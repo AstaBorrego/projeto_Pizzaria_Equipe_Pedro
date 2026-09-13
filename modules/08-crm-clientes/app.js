@@ -1,287 +1,412 @@
-/**
- * MÓDULO DE CLIENTES - PIZZARIA
- * Arquitetura baseada em Estado Local com Event Hooks para Integração Externa
- */
-// Este trecho de escuta  que recebe os dados do cliente e preenche os campos
+/* ==========================================
+   BELLA MASSA
+   US-007 - CAIXA E OPERAÇÕES FINANCEIRAS
+   ========================================== */
+
+// Listener para postMessage
 window.addEventListener('message', (event) => {
-  // Verifica se a ação recebida é a de carregar cliente
   if (event.data && event.data.action === 'LOAD_CUSTOMER_DATA') {
     const cliente = event.data.customer;
-    
-    // Preenche os inputs do formulário de atendimento do Pedro
     if (document.getElementById('inputNome')) {
-      document.getElementById('inputNome').value = cliente.nome;
+      document.getElementById('inputNome').value = cliente.nome || cliente.name || '';
     }
     if (document.getElementById('inputTelefone')) {
-      document.getElementById('inputTelefone').value = cliente.telefone;
+      document.getElementById('inputTelefone').value = cliente.telefone || cliente.phone || '';
     }
   }
 });
-// fim
-// Mock de Banco de Dados de Clientes e Histórico
-let mockCustomers = [
-  {
-    id: "1",
-    name: "Astarote Borrego",
-    phone: "(11) 98765-4321",
-    cpf: "123.456.789-00",
-    street: "Rua Vergueiro, 1000 - Apt 42",
-    neighborhood: "Liberdade",
-    complement: "Próximo ao metrô",
-    notes: "Prefere massa fina. Sem cebola.",
-    isVip: true,
-    orders: [
-      {
-        id: "ORD-9901",
-        date: "10/09/2026 - 19:40",
-        items: "1x Pizza Calabresa (Borda Catupiry), 1x Guaraná 2L",
-        total: 78.50
-      },
-      {
-        id: "ORD-8520",
-        date: "25/08/2026 - 20:15",
-        items: "1x Pizza Portuguesa, 1x Pizza Chocolate P",
-        total: 92.00
-      }
-    ]
-  },
-  {
-    id: "2",
-    name: "Mariana Souza",
-    phone: "(11) 91234-5678",
-    cpf: "",
-    street: "Av. Paulista, 500",
-    neighborhood: "Bela Vista",
-    complement: "Bloco B",
-    notes: "Cliente pede para buzinar ao chegar.",
-    isVip: false,
-    orders: [
-      {
-        id: "ORD-7411",
-        date: "01/09/2026 - 21:00",
-        items: "1x Pizza Frango c/ Catupiry",
-        total: 55.00
-      }
-    ]
-  }
-];
 
-// Estado da Aplicação
-let selectedCustomerId = null;
+let pedidos = [];
+let saldoInicial = 100;
+let totalEntradas = 0;
+let totalSaidas = 0;
 
-// Elementos do DOM
-const searchInput = document.getElementById('searchInput');
-const customerListEl = document.getElementById('customerList');
-const customerCountEl = document.getElementById('customerCount');
-const btnNewCustomer = document.getElementById('btnNewCustomer');
+let pagamentos = {
+    PIX: 0,
+    Credito: 0,
+    Debito: 0,
+    Dinheiro: 0
+};
 
-const emptyStateEl = document.getElementById('emptyState');
-const customerFormEl = document.getElementById('customerForm');
-const formTitleEl = document.getElementById('formTitle');
-const vipTagEl = document.getElementById('vipTag');
-const btnCancelEl = document.getElementById('btnCancel');
+let pedidoAtual = null;
+let tipoMovimentacao = "";
 
-const historySectionEl = document.getElementById('historySection');
-const historyListEl = document.getElementById('historyList');
-const btnNewOrderForCustomer = document.getElementById('btnNewOrderForCustomer');
+/* ==========================================
+   INICIALIZAÇÃO & LEITURA BANCO (READ)
+   ========================================== */
+window.onload = function () {
+    carregarTema();
+    carregarPedidosCaixa();
+};
 
-// Initializer
-document.addEventListener('DOMContentLoaded', () => {
-  renderCustomerList(mockCustomers);
-  setupEventListeners();
-});
-
-function setupEventListeners() {
-  // Busca em Tempo Real
-  searchInput.addEventListener('input', (e) => {
-    const term = e.target.value.toLowerCase();
-    const filtered = mockCustomers.filter(c => 
-      c.name.toLowerCase().includes(term) ||
-      c.phone.includes(term) ||
-      c.cpf.includes(term)
-    );
-    renderCustomerList(filtered);
-  });
-
-  // Abrir Form para Novo Cliente
-  btnNewCustomer.addEventListener('click', () => {
-    resetForm();
-    selectedCustomerId = null;
-    formTitleEl.innerText = "Novo Cadastro de Cliente";
-    emptyStateEl.classList.add('hidden');
-    historySectionEl.classList.add('hidden');
-    vipTagEl.classList.add('hidden');
-    customerFormEl.classList.remove('hidden');
-  });
-
-  // Cancelar Formulário
-  btnCancelEl.addEventListener('click', () => {
-    resetForm();
-    customerFormEl.classList.add('hidden');
-    emptyStateEl.classList.remove('hidden');
-  });
-
-  // Salvar ou Atualizar Cliente
-  customerFormEl.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const customerData = {
-      id: selectedCustomerId || Date.now().toString(),
-      name: document.getElementById('name').value,
-      phone: document.getElementById('phone').value,
-      cpf: document.getElementById('cpf').value,
-      street: document.getElementById('street').value,
-      neighborhood: document.getElementById('neighborhood').value,
-      complement: document.getElementById('complement').value,
-      notes: document.getElementById('notes').value,
-      isVip: false,
-      orders: selectedCustomerId ? (mockCustomers.find(c => c.id === selectedCustomerId)?.orders || []) : []
-    };
-
-    if (selectedCustomerId) {
-      // Update
-      const index = mockCustomers.findIndex(c => c.id === selectedCustomerId);
-      mockCustomers[index] = customerData;
+function carregarPedidosCaixa() {
+    let dbPedidos = [];
+    if (typeof DB !== 'undefined') {
+        dbPedidos = DB.getPedidos();
     } else {
-      // Create
-      mockCustomers.unshift(customerData);
+        dbPedidos = JSON.parse(localStorage.getItem('bellaMassa_pedidos') || '[]');
     }
 
-    renderCustomerList(mockCustomers);
-    selectCustomer(customerData.id);
-    
-    // HOOK PARA INTEGRAÇÃO EXTERNA (Ex: Salvar no Backend/API Principal)
-    onCustomerSaved(customerData);
-  });
+    // Filtra apenas pedidos que ainda não foram pagos/finalizados no caixa
+    pedidos = dbPedidos.filter(p => p.status !== 'paid' && p.status !== 'closed').map(p => ({
+        id: p.id,
+        cliente: p.cliente || 'Cliente Balcão',
+        modalidade: p.tipo === 'Salao' ? `🪑 Mesa ${p.mesa || '01'}` : p.tipo === 'Entrega' ? '🛵 Delivery' : '🍕 Balcão',
+        total: parseFloat(p.total) || 0,
+        origem: p
+    }));
 
-  // Disparar Novo Pedido vinculando o Cliente
-  btnNewOrderForCustomer.addEventListener('click', () => {
-    const customer = mockCustomers.find(c => c.id === selectedCustomerId);
-    if (customer) {
-      onStartOrderForCustomer(customer);
+    renderTabelaPedidos();
+    atualizarDashboard();
+}
+
+function renderTabelaPedidos() {
+    const tbody = document.getElementById("pedidosBody");
+    if (!tbody) return;
+
+    if (pedidos.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Nenhum pedido aguardando pagamento.</td></tr>`;
+        return;
     }
-  });
+
+    tbody.innerHTML = pedidos.map(p => `
+        <tr>
+            <td><strong>#${String(p.id).slice(-4)}</strong></td>
+            <td>${p.cliente}</td>
+            <td>${p.modalidade}</td>
+            <td>${moeda(p.total)}</td>
+            <td><span class="status-pendente">Pendente</span></td>
+            <td>
+                <button class="btn-small" onclick="abrirPagamento('${p.id}')">💳 Pagar</button>
+            </td>
+        </tr>
+    `).join('');
 }
 
-// Renderizar Lista de Clientes
-function renderCustomerList(list) {
-  customerListEl.innerHTML = '';
-  customerCountEl.innerText = list.length;
+// Sincronização em tempo real do banco de dados
+window.addEventListener('db:pedidosUpdated', carregarPedidosCaixa);
+window.addEventListener('db:externalChange', (e) => {
+  if (e.detail && e.detail.key === 'bellaMassa_pedidos') carregarPedidosCaixa();
+});
 
-  if (list.length === 0) {
-    customerListEl.innerHTML = `<li style="color: var(--text-muted); text-align:center; padding: 20px;">Nenhum cliente encontrado.</li>`;
-    return;
-  }
+/* ==========================================
+   ALTERNÂNCIA DE TEMA
+   ========================================== */
+function setTheme(mode) {
+    const btnLight = document.getElementById('btnLight');
+    const btnDark = document.getElementById('btnDark');
 
-  list.forEach(c => {
-    const li = document.createElement('li');
-    li.className = `customer-item ${c.id === selectedCustomerId ? 'active' : ''}`;
-    li.onclick = () => selectCustomer(c.id);
+    if (mode === "light") {
+        document.body.classList.add("light-theme");
+        localStorage.setItem("bellaMassa_theme", "light");
+        if (btnLight) btnLight.classList.add('active');
+        if (btnDark) btnDark.classList.remove('active');
+    } else {
+        document.body.classList.remove("light-theme");
+        localStorage.setItem("bellaMassa_theme", "dark");
+        if (btnDark) btnDark.classList.add('active');
+        if (btnLight) btnLight.classList.remove('active');
+    }
+}
 
-    li.innerHTML = `
-      <div class="customer-item-header">
-        <span>${c.name}</span>
-        ${c.isVip ? '<i class="ph ph-crown" style="color:var(--warning)"></i>' : ''}
-      </div>
-      <div class="customer-item-sub">📞 ${c.phone}</div>
-      <div class="customer-item-sub">📍 ${c.neighborhood}</div>
+function carregarTema() {
+    let tema = localStorage.getItem("bellaMassa_theme") || "dark";
+    setTheme(tema);
+}
+
+function moeda(valor) {
+    return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function atualizarDashboard() {
+    let saldoAtual = saldoInicial + totalEntradas - totalSaidas;
+
+    const saldoInicialEl = document.getElementById("saldoInicial");
+    if (saldoInicialEl) saldoInicialEl.innerText = moeda(saldoInicial);
+
+    const totalEntradasEl = document.getElementById("totalEntradas");
+    if (totalEntradasEl) totalEntradasEl.innerText = moeda(totalEntradas);
+
+    const totalSaidasEl = document.getElementById("totalSaidas");
+    if (totalSaidasEl) totalSaidasEl.innerText = moeda(totalSaidas);
+
+    const saldoAtualEl = document.getElementById("saldoAtual");
+    if (saldoAtualEl) saldoAtualEl.innerText = moeda(saldoAtual);
+
+    const totalPixEl = document.getElementById("totalPix");
+    if (totalPixEl) totalPixEl.innerText = moeda(pagamentos.PIX);
+
+    const totalCreditoEl = document.getElementById("totalCredito");
+    if (totalCreditoEl) totalCreditoEl.innerText = moeda(pagamentos.Credito);
+
+    const totalDebitoEl = document.getElementById("totalDebito");
+    if (totalDebitoEl) totalDebitoEl.innerText = moeda(pagamentos.Debito);
+
+    const totalDinheiroEl = document.getElementById("totalDinheiro");
+    if (totalDinheiroEl) totalDinheiroEl.innerText = moeda(pagamentos.Dinheiro);
+
+    const fechamentoVendasEl = document.getElementById("fechamentoVendas");
+    if (fechamentoVendasEl) fechamentoVendasEl.innerText = moeda(totalEntradas);
+
+    let movimentacoes = totalEntradas - totalSaidas;
+
+    const fechamentoMovEl = document.getElementById("fechamentoMovimentacoes");
+    if (fechamentoMovEl) fechamentoMovEl.innerText = moeda(movimentacoes);
+
+    const valorEsperadoEl = document.getElementById("valorEsperado");
+    if (valorEsperadoEl) valorEsperadoEl.innerText = moeda(saldoAtual);
+}
+
+/* ==========================================
+   PAGAMENTO E ATUALIZAÇÃO BANCO (UPDATE)
+   ========================================== */
+function abrirPagamento(id) {
+    pedidoAtual = pedidos.find(p => String(p.id) === String(id));
+
+    if (!pedidoAtual) {
+        alert("Pedido não encontrado.");
+        return;
+    }
+
+    document.getElementById("modalPedido").innerText = "#" + String(pedidoAtual.id).slice(-4);
+    document.getElementById("modalCliente").innerText = pedidoAtual.cliente;
+    document.getElementById("modalTotal").innerText = moeda(pedidoAtual.total);
+
+    document.getElementById("discountInput").value = 0;
+    document.getElementById("cashInput").value = "";
+    document.getElementById("paymentSelect").value = "PIX";
+    document.getElementById("cashPaymentGroup").classList.add("hidden");
+
+    calcularPagamento();
+    document.getElementById("paymentModal").classList.remove("hidden");
+}
+
+function fecharModalPagamento() {
+    document.getElementById("paymentModal").classList.add("hidden");
+}
+
+function alternarDinheiro() {
+    let metodo = document.getElementById("paymentSelect").value;
+    let grupo = document.getElementById("cashPaymentGroup");
+
+    if (metodo === "Dinheiro") {
+        grupo.classList.remove("hidden");
+    } else {
+        grupo.classList.add("hidden");
+    }
+
+    calcularPagamento();
+}
+
+function calcularPagamento() {
+    if (!pedidoAtual) return;
+
+    let desconto = parseFloat(document.getElementById("discountInput").value) || 0;
+    if (desconto < 0) desconto = 0;
+    if (desconto > pedidoAtual.total) desconto = pedidoAtual.total;
+
+    let total = pedidoAtual.total - desconto;
+    document.getElementById("paymentFinalValue").innerText = moeda(total);
+
+    let metodo = document.getElementById("paymentSelect").value;
+
+    if (metodo === "Dinheiro") {
+        let recebido = parseFloat(document.getElementById("cashInput").value) || 0;
+        let troco = recebido - total;
+        let changeInfo = document.getElementById("changeInfo");
+
+        if (recebido === 0) {
+            changeInfo.innerText = "Troco: R$ 0,00";
+            changeInfo.style.color = "#FFB300";
+        } else if (troco >= 0) {
+            changeInfo.innerText = "Troco: " + moeda(troco);
+            changeInfo.style.color = "#81C784";
+        } else {
+            changeInfo.innerText = "Faltam: " + moeda(Math.abs(troco));
+            changeInfo.style.color = "#EF5350";
+        }
+    }
+}
+
+function confirmarPagamento() {
+    if (!pedidoAtual) return;
+
+    let desconto = parseFloat(document.getElementById("discountInput").value) || 0;
+    let total = pedidoAtual.total - desconto;
+    let metodo = document.getElementById("paymentSelect").value;
+
+    if (metodo === "Dinheiro") {
+        let recebido = parseFloat(document.getElementById("cashInput").value) || 0;
+        if (recebido < total) {
+            alert("O valor recebido é menor que o total do pedido.");
+            return;
+        }
+    }
+
+    totalEntradas += total;
+    pagamentos[metodo] += total;
+
+    let agora = new Date();
+    let hora = agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+    let historico = document.getElementById("historicoBody");
+    let nomeMetodo = obterNomeMetodo(metodo);
+
+    let novaLinha = document.createElement("tr");
+    novaLinha.innerHTML = `
+        <td>${hora}</td>
+        <td><span class="tag entrada">Entrada</span></td>
+        <td>Pedido #${String(pedidoAtual.id).slice(-4)} - ${nomeMetodo}</td>
+        <td class="valor-entrada">+ ${moeda(total)}</td>
     `;
-    customerListEl.appendChild(li);
-  });
+
+    historico.prepend(novaLinha);
+    gerarComprovante(total, desconto, metodo);
+
+    // Atualiza status no Banco de Dados DB Central
+    if (typeof DB !== 'undefined') {
+        DB.atualizarStatusPedido(pedidoAtual.id, 'paid');
+    }
+
+    carregarPedidosCaixa();
+    fecharModalPagamento();
+    document.getElementById("receiptModal").classList.remove("hidden");
 }
 
-// Selecionar Cliente e Mostrar Detalhes / Histórico
-function selectCustomer(id) {
-  selectedCustomerId = id;
-  const customer = mockCustomers.find(c => c.id === id);
-  if (!customer) return;
-
-  // Atualiza classes ativas na lista
-  renderCustomerList(mockCustomers);
-
-  // Preenche Formulário
-  document.getElementById('customerId').value = customer.id;
-  document.getElementById('name').value = customer.name;
-  document.getElementById('phone').value = customer.phone;
-  document.getElementById('cpf').value = customer.cpf;
-  document.getElementById('street').value = customer.street;
-  document.getElementById('neighborhood').value = customer.neighborhood;
-  document.getElementById('complement').value = customer.complement;
-  document.getElementById('notes').value = customer.notes;
-
-  formTitleEl.innerText = "Editar Cliente";
-  if (customer.isVip) {
-    vipTagEl.classList.remove('hidden');
-  } else {
-    vipTagEl.classList.add('hidden');
-  }
-
-  emptyStateEl.classList.add('hidden');
-  customerFormEl.classList.remove('hidden');
-
-  // Renderiza Histórico
-  renderHistory(customer.orders);
+function obterNomeMetodo(metodo) {
+    if (metodo === "PIX") return "PIX";
+    if (metodo === "Credito") return "Cartão de Crédito";
+    if (metodo === "Debito") return "Cartão de Débito";
+    if (metodo === "Dinheiro") return "Dinheiro";
+    return metodo;
 }
 
-// Renderizar Histórico de Pedidos
-function renderHistory(orders) {
-  historySectionEl.classList.remove('hidden');
-  historyListEl.innerHTML = '';
+function gerarComprovante(total, desconto, metodo) {
+    let recebido = parseFloat(document.getElementById("cashInput").value) || 0;
+    let troco = recebido - total;
+    let textoTroco = "";
 
-  if (!orders || orders.length === 0) {
-    historyListEl.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">Nenhum pedido anterior cadastrado para este cliente.</p>`;
-    return;
-  }
+    if (metodo === "Dinheiro") {
+        textoTroco = `
+            <p>Valor recebido: <strong>${moeda(recebido)}</strong></p>
+            <p>Troco: <strong>${moeda(troco)}</strong></p>
+        `;
+    }
 
-  orders.forEach(order => {
-    const card = document.createElement('div');
-    card.className = 'history-card';
-    card.innerHTML = `
-      <div class="history-card-header">
-        <span>#${order.id}</span>
-        <span>${order.date}</span>
-      </div>
-      <div class="history-items">${order.items}</div>
-      <div class="history-footer">
-        <span>Total: R$ ${order.total.toFixed(2).replace('.', ',')}</span>
-        <button class="btn btn-sm btn-secondary" onclick="onReorder('${order.id}')">
-          <i class="ph ph-arrows-counter-clockwise"></i> Repetir Pedido
-        </button>
-      </div>
+    document.getElementById("receiptContent").innerHTML = `
+        <p><strong>Pedido:</strong> #${String(pedidoAtual.id).slice(-4)}</p>
+        <p><strong>Cliente:</strong> ${pedidoAtual.cliente}</p>
+        <p><strong>Modalidade:</strong> ${pedidoAtual.modalidade}</p>
+        <hr>
+        <p>Valor original: ${moeda(pedidoAtual.total)}</p>
+        <p>Desconto: ${moeda(desconto)}</p>
+        <p>Forma de pagamento: ${obterNomeMetodo(metodo)}</p>
+        ${textoTroco}
+        <hr>
+        <p><strong>Total pago:</strong> ${moeda(total)}</p>
+        <p>Obrigado pela preferência!</p>
     `;
-    historyListEl.appendChild(card);
-  });
 }
 
-function resetForm() {
-  customerFormEl.reset();
-  document.getElementById('customerId').value = '';
+function fecharComprovante() {
+    document.getElementById("receiptModal").classList.add("hidden");
 }
 
-/* ==========================================================================
-   HOOKS DE INTEGRAÇÃO COM O PROJETO PRINCIPAL (EX: PDV / CAIXA / BACKEND)
-   ========================================================================== */
+function abrirMovimentacao(tipo) {
+    tipoMovimentacao = tipo;
+    let titulo = document.getElementById("movementTitle");
 
-// Evento ao Salvar Cliente
-function onCustomerSaved(customerData) {
-  console.log("[INTEGRAÇÃO] Cliente Salvo / Atualizado:", customerData);
-  // Exemplo de integração via CustomEvent para React, Vue ou JS Vanilla Principal:
-  const event = new CustomEvent('crm:customerSaved', { detail: customerData });
-  window.dispatchEvent(event);
+    if (tipo === "sangria") {
+        titulo.innerText = "💸 Registrar Sangria";
+    } else {
+        titulo.innerText = "💰 Registrar Reforço";
+    }
+
+    document.getElementById("movementValue").value = "";
+    document.getElementById("movementReason").value = "";
+    document.getElementById("movementModal").classList.remove("hidden");
 }
 
-// Evento ao clicar em "Iniciar Pedido para este Cliente"
-function onStartOrderForCustomer(customerData) {
-  console.log("[INTEGRAÇÃO] Iniciar novo pedido para:", customerData);
-  const event = new CustomEvent('crm:startOrder', { detail: customerData });
-  window.dispatchEvent(event);
-  alert(`Redirecionando para a tela de PDV/Pedidos com o cliente ${customerData.name} selecionado!`);
+function fecharMovimentacao() {
+    document.getElementById("movementModal").classList.add("hidden");
 }
 
-// Evento ao clicar em "Repetir Pedido"
-function onReorder(orderId) {
-  console.log("[INTEGRAÇÃO] Repetir pedido:", orderId);
-  const event = new CustomEvent('crm:reorder', { detail: { orderId } });
-  window.dispatchEvent(event);
-  alert(`Itens do pedido ${orderId} adicionados ao carrinho atual!`);
+function confirmarMovimentacao() {
+    let valor = parseFloat(document.getElementById("movementValue").value);
+    let motivo = document.getElementById("movementReason").value.trim();
+
+    if (!valor || valor <= 0) {
+        alert("Informe um valor válido.");
+        return;
+    }
+
+    if (!motivo) {
+        alert("Informe o motivo da operação.");
+        return;
+    }
+
+    let agora = new Date();
+    let hora = agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    let historico = document.getElementById("historicoBody");
+    let linha = document.createElement("tr");
+
+    if (tipoMovimentacao === "sangria") {
+        totalSaidas += valor;
+        linha.innerHTML = `
+            <td>${hora}</td>
+            <td><span class="tag saida">Saída</span></td>
+            <td>Sangria - ${motivo}</td>
+            <td class="valor-saida">- ${moeda(valor)}</td>
+        `;
+    } else {
+        totalEntradas += valor;
+        linha.innerHTML = `
+            <td>${hora}</td>
+            <td><span class="tag entrada">Entrada</span></td>
+            <td>Reforço - ${motivo}</td>
+            <td class="valor-entrada">+ ${moeda(valor)}</td>
+        `;
+    }
+
+    historico.prepend(linha);
+    atualizarDashboard();
+    fecharMovimentacao();
 }
+
+function fecharCaixa() {
+    let saldo = saldoInicial + totalEntradas - totalSaidas;
+
+    let confirmar = confirm(
+        "Deseja realmente fechar o caixa?\n\n" +
+        "Valor esperado: " + moeda(saldo)
+    );
+
+    if (!confirmar) return;
+
+    alert("Caixa fechado com sucesso!\n\nValor final: " + moeda(saldo));
+
+    let status = document.getElementById("caixaStatusBadge");
+    if (status) {
+        status.innerText = "● Caixa Fechado";
+        status.style.background = "#555";
+    }
+
+    const btnClose = document.querySelector(".btn-close");
+    if (btnClose) {
+        btnClose.disabled = true;
+        btnClose.innerText = "🔒 Caixa Fechado";
+    }
+}
+
+// Globalização das funções para chamadas em atributos inline
+window.setTheme = setTheme;
+window.abrirPagamento = abrirPagamento;
+window.fecharModalPagamento = fecharModalPagamento;
+window.alternarDinheiro = alternarDinheiro;
+window.calcularPagamento = calcularPagamento;
+window.confirmarPagamento = confirmarPagamento;
+window.fecharComprovante = fecharComprovante;
+window.abrirMovimentacao = abrirMovimentacao;
+window.fecharMovimentacao = fecharMovimentacao;
+window.confirmarMovimentacao = confirmarMovimentacao;
+window.fecharCaixa = fecharCaixa;

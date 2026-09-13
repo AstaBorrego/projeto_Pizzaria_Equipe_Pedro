@@ -7,12 +7,12 @@
   <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-
+  <div class="form-box">
   <div class="container">
     <header>
       <div class="brand-title">
         <span class="pizza-icon" title="Clique para girar!">🍕</span>
-        <h1>Bella Massa</h1>
+        <h1>Bella Massa | <strong>Atendimento</strong></h1>
       </div>
       
       <!-- Controles Superiores Direitos: Tema (Sol/Lua) e Sessão -->
@@ -26,119 +26,117 @@
     </header>
 
     <!-- Modalidade de Atendimento -->
-    <div class="form-group">
-      <label for="modality">Modalidade de Atendimento</label>
-      <select id="modality" onchange="toggleModalityFields()">
-        <option value="" disabled selected>Selecione</option>
-        <option value="Balcao">🍕 Balcão</option>
-        <option value="Salao">🪑 Salão / Mesa</option>
-        <option value="Entrega">🛵 Entrega (Delivery)</option>
-      </select>
-    </div>
-
-    <!-- Campo Condicional da Mesa -->
-    <div class="form-group hidden" id="mesaGroup">
-      <label for="mesaInput">Número da Mesa *</label>
-      <input type="number" id="mesaInput" min="1" step="1" placeholder="Ex: 05">
-    </div>
-
-    <!-- Campos de Delivery -->
-  <!-- Campos de Delivery -->
-    <div id="deliveryGroup" class="hidden">
       <div class="form-group">
-        <label for="cepInput">CEP da Entrega</label>
-        <div class="cep-container">
-          <input type="text" id="cepInput" placeholder="Ex: 07043000" maxlength="8" onblur="buscarCEP(this.value)">
-          <button type="button" class="btn-primary btn-cep-buscar" onclick="buscarCEP(document.getElementById('cepInput').value)">Buscar</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="addressInput">Endereço de Entrega *</label>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <input type="text" id="addressInput" placeholder="Rua, Bairro, Cidade - UF" style="flex: 1;">
-          <a id="mapsLink" href="#" target="_blank" style="display: none; background: #2E7D32; color: #FBFADA; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center; white-space: nowrap;">Ver no Maps</a>
-        </div>
-      </div>
-
-      <!-- Novos campos de Número e Complemento -->
-      <div style="display: flex; gap: 10px;">
-        <div class="form-group" style="flex: 1;">
-          <label for="numeroInput">Número *</label>
-          <input type="text" id="numeroInput" placeholder="Ex: 123">
-        </div>
-        <div class="form-group" style="flex: 2;">
-          <label for="complementoInput">Complemento</label>
-          <input type="text" id="complementoInput" placeholder="Ex: Apto 42, Bloco B">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="deliveryFeeInput">Taxa de Entrega (R$) <small id="distanciaInfo" style="color: var(--cheese-gold); font-weight: normal;"></small></label>
-        <input type="number" id="deliveryFeeInput" value="7.00" min="7.00" step="0.50" onchange="renderOrder()">
-      </div>
-    </div>
-
-    <!-- Categoria do Item -->
-    <div class="form-group">
-      <label for="category">Categoria do Item</label>
-      <select id="category" onchange="handleCategoryChange()">
-        <option value="" disabled selected>Selecione</option>
-        <option value="pizza">🍕 Pizza</option>
-        <option value="bebida">🥤 Bebida</option>
-      </select>
-    </div>
-
-    <!-- Tamanho da Pizza -->
-    <div class="form-group" id="sizeGroup">
-      <label for="sizeSelect">Tamanho da Pizza</label>
-      <select id="sizeSelect" onchange="updatePizzaFlavorPrices()">
-        <option value="" disabled selected>Selecione</option>
-        <option value="Broto" data-ratio="0.70">Broto (4 Fatias)</option>
-        <option value="Media" data-ratio="0.85">Média (6 Fatias)</option>
-        <option value="Grande" data-ratio="1.00">Grande (8 Fatias)</option>
-        <option value="Familia" data-ratio="1.20">Família (12 Fatias)</option>
-      </select>
-    </div>
-
-    <!-- Seleção de Sabores -->
-    <div id="pizzaFlavorsGroup">
-      <div class="form-group">
-        <label for="flavor1Select">Sabor 1 (ou Inteira)</label>
-        <select id="flavor1Select"></select>
-      </div>
-
-      <div class="form-group">
-        <label for="flavor2Select">Sabor 2 (Opcional - Meio a Meio)</label>
-        <select id="flavor2Select">
-          <option value="Nenhum">Selecione</option>
+        <label for="modality">Modalidade de Atendimento</label>
+        <select id="modality" onchange="toggleModalityFields()">
+          <option value="" disabled selected>Selecione</option>
+          <option value="Balcao">🍕 Balcão</option>
+          <option value="Salao">🪑 Salão / Mesa</option>
+          <option value="Entrega">🛵 Entrega (Delivery)</option>
         </select>
       </div>
-    </div>
 
-    <!-- Seleção de Bebidas -->
-    <div class="form-group hidden" id="drinkGroup">
-      <label for="drinkSelect">Bebida</label>
-      <select id="drinkSelect"></select>
-    </div>
+      <!-- Campo Condicional da Mesa -->
+      <div class="form-group hidden" id="mesaGroup">
+        <label for="mesaInput">Número da Mesa *</label>
+        <input type="number" id="mesaInput" min="1" step="1" placeholder="Ex: 05">
+      </div>
 
-    <!-- Borda Recheada -->
-    <div class="form-group" id="borderGroup">
-      <label for="borderSelect" id="borderLabel">Borda Recheada</label>
-      <select id="borderSelect"></select>
-    </div>
+      <!-- Campos de Delivery -->
+      <div id="deliveryGroup" class="hidden">
+        <div class="form-group">
+          <label for="cepInput">CEP da Entrega</label>
+          <div class="cep-container">
+            <input type="text" id="cepInput" placeholder="Ex: 07043000" maxlength="8" onblur="buscarCEP(this.value)">
+            <button type="button" class="btn-primary btn-cep-buscar" onclick="buscarCEP(document.getElementById('cepInput').value)">Buscar</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="addressInput">Endereço de Entrega *</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="addressInput" placeholder="Rua, Bairro, Cidade - UF" style="flex: 1;">
+            <a id="mapsLink" href="#" target="_blank" style="display: none; background: #2E7D32; color: #FBFADA; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center; white-space: nowrap;">Ver no Maps</a>
+          </div>
+        </div>
 
-    <!-- Observações -->
-    <div class="form-group">
-      <label for="obsInput">Observações / Personalização</label>
-      <input type="text" id="obsInput" placeholder="Ex: Sem cebola, massa bem assada">
-    </div>
+        <!-- Campos de Número e Complemento -->
+        <div style="display: flex; gap: 10px;">
+          <div class="form-group" style="flex: 1;">
+            <label for="numeroInput">Número *</label>
+            <input type="text" id="numeroInput" placeholder="Ex: 123">
+          </div>
+          <div class="form-group" style="flex: 2;">
+            <label for="complementoInput">Complemento</label>
+            <input type="text" id="complementoInput" placeholder="Ex: Apto 42, Bloco B">
+          </div>
+        </div>
 
-    <!-- Quantidade -->
-    <div class="form-group">
-      <label for="quantityInput">Quantidade *</label>
-      <input type="number" id="quantityInput" value="1" min="1" step="1">
-    </div>
+        <div class="form-group">
+          <label for="deliveryFeeInput">Taxa de Entrega (R$) <small id="distanciaInfo" style="color: var(--cheese-gold); font-weight: normal;"></small></label>
+          <input type="number" id="deliveryFeeInput" value="7.00" min="7.00" step="0.50" onchange="renderOrder()">
+        </div>
+      </div>
 
+      <!-- Categoria do Item -->
+      <div class="form-group">
+        <label for="category">Categoria do Item</label>
+        <select id="category" onchange="handleCategoryChange()">
+          <option value="" disabled selected>Selecione</option>
+          <option value="pizza">🍕 Pizza</option>
+          <option value="bebida">🥤 Bebida</option>
+        </select>
+      </div>
+
+      <!-- Tamanho da Pizza -->
+      <div class="form-group" id="sizeGroup">
+        <label for="sizeSelect">Tamanho da Pizza</label>
+        <select id="sizeSelect" onchange="updatePizzaFlavorPrices()">
+          <option value="" disabled selected>Selecione</option>
+          <option value="Broto" data-ratio="0.70">Broto (4 Fatias)</option>
+          <option value="Media" data-ratio="0.85">Média (6 Fatias)</option>
+          <option value="Grande" data-ratio="1.00">Grande (8 Fatias)</option>
+          <option value="Familia" data-ratio="1.20">Família (12 Fatias)</option>
+        </select>
+      </div>
+
+      <!-- Seleção de Sabores -->
+      <div id="pizzaFlavorsGroup">
+        <div class="form-group">
+          <label for="flavor1Select">Sabor 1 (ou Inteira)</label>
+          <select id="flavor1Select"></select>
+        </div>
+
+        <div class="form-group">
+          <label for="flavor2Select">Sabor 2 (Opcional - Meio a Meio)</label>
+          <select id="flavor2Select">
+            <option value="Nenhum">Selecione</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Seleção de Bebidas -->
+      <div class="form-group hidden" id="drinkGroup">
+        <label for="drinkSelect">Bebida</label>
+        <select id="drinkSelect"></select>
+      </div>
+
+      <!-- Borda Recheada -->
+      <div class="form-group" id="borderGroup">
+        <label for="borderSelect" id="borderLabel">Borda Recheada</label>
+        <select id="borderSelect"></select>
+      </div>
+
+      <!-- Observações -->
+      <div class="form-group">
+        <label for="obsInput">Observações / Personalização</label>
+        <input type="text" id="obsInput" placeholder="Ex: Sem cebola, massa bem assada">
+      </div>
+
+      <!-- Quantidade -->
+      <div class="form-group">
+        <label for="quantityInput">Quantidade *</label>
+        <input type="number" id="quantityInput" value="1" min="1" step="1">
+      </div>
     <button type="button" class="btn-primary btn-add" onclick="addItem()">+ Adicionar ao Pedido</button>
 
     <!-- Resumo do Pedido -->
@@ -191,6 +189,7 @@
       <button class="btn-primary" onclick="closeModal()">Novo Pedido</button>
     </div>
   </div>
+</div>
 
   <!-- Widget VLIBRAS -->
   <div vw class="enabled">
@@ -204,6 +203,8 @@
     new window.VLibras.Widget('https://vlibras.gov.br/app');
   </script>
 
+  <!-- CARREGAMENTO DOS SCRIPTS NA ORDEM CORRETA -->
+  <script src="../../database.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

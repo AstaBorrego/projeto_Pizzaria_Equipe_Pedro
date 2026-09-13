@@ -1,21 +1,15 @@
-// Este trecho de escuta  que recebe os dados do cliente e preenche os campos
+// Escuta de dados de clientes (Integração CRM / postMessage)
 window.addEventListener('message', (event) => {
-  // Verifica se a ação recebida é a de carregar cliente
   if (event.data && event.data.action === 'LOAD_CUSTOMER_DATA') {
     const cliente = event.data.customer;
-    
-    // Preenche os inputs do formulário de atendimento do Pedro
     if (document.getElementById('inputNome')) {
-      document.getElementById('inputNome').value = cliente.nome;
+      document.getElementById('inputNome').value = cliente.nome || cliente.name || '';
     }
     if (document.getElementById('inputTelefone')) {
-      document.getElementById('inputTelefone').value = cliente.telefone;
+      document.getElementById('inputTelefone').value = cliente.telefone || cliente.phone || '';
     }
   }
 });
-// fim
-
-const STORAGE_KEY = 'bellaMassa_delivery_lucas006';
 
 const defaultRiders = [
   { id: 1, name: 'Carlos Silva', vehicle: 'Honda CG 160', plate: 'ABC1D23' },
@@ -23,36 +17,48 @@ const defaultRiders = [
   { id: 3, name: 'Bruno Oliveira', vehicle: 'Honda Biz 125', plate: 'GHI7J89' }
 ];
 
-const defaultOrders = [
-  { id: 1042, customer: 'Mariana Souza', address: 'Rua das Flores, 128 - Centro', fee: 8.00, status: 'Aguardando motoboy', riderId: null, routeNote: '' },
-  { id: 1043, customer: 'João Lima', address: 'Av. Brasil, 950 - Jardim Maia', fee: 10.00, status: 'Aguardando motoboy', riderId: null, routeNote: '' },
-  { id: 1044, customer: 'Fernanda Alves', address: 'Rua Sete de Setembro, 315 - Vila Galvão', fee: 9.50, status: 'Em trânsito', riderId: 1, routeNote: 'Priorizar a avenida principal' },
-  { id: 1045, customer: 'Paulo Mendes', address: 'Av. Tiradentes, 1840 - Macedo', fee: 12.00, status: 'Entregue', riderId: 2, routeNote: '' },
-  { id: 1046, customer: 'Ana Costa', address: 'Rua Dona Tecla, 77 - Jardim Flor da Montanha', fee: 11.50, status: 'Entregue', riderId: 3, routeNote: '' }
-];
-
 let orders = [];
-let riders = [];
+let riders = defaultRiders;
 
+// LEITURA DO BANCO DE DADOS CENTRAL (READ)
 function loadData() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      orders = Array.isArray(parsed.orders) ? parsed.orders : [...defaultOrders];
-      riders = Array.isArray(parsed.riders) ? parsed.riders : [...defaultRiders];
-    } catch {
-      orders = JSON.parse(JSON.stringify(defaultOrders));
-      riders = JSON.parse(JSON.stringify(defaultRiders));
-    }
+  let dbPedidos = [];
+  if (typeof DB !== 'undefined') {
+    dbPedidos = DB.getPedidos();
   } else {
-    orders = JSON.parse(JSON.stringify(defaultOrders));
-    riders = JSON.parse(JSON.stringify(defaultRiders));
+    dbPedidos = JSON.parse(localStorage.getItem('bellaMassa_pedidos') || '[]');
+  }
+
+  // Filtrar apenas pedidos com modalidade de Entrega
+  const deliveryPedidos = dbPedidos.filter(p => p.tipo === 'Entrega' || p.tipo === 'delivery');
+
+  orders = deliveryPedidos.map(p => {
+    let statusDelivery = 'Aguardando motoboy';
+    if (p.status === 'transit') statusDelivery = 'Em trânsito';
+    if (p.status === 'delivered' || p.status === 'finished') statusDelivery = 'Entregue';
+
+    return {
+      id: p.id,
+      customer: p.cliente || 'Cliente',
+      address: p.endereco || 'Endereço não informado',
+      fee: p.taxaEntrega || 7.00,
+      status: statusDelivery,
+      riderId: p.motoboyId || null,
+      routeNote: p.orientacaoRota || ''
+    };
+  });
+
+  // Salvar/Carregar Motoboys do Storage local caso cadastrados no sistema
+  const savedRiders = localStorage.getItem('bellaMassa_motoboys');
+  if (savedRiders) {
+    try { riders = JSON.parse(savedRiders); } catch(e) {}
+  } else {
+    localStorage.setItem('bellaMassa_motoboys', JSON.stringify(defaultRiders));
   }
 }
 
 function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ orders, riders }));
+  localStorage.setItem('bellaMassa_motoboys', JSON.stringify(riders));
 }
 
 function money(value) {
@@ -67,13 +73,28 @@ function isRiderBusy(id) {
   return orders.some(o => o.riderId === id && o.status === 'Em trânsito');
 }
 
+// Alternância de Tema Unificada
 function setTheme(mode) {
-  document.body.classList.toggle('light-theme', mode === 'light');
-  localStorage.setItem('bellaMassa_theme', mode);
+  const btnLight = document.getElementById('btnLight');
+  const btnDark = document.getElementById('btnDark');
+
+  if (mode === 'light') {
+    document.body.classList.add('light-theme');
+    localStorage.setItem('bellaMassa_theme', 'light');
+    if (btnLight) btnLight.classList.add('active');
+    if (btnDark) btnDark.classList.remove('active');
+  } else {
+    document.body.classList.remove('light-theme');
+    localStorage.setItem('bellaMassa_theme', 'dark');
+    if (btnDark) btnDark.classList.add('active');
+    if (btnLight) btnLight.classList.remove('active');
+  }
 }
+window.setTheme = setTheme;
 
 function showToast(message) {
   const toast = document.getElementById('toast');
+  if (!toast) return;
   toast.textContent = message;
   toast.classList.remove('hidden');
   clearTimeout(showToast.timer);
@@ -86,10 +107,10 @@ function renderStats() {
   const delivered = orders.filter(o => o.status === 'Entregue').length;
   const fees = orders.filter(o => o.status === 'Entregue').reduce((sum, o) => sum + Number(o.fee), 0);
 
-  document.getElementById('statWaiting').textContent = waiting;
-  document.getElementById('statTransit').textContent = transit;
-  document.getElementById('statDelivered').textContent = delivered;
-  document.getElementById('statFees').textContent = money(fees);
+  if (document.getElementById('statWaiting')) document.getElementById('statWaiting').textContent = waiting;
+  if (document.getElementById('statTransit')) document.getElementById('statTransit').textContent = transit;
+  if (document.getElementById('statDelivered')) document.getElementById('statDelivered').textContent = delivered;
+  if (document.getElementById('statFees')) document.getElementById('statFees').textContent = money(fees);
 }
 
 function statusClass(status) {
@@ -101,7 +122,10 @@ function statusClass(status) {
 function renderOrders() {
   const tbody = document.getElementById('ordersBody');
   const empty = document.getElementById('emptyOrders');
-  const filter = document.getElementById('statusFilter').value;
+  const filterEl = document.getElementById('statusFilter');
+  if (!tbody || !empty || !filterEl) return;
+
+  const filter = filterEl.value;
   const list = filter === 'Todos' ? orders : orders.filter(o => o.status === filter);
 
   tbody.innerHTML = '';
@@ -121,7 +145,7 @@ function renderOrders() {
     }
 
     tr.innerHTML = `
-      <td><span class="order-id">#${order.id}</span></td>
+      <td><span class="order-id">#${String(order.id).slice(-4)}</span></td>
       <td><strong>${order.customer}</strong><span class="address">${order.address}</span></td>
       <td>${rider ? rider.name : '<span style="color:var(--text-muted)">Não atribuído</span>'}</td>
       <td><span class="fee">${money(Number(order.fee))}</span></td>
@@ -133,6 +157,7 @@ function renderOrders() {
 
 function renderRiders() {
   const list = document.getElementById('ridersList');
+  if (!list) return;
   list.innerHTML = '';
 
   riders.forEach(rider => {
@@ -145,7 +170,7 @@ function renderRiders() {
         <div class="rider-avatar">🛵</div>
         <div>
           <div class="rider-name">${rider.name}</div>
-          <div class="rider-meta">${rider.vehicle} • ${rider.plate}${current ? ` • Pedido #${current.id}` : ''}</div>
+          <div class="rider-meta">${rider.vehicle} • ${rider.plate}${current ? ` • Pedido #${String(current.id).slice(-4)}` : ''}</div>
         </div>
       </div>
       <span class="availability ${busy ? 'busy' : 'free'}">${busy ? 'Em rota' : 'Disponível'}</span>`;
@@ -155,6 +180,7 @@ function renderRiders() {
 
 function renderClosing() {
   const wrap = document.getElementById('closingCards');
+  if (!wrap) return;
   wrap.innerHTML = '';
 
   riders.forEach(rider => {
@@ -167,7 +193,7 @@ function renderClosing() {
         <div><h4>${rider.name}</h4><p>${delivered.length} entrega(s) concluída(s)</p></div>
         <span class="amount">${money(amount)}</span>
       </div>
-      <p>${delivered.length ? `Pedidos: ${delivered.map(o => '#' + o.id).join(', ')}` : 'Nenhuma taxa lançada para este motoboy.'}</p>`;
+      <p>${delivered.length ? `Pedidos: ${delivered.map(o => '#' + String(o.id).slice(-4)).join(', ')}` : 'Nenhuma taxa lançada para este motoboy.'}</p>`;
     wrap.appendChild(card);
   });
 }
@@ -182,11 +208,13 @@ function renderAll() {
 function populateAssignment(preselectedOrderId) {
   const orderSelect = document.getElementById('orderSelect');
   const riderSelect = document.getElementById('riderSelect');
+  if (!orderSelect || !riderSelect) return;
+
   const waiting = orders.filter(o => o.status === 'Aguardando motoboy');
   const available = riders.filter(r => !isRiderBusy(r.id));
 
   orderSelect.innerHTML = waiting.length
-    ? waiting.map(o => `<option value="${o.id}">#${o.id} - ${o.customer}</option>`).join('')
+    ? waiting.map(o => `<option value="${o.id}">#${String(o.id).slice(-4)} - ${o.customer}</option>`).join('')
     : '<option value="">Nenhum pedido aguardando</option>';
 
   riderSelect.innerHTML = available.length
@@ -200,9 +228,13 @@ function populateAssignment(preselectedOrderId) {
 }
 
 function updateRoutePreview() {
-  const id = Number(document.getElementById('orderSelect').value);
-  const order = orders.find(o => o.id === id);
+  const orderSelect = document.getElementById('orderSelect');
   const preview = document.getElementById('routePreview');
+  if (!orderSelect || !preview) return;
+
+  const id = Number(orderSelect.value);
+  const order = orders.find(o => o.id === id);
+  
   preview.innerHTML = order
     ? `<strong>Destino:</strong> ${order.address}<br><strong>Cliente:</strong> ${order.customer}<br><strong>Taxa:</strong> ${money(Number(order.fee))}`
     : 'Selecione um pedido para visualizar os dados da rota.';
@@ -210,50 +242,69 @@ function updateRoutePreview() {
 
 function openAssignModal(orderId) {
   populateAssignment(orderId);
-  document.getElementById('routeNote').value = '';
-  document.getElementById('assignModal').classList.remove('hidden');
+  const routeNote = document.getElementById('routeNote');
+  if (routeNote) routeNote.value = '';
+  const assignModal = document.getElementById('assignModal');
+  if (assignModal) assignModal.classList.remove('hidden');
 }
 
 function closeAssignModal() {
-  document.getElementById('assignModal').classList.add('hidden');
+  const assignModal = document.getElementById('assignModal');
+  if (assignModal) assignModal.classList.add('hidden');
 }
 
+// ATRIBUIR ENTREGA E ATUALIZAR BANCO CENTRAL (UPDATE)
 function assignDelivery() {
-  const orderId = Number(document.getElementById('orderSelect').value);
-  const riderId = Number(document.getElementById('riderSelect').value);
+  const orderSelect = document.getElementById('orderSelect');
+  const riderSelect = document.getElementById('riderSelect');
+  if (!orderSelect || !riderSelect) return;
+
+  const orderId = Number(orderSelect.value);
+  const riderId = Number(riderSelect.value);
   const order = orders.find(o => o.id === orderId && o.status === 'Aguardando motoboy');
   const rider = getRider(riderId);
 
   if (!order) return alert('Selecione um pedido aguardando motoboy.');
   if (!rider || isRiderBusy(riderId)) return alert('Selecione um motoboy disponível.');
 
-  order.riderId = riderId;
-  order.status = 'Em trânsito';
-  order.routeNote = document.getElementById('routeNote').value.trim();
+  const routeNote = document.getElementById('routeNote');
+  const orientacao = routeNote ? routeNote.value.trim() : '';
+
+  // Atualiza no DB Central
+  if (typeof DB !== 'undefined') {
+    const pedidoDB = DB.getPedidoPorId(orderId);
+    if (pedidoDB) {
+      pedidoDB.status = 'transit';
+      pedidoDB.motoboyId = riderId;
+      pedidoDB.orientacaoRota = orientacao;
+      DB.salvarPedido(pedidoDB);
+    }
+  }
+
   saveData();
   closeAssignModal();
+  loadData();
   renderAll();
-  showToast(`Pedido #${order.id} atribuído a ${rider.name}.`);
+  showToast(`Pedido #${String(order.id).slice(-4)} atribuído a ${rider.name}.`);
 }
 
+// CONFIRMAR ENTREGA NO BANCO CENTRAL (UPDATE)
 function markDelivered(orderId) {
-  const order = orders.find(o => o.id === orderId);
-  if (!order || order.status !== 'Em trânsito') return;
-  order.status = 'Entregue';
-  saveData();
+  if (typeof DB !== 'undefined') {
+    DB.atualizarStatusPedido(orderId, 'delivered');
+  }
+  loadData();
   renderAll();
-  showToast(`Entrega #${order.id} concluída e taxa lançada.`);
+  showToast(`Entrega #${String(orderId).slice(-4)} concluída e taxa lançada.`);
 }
 
 function reopenOrder(orderId) {
-  const order = orders.find(o => o.id === orderId);
-  if (!order) return;
-  order.status = 'Aguardando motoboy';
-  order.riderId = null;
-  order.routeNote = '';
-  saveData();
+  if (typeof DB !== 'undefined') {
+    DB.atualizarStatusPedido(orderId, 'pending');
+  }
+  loadData();
   renderAll();
-  showToast(`Pedido #${order.id} voltou para a fila de entrega.`);
+  showToast(`Pedido #${String(orderId).slice(-4)} voltou para a fila de entrega.`);
 }
 
 function closeShift() {
@@ -274,13 +325,39 @@ function closeShift() {
   alert(`Fechamento do turno\n\n${detail}\n\nTotal de taxas: ${money(total)}`);
 }
 
+// Globalização das funções para chamadas em atributos inline (onclick)
+window.renderOrders = renderOrders;
+window.openAssignModal = openAssignModal;
+window.closeAssignModal = closeAssignModal;
+window.assignDelivery = assignDelivery;
+window.markDelivered = markDelivered;
+window.reopenOrder = reopenOrder;
+window.closeShift = closeShift;
+
+// Escuta atualizações do DB em tempo real
+window.addEventListener('db:pedidosUpdated', () => {
+  loadData();
+  renderAll();
+});
+window.addEventListener('db:externalChange', (e) => {
+  if (e.detail && e.detail.key === 'bellaMassa_pedidos') {
+    loadData();
+    renderAll();
+  }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   loadData();
   setTheme(localStorage.getItem('bellaMassa_theme') || 'dark');
   renderAll();
-  document.getElementById('orderSelect').addEventListener('change', updateRoutePreview);
 
-  document.getElementById('assignModal').addEventListener('click', e => {
-    if (e.target.id === 'assignModal') closeAssignModal();
-  });
+  const orderSelect = document.getElementById('orderSelect');
+  if (orderSelect) orderSelect.addEventListener('change', updateRoutePreview);
+
+  const assignModal = document.getElementById('assignModal');
+  if (assignModal) {
+    assignModal.addEventListener('click', e => {
+      if (e.target.id === 'assignModal') closeAssignModal();
+    });
+  }
 });

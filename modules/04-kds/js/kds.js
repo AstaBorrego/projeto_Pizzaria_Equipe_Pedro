@@ -1,108 +1,166 @@
-// Este trecho de escuta  que recebe os dados do cliente e preenche os campos
-window.addEventListener('message', (event) => {
-  // Verifica se a ação recebida é a de carregar cliente
-  if (event.data && event.data.action === 'LOAD_CUSTOMER_DATA') {
-    const cliente = event.data.customer;
-    
-    // Preenche os inputs do formulário de atendimento do Pedro
-    if (document.getElementById('inputNome')) {
-      document.getElementById('inputNome').value = cliente.nome;
-    }
-    if (document.getElementById('inputTelefone')) {
-      document.getElementById('inputTelefone').value = cliente.telefone;
-    }
-  }
-});
-// fim
-
-const orders = [
-  { id: 15, mode: 'Delivery', modeClass: 'red', status: 'queue', created: '20:02', mins: 12, items: [['1x','Calabresa Especial','Grande'],['1x','Refrigerante Coca-Cola','2L'],['1x','Pão de Alho','Tradicional']] },
-  { id: 16, mode: 'Balcão', modeClass: '', status: 'queue', created: '20:06', mins: 8, items: [['1x','Frango com Catupiry','Média'],['1x','Refrigerante Guaraná','2L']] },
-  { id: 17, mode: 'Mesa 05', modeClass: 'green', status: 'queue', created: '20:09', mins: 5, items: [['1x','Portuguesa','Grande'],['1x','Borda Cheddar','Adicional']] },
-  { id: 14, mode: 'Delivery', modeClass: 'red', status: 'preparing', created: '20:08', mins: 6, progress: 54, items: [['1x','Marguerita','Grande'],['1x','Refrigerante Coca-Cola','2L']] },
-  { id: 13, mode: 'Mesa 03', modeClass: 'green', status: 'preparing', created: '20:04', mins: 10, progress: 70, items: [['1x','Quatro Queijos','Grande'],['1x','Pão de Alho','Com Catupiry']] },
-  { id: 12, mode: 'Balcão', modeClass: '', status: 'ready', created: '20:11', mins: 3, items: [['1x','Calabresa','Média']] },
-  { id: 11, mode: 'Delivery', modeClass: 'red', status: 'ready', created: '20:09', mins: 5, items: [['1x','Frango com Catupiry','Grande'],['1x','Refrigerante Guaraná','2L']] }
-];
-
-let finalized = 5;
 let timerHandle;
 
-function renderOrder(order) {
-  const extra = order.progress !== undefined ? `
-    <div class="progress"><span style="width:${order.progress}%"></span></div>
-    <button class="action finish" data-id="${order.id}">✓ &nbsp; Marcar como Pronto</button>` :
-    order.status === 'queue' ? `<button class="action start" data-id="${order.id}">▶ &nbsp; Iniciar Preparo</button>` :
-    `<button class="action deliver" data-id="${order.id}">➤ &nbsp; Pedido Entregue</button>`;
+// ==========================================
+// 1. GERENCIAMENTO DE TEMA (LIGHT / DARK)
+// ==========================================
+function setTheme(mode) {
+  const btnLight = document.getElementById('btnLight');
+  const btnDark = document.getElementById('btnDark');
 
-  const items = order.items.map(i => `<div class="item"><span class="qty">${i[0]}</span><span>${i[1]}<small>${i[2]}</small></span></div>`).join('');
-  return `<article class="order-card">
-    <div class="order-top">
-      <div class="order-number">#${String(order.id).padStart(4,'0')}</div>
-      <div class="order-meta">
-        <div class="badge ${order.modeClass}">${order.mode}</div>
-        <div class="timer">◷ &nbsp;${order.mins} min</div>
-        <div class="order-time">${order.created}</div>
-      </div>
-    </div>
-    <div class="items">${items}</div>
-    ${extra}
-  </article>`;
-}
-
-function render() {
-  const queue = orders.filter(o => o.status === 'queue');
-  const preparing = orders.filter(o => o.status === 'preparing');
-  const ready = orders.filter(o => o.status === 'ready');
-  document.getElementById('queueList').innerHTML = queue.length ? queue.map(renderOrder).join('') : '<div class="empty">Nenhum pedido aguardando.</div>';
-  document.getElementById('preparingList').innerHTML = preparing.length ? preparing.map(renderOrder).join('') : '<div class="empty">Nenhum pedido em preparo.</div>';
-  document.getElementById('readyList').innerHTML = ready.length ? ready.map(renderOrder).join('') : '<div class="empty">Nenhum pedido pronto.</div>';
-  document.getElementById('queueCount').textContent = queue.length;
-  document.getElementById('preparingCount').textContent = preparing.length;
-  document.getElementById('readyCount').textContent = ready.length;
-  document.getElementById('dayOrders').textContent = orders.length + finalized - 5;
-  document.getElementById('finalized').textContent = finalized + ready.length;
-  const totalMins = orders.reduce((sum, o) => sum + o.mins, 0);
-  document.getElementById('avgTime').textContent = `${Math.round(totalMins / orders.length)} min`;
-
-  document.querySelectorAll('[data-id]').forEach(btn => btn.addEventListener('click', () => moveOrder(Number(btn.dataset.id))));
-}
-
-function moveOrder(id) {
-  const order = orders.find(o => o.id === id);
-  if (!order) return;
-  if (order.status === 'queue') {
-    order.status = 'preparing'; order.progress = 25;
-    showToast(`Pedido #${String(id).padStart(4,'0')} entrou em preparo.`);
-  } else if (order.status === 'preparing') {
-    order.status = 'ready'; delete order.progress;
-    showToast(`Pedido #${String(id).padStart(4,'0')} está pronto para expedição.`);
+  if (mode === 'light') {
+    document.body.classList.add('light-theme');
+    localStorage.setItem('bellaMassa_theme', 'light');
+    if (btnLight) btnLight.classList.add('active');
+    if (btnDark) btnDark.classList.remove('active');
   } else {
-    order.status = 'done'; finalized++;
-    showToast(`Pedido #${String(id).padStart(4,'0')} entregue.`);
+    document.body.classList.remove('light-theme');
+    localStorage.setItem('bellaMassa_theme', 'dark');
+    if (btnDark) btnDark.classList.add('active');
+    if (btnLight) btnLight.classList.remove('active');
   }
-  render();
 }
+window.setTheme = setTheme;
+
+// ==========================================
+// 2. LEITURA E PERSISTÊNCIA VIA BANCO (DB)
+// ==========================================
+function carregarPedidosKDS() {
+  let pedidos = [];
+  
+  // Consulta do Banco Centralizado (DB)
+  if (typeof DB !== 'undefined') {
+    pedidos = DB.getPedidos();
+  } else {
+    pedidos = JSON.parse(localStorage.getItem('bellaMassa_pedidos') || '[]');
+  }
+  
+  renderKDS(pedidos);
+}
+
+function renderOrderCard(order) {
+  let actionBtn = '';
+  if (order.status === 'queue' || order.status === 'pending') {
+    actionBtn = `<button class="action start" onclick="alterarStatusPedido(${order.id}, 'preparing')">▶ Iniciar Preparo</button>`;
+  } else if (order.status === 'preparing') {
+    actionBtn = `<button class="action finish" onclick="alterarStatusPedido(${order.id}, 'ready')">✓ Marcar como Pronto</button>`;
+  } else {
+    actionBtn = `<button class="action deliver" onclick="alterarStatusPedido(${order.id}, 'ready')">➤ Pronto p/ Expedição</button>`;
+  }
+
+  // Tratamento dinâmico para os itens do pedido
+  let itemsHTML = '';
+  if (Array.isArray(order.itens) && order.itens.length > 0) {
+    itemsHTML = order.itens.map(i => {
+      const qty = i.quantity || i[0] || '1x';
+      const prod = i.product || i[1] || 'Item';
+      const detail = i.size || i.border || i[2] || '';
+      const obs = i.obs ? `<br><small style="color:var(--text-muted);">Obs: ${i.obs}</small>` : '';
+      return `
+        <div class="item">
+          <span class="qty">${typeof qty === 'number' ? qty + 'x' : qty}</span>
+          <span>${prod} <small>${detail !== 'N/A' ? detail : ''}</small>${obs}</span>
+        </div>
+      `;
+    }).join('');
+  } else if (Array.isArray(order.items)) {
+    itemsHTML = order.items.map(i => `
+      <div class="item">
+        <span class="qty">${i[0] || '1x'}</span>
+        <span>${i[1] || 'Item'} <small>${i[2] || ''}</small></span>
+      </div>
+    `).join('');
+  } else {
+    itemsHTML = '<div class="item"><span>Sem detalhes dos itens</span></div>';
+  }
+
+  const badgeClass = order.tipo === 'Entrega' || order.mode === 'Delivery' ? 'red' : order.tipo === 'Salao' ? 'green' : '';
+  const tipoTexto = order.tipo || order.mode || 'Balcão';
+  const clienteTexto = order.cliente ? `<br><small style="color:var(--text-muted); font-size:11px;">Cliente: ${order.cliente}</small>` : '';
+
+  return `
+    <article class="order-card">
+      <div class="order-top">
+        <div class="order-number">#${order.numero || String(order.id).slice(-4)}</div>
+        <div class="badge ${badgeClass}">${tipoTexto}</div>
+      </div>
+      ${clienteTexto}
+      <div class="items">${itemsHTML}</div>
+      ${actionBtn}
+    </article>
+  `;
+}
+
+function renderKDS(pedidos) {
+  const queue = pedidos.filter(p => p.status === 'queue' || p.status === 'pending');
+  const preparing = pedidos.filter(p => p.status === 'preparing');
+  const ready = pedidos.filter(p => p.status === 'ready');
+
+  const queueList = document.getElementById('queueList');
+  const preparingList = document.getElementById('preparingList');
+  const readyList = document.getElementById('readyList');
+
+  if (queueList) queueList.innerHTML = queue.length ? queue.map(renderOrderCard).join('') : '<div class="empty">Nenhum pedido aguardando.</div>';
+  if (preparingList) preparingList.innerHTML = preparing.length ? preparing.map(renderOrderCard).join('') : '<div class="empty">Nenhum pedido em preparo.</div>';
+  if (readyList) readyList.innerHTML = ready.length ? ready.map(renderOrderCard).join('') : '<div class="empty">Nenhum pedido pronto.</div>';
+
+  if (document.getElementById('queueCount')) document.getElementById('queueCount').textContent = queue.length;
+  if (document.getElementById('preparingCount')) document.getElementById('preparingCount').textContent = preparing.length;
+  if (document.getElementById('readyCount')) document.getElementById('readyCount').textContent = ready.length;
+
+  if (document.getElementById('dayOrders')) document.getElementById('dayOrders').textContent = pedidos.length;
+  if (document.getElementById('finalized')) document.getElementById('finalized').textContent = pedidos.filter(p => p.status === 'delivered' || p.status === 'finished').length;
+}
+
+// Atualização via Banco Centralizado (DB)
+function alterarStatusPedido(id, novoStatus) {
+  if (typeof DB !== 'undefined') {
+    DB.atualizarStatusPedido(id, novoStatus);
+  } else {
+    let pedidos = JSON.parse(localStorage.getItem('bellaMassa_pedidos') || '[]');
+    const index = pedidos.findIndex(p => p.id === id);
+    if (index !== -1) {
+      pedidos[index].status = novoStatus;
+      localStorage.setItem('bellaMassa_pedidos', JSON.stringify(pedidos));
+    }
+  }
+  showToast(`Pedido #${String(id).slice(-4)} atualizado!`);
+  carregarPedidosKDS();
+}
+window.alterarStatusPedido = alterarStatusPedido;
+window.carregarPedidosKDS = carregarPedidosKDS;
 
 function tick() {
   const now = new Date();
-  document.getElementById('date').textContent = now.toLocaleDateString('pt-BR');
-  document.getElementById('clock').textContent = now.toLocaleTimeString('pt-BR', { hour12:false });
+  const dateEl = document.getElementById('date');
+  const clockEl = document.getElementById('clock');
+  
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('pt-BR');
+  if (clockEl) clockEl.textContent = now.toLocaleTimeString('pt-BR', { hour12: false });
 }
 
 function showToast(message) {
   const toast = document.getElementById('toast');
+  if (!toast) return;
   toast.textContent = message;
   toast.classList.add('show');
   clearTimeout(timerHandle);
   timerHandle = setTimeout(() => toast.classList.remove('show'), 2200);
 }
 
-document.getElementById('refreshBtn').addEventListener('click', () => {
-  render();
-  showToast('Painel atualizado.');
+// Escuta atualizações no banco de dados centralizado em tempo real
+window.addEventListener('db:pedidosUpdated', carregarPedidosKDS);
+window.addEventListener('db:externalChange', (e) => {
+  if (e.detail && e.detail.key === 'bellaMassa_pedidos') {
+    carregarPedidosKDS();
+  }
 });
 
-tick();
-setInterval(tick, 1000);
-render();
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('bellaMassa_theme') || 'dark';
+  setTheme(savedTheme);
+
+  tick();
+  setInterval(tick, 1000);
+  carregarPedidosKDS();
+});

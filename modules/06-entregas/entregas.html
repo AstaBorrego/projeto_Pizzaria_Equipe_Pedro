@@ -7,32 +7,32 @@
   <link rel="stylesheet" href="entregas.css">
 </head>
 <body>
-  <main class="delivery-shell">
-    <header class="topbar">
+  <div class="container">
+    <header class="page-header">
       <div class="brand-title">
         <span class="pizza-icon">🍕</span>
         <div>
-          <h1>Bella Massa</h1>
-          <p>Gestão de Entregas e Motoboys</p>
+          <span class="eyebrow">Módulo 06</span>
+          <h1>Bella Massa | <strong>Gestão de Entregas</strong></h1>
+          <p>Atribua pedidos aos motoboys, acompanhe entregas em trânsito e feche o turno.</p>
         </div>
       </div>
-      <div class="header-actions">
-        <span class="user-badge">Lucas • Delivery</span>
-        <div class="theme-switch" aria-label="Tema">
-          <button type="button" onclick="setTheme('light')" title="Modo claro">☀️</button>
-          <button type="button" onclick="setTheme('dark')" title="Modo escuro">🌙</button>
+      
+      <div class="header-right">
+        <!-- BOTÕES DE ALTERNÂNCIA DE TEMA (CLAREAR / ESCURECER) -->
+        <div class="theme-switch-wrapper">
+          <div class="theme-switch">
+            <button type="button" id="btnLight" onclick="setTheme('light')" title="Modo Claro">☀️ Clarear</button>
+            <button type="button" id="btnDark" onclick="setTheme('dark')" class="active" title="Modo Escuro">🌙 Escurecer</button>
+          </div>
         </div>
+        <span class="user-badge">Lucas • Delivery</span>
       </div>
     </header>
 
-    <section class="page-heading">
-      <div>
-        <span class="eyebrow">MODALIDADE DELIVERY</span>
-        <h2>Painel de Entregas</h2>
-        <p>Atribua pedidos aos motoboys, acompanhe entregas em trânsito e feche as taxas do turno.</p>
-      </div>
-      <button class="btn btn-primary" type="button" onclick="openAssignModal()">+ Atribuir entrega</button>
-    </section>
+    <div class="page-heading-action">
+      <button class="btn btn-primary" type="button" onclick="openAssignModal()">+ Atribuir nova entrega</button>
+    </div>
 
     <section class="stats-grid" aria-label="Resumo do delivery">
       <article class="stat-card">
@@ -111,8 +111,9 @@
       </div>
       <div id="closingCards" class="closing-grid"></div>
     </section>
-  </main>
+  </div>
 
+  <!-- MODAL DE ATRIBUIÇÃO DE ENTREGA -->
   <div id="assignModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="assignTitle">
     <div class="modal-card">
       <div class="modal-header">
@@ -150,6 +151,21 @@
   </div>
 
   <div id="toast" class="toast hidden"></div>
+
+  <!-- Widget VLIBRAS -->
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+  </script>
+
+  <!-- SCRIPTS NA ORDEM CORRETA -->
+  <script src="../../database.js"></script>
   <script src="entregas.js"></script>
 </body>
 </html>

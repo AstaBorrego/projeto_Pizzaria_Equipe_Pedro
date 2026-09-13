@@ -1,135 +1,293 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Módulo CRM - Pizzaria</title>
-  <link rel="stylesheet" href="style.css">
-<!-- ou href="crm.css" conforme o nome exato do arquivo -->">
-  <!-- Ícones Phosphor Icons para UI moderna -->
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bella Massa - Caixa</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="crm-container">
-    
-    <!-- Header com Busca Rápida -->
-    <header class="crm-header">
-      <div class="header-title">
-        <i class="ph ph-users-three"></i>
-        <h2>Gestão de Clientes</h2>
-      </div>
-      
-      <div class="search-bar-container">
-        <i class="ph ph-magnifying-glass search-icon"></i>
-        <input 
-          type="text" 
-          id="searchInput" 
-          placeholder="Buscar por nome, telefone ou CPF..."
-          autocomplete="off"
-        >
-        <button id="btnNewCustomer" class="btn btn-primary">
-          <i class="ph ph-user-plus"></i> Novo Cliente
-        </button>
-      </div>
+<div class="container">
+    <!-- CABEÇALHO UNIFICADO -->
+    <header class="page-header">
+        <div class="brand-title">
+            <span class="pizza-icon">🍕</span>
+            <div>
+                <span class="eyebrow">Módulo 07</span>
+                <h1>Bella Massa | <strong>Caixa e Finanças</strong></h1>
+                <p>Gerencie pagamentos, movimentações de caixa e fechamento.</p>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- BOTÕES DE ALTERNÂNCIA DE TEMA -->
+            <div class="theme-switch-wrapper">
+                <div class="theme-switch">
+                    <button type="button" id="btnLight" onclick="setTheme('light')" title="Modo Claro">☀️ Clarear</button>
+                    <button type="button" id="btnDark" onclick="setTheme('dark')" class="active" title="Modo Escuro">🌙 Escurecer</button>
+                </div>
+            </div>
+
+            <span class="status-badge" id="caixaStatusBadge">
+                ● Caixa Aberto
+            </span>
+        </div>
     </header>
 
-    <!-- Conteúdo Principal Grid -->
-    <main class="crm-grid">
-
-      <!-- Painel Esquerdo: Lista de Clientes Encontrados -->
-      <section class="card customer-list-card">
-        <div class="card-header">
-          <h3>Clientes Encontrados</h3>
-          <span id="customerCount" class="badge">0</span>
-        </div>
-        <ul id="customerList" class="customer-list">
-          <!-- Renderizado via JavaScript -->
-        </ul>
-      </section>
-
-      <!-- Painel Central/Direito: Cadastro / Detalhes + Histórico -->
-      <section class="card customer-detail-card">
-        
-        <!-- Estado Vazio (Nenhum cliente selecionado) -->
-        <div id="emptyState" class="empty-state">
-          <i class="ph ph-user-focus"></i>
-          <p>Selecione um cliente na busca ou clique em "Novo Cliente" para começar.</p>
+    <!-- RESUMO DO CAIXA -->
+    <section class="dashboard">
+        <div class="summary-card">
+            <span class="summary-icon">💰</span>
+            <div>
+                <p>Saldo Inicial</p>
+                <strong id="saldoInicial">R$ 100,00</strong>
+            </div>
         </div>
 
-        <!-- Formulário de Cadastro / Edição -->
-        <form id="customerForm" class="crm-form hidden">
-          <div class="form-header">
-            <h3 id="formTitle">Novo Cadastro</h3>
-            <span class="vip-badge hidden" id="vipTag"><i class="ph ph-crown"></i> Cliente VIP</span>
-          </div>
-
-          <input type="hidden" id="customerId">
-
-          <div class="form-grid">
-            <div class="form-group span-2">
-              <label for="name">Nome Completo *</label>
-              <input type="text" id="name" required placeholder="Ex: João da Silva">
+        <div class="summary-card">
+            <span class="summary-icon">🟢</span>
+            <div>
+                <p>Entradas</p>
+                <strong id="totalEntradas">R$ 0,00</strong>
             </div>
-
-            <div class="form-group">
-              <label for="phone">Telefone / WhatsApp *</label>
-              <input type="tel" id="phone" required placeholder="(11) 99999-9999">
-            </div>
-
-            <div class="form-group">
-              <label for="cpf">CPF (Opcional)</label>
-              <input type="text" id="cpf" placeholder="000.000.000-00">
-            </div>
-
-            <div class="form-group span-2">
-              <label for="street">Endereço de Entrega *</label>
-              <input type="text" id="street" required placeholder="Rua, Av, Número, Bloco/Apto">
-            </div>
-
-            <div class="form-group">
-              <label for="neighborhood">Bairro *</label>
-              <input type="text" id="neighborhood" required placeholder="Centro">
-            </div>
-
-            <div class="form-group">
-              <label for="complement">Complemento / Ponto de Ref.</label>
-              <input type="text" id="complement" placeholder="Portão azul, próx ao mercado">
-            </div>
-
-            <div class="form-group span-2">
-              <label for="notes">Observações do Cliente (Restrições / Preferências)</label>
-              <input type="text" id="notes" placeholder="Ex: Alérgico a cebola. Sempre pede borda recheada.">
-            </div>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" id="btnCancel" class="btn btn-secondary">Cancelar</button>
-            <button type="submit" class="btn btn-success">
-              <i class="ph ph-floppy-disk"></i> Salvar Cliente
-            </button>
-          </div>
-        </form>
-
-        <!-- Histórico de Pedidos (Exibido ao selecionar cliente) -->
-        <div id="historySection" class="history-section hidden">
-          <div class="history-header">
-            <h3><i class="ph ph-clock-counter-clockwise"></i> Histórico de Pedidos</h3>
-            <button id="btnNewOrderForCustomer" class="btn btn-sm btn-accent">
-              <i class="ph ph-pizza"></i> Iniciar Pedido para este Cliente
-            </button>
-          </div>
-
-          <div id="historyList" class="history-list">
-            <!-- Renderizado via JavaScript -->
-          </div>
         </div>
 
-      </section>
+        <div class="summary-card">
+            <span class="summary-icon">🔴</span>
+            <div>
+                <p>Saídas</p>
+                <strong id="totalSaidas">R$ 0,00</strong>
+            </div>
+        </div>
 
-    </main>
-  </div>
+        <div class="summary-card destaque">
+            <span class="summary-icon">💵</span>
+            <div>
+                <p>Saldo Atual</p>
+                <strong id="saldoAtual">R$ 100,00</strong>
+            </div>
+        </div>
+    </section>
 
-  <script src="/app.js"></script>
+    <!-- PAGAMENTOS -->
+    <section class="card">
+        <div class="section-title">
+            <div>
+                <h2>🧾 Pedidos Aguardando Pagamento</h2>
+                <p>Selecione um pedido para realizar o pagamento.</p>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pedido</th>
+                        <th>Cliente</th>
+                        <th>Modalidade</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="pedidosBody">
+                    <!-- Preenchido dinamicamente via JS -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- OPERAÇÕES -->
+    <section class="operations">
+        <!-- SANGRIA -->
+        <div class="card operation-card">
+            <div class="operation-icon">💸</div>
+            <div>
+                <h2>Sangria</h2>
+                <p>Retirar dinheiro do caixa.</p>
+                <button class="btn-danger" onclick="abrirMovimentacao('sangria')">Registrar Sangria</button>
+            </div>
+        </div>
+
+        <!-- REFORÇO -->
+        <div class="card operation-card">
+            <div class="operation-icon">💰</div>
+            <div>
+                <h2>Reforço de Caixa</h2>
+                <p>Adicionar dinheiro ao caixa.</p>
+                <button class="btn-green" onclick="abrirMovimentacao('reforco')">Registrar Reforço</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESUMO POR PAGAMENTO -->
+    <section class="card">
+        <div class="section-title">
+            <div>
+                <h2>📊 Resumo das Vendas</h2>
+                <p>Valores recebidos por forma de pagamento.</p>
+            </div>
+        </div>
+
+        <div class="payment-summary">
+            <div class="payment-box">
+                <span>💠 PIX</span>
+                <strong id="totalPix">R$ 0,00</strong>
+            </div>
+            <div class="payment-box">
+                <span>💳 Crédito</span>
+                <strong id="totalCredito">R$ 0,00</strong>
+            </div>
+            <div class="payment-box">
+                <span>💳 Débito</span>
+                <strong id="totalDebito">R$ 0,00</strong>
+            </div>
+            <div class="payment-box">
+                <span>💵 Dinheiro</span>
+                <strong id="totalDinheiro">R$ 0,00</strong>
+            </div>
+        </div>
+    </section>
+
+    <!-- HISTÓRICO -->
+    <section class="card">
+        <div class="section-title">
+            <div>
+                <h2>📋 Histórico de Movimentações</h2>
+                <p>Últimas operações realizadas no caixa.</p>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Horário</th>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody id="historicoBody">
+                    <!-- Histórico dinâmico -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- FECHAMENTO -->
+    <section class="closing-card">
+        <div>
+            <h2>🔒 Fechamento do Caixa</h2>
+            <p>Confira os valores antes de encerrar o caixa.</p>
+        </div>
+
+        <div class="closing-values">
+            <div>
+                <span>Total de Vendas</span>
+                <strong id="fechamentoVendas">R$ 0,00</strong>
+            </div>
+            <div>
+                <span>Entradas/Saídas</span>
+                <strong id="fechamentoMovimentacoes">R$ 0,00</strong>
+            </div>
+            <div class="final-value">
+                <span>Valor Esperado</span>
+                <strong id="valorEsperado">R$ 100,00</strong>
+            </div>
+        </div>
+
+        <button class="btn-close" onclick="fecharCaixa()">🔒 Fechar Caixa</button>
+    </section>
+</div>
+
+<!-- MODAL DE PAGAMENTO -->
+<div id="paymentModal" class="modal hidden">
+    <div class="modal-content">
+        <button class="close-modal" onclick="fecharModalPagamento()">×</button>
+        <h2>💳 Finalizar Pagamento</h2>
+        <div class="order-info">
+            <p>Pedido: <strong id="modalPedido">#001</strong></p>
+            <p>Cliente: <strong id="modalCliente">João Silva</strong></p>
+            <div class="modal-total">Total: <strong id="modalTotal">R$ 0,00</strong></div>
+        </div>
+
+        <div class="form-group">
+            <label for="discountInput">Desconto / Cupom</label>
+            <input type="number" id="discountInput" value="0" min="0" step="0.01" oninput="calcularPagamento()">
+        </div>
+
+        <div class="form-group">
+            <label for="paymentSelect">Forma de Pagamento</label>
+            <select id="paymentSelect" onchange="alternarDinheiro()">
+                <option value="PIX">💠 PIX</option>
+                <option value="Credito">💳 Cartão de Crédito</option>
+                <option value="Debito">💳 Cartão de Débito</option>
+                <option value="Dinheiro">💵 Dinheiro</option>
+            </select>
+        </div>
+
+        <div class="form-group hidden" id="cashPaymentGroup">
+            <label for="cashInput">Valor Recebido</label>
+            <input type="number" id="cashInput" min="0" step="0.01" placeholder="Ex: 100.00" oninput="calcularPagamento()">
+            <div id="changeInfo" class="change-info">Troco: R$ 0,00</div>
+        </div>
+
+        <div class="payment-final">
+            <span>Total a pagar</span>
+            <strong id="paymentFinalValue">R$ 0,00</strong>
+        </div>
+
+        <button class="btn-primary" onclick="confirmarPagamento()">✅ Confirmar Pagamento</button>
+    </div>
+</div>
+
+<!-- MODAL DE SANGRIA / REFORÇO -->
+<div id="movementModal" class="modal hidden">
+    <div class="modal-content">
+        <button class="close-modal" onclick="fecharMovimentacao()">×</button>
+        <h2 id="movementTitle">💸 Sangria</h2>
+
+        <div class="form-group">
+            <label for="movementValue">Valor</label>
+            <input type="number" id="movementValue" min="0.01" step="0.01" placeholder="R$ 0,00">
+        </div>
+
+        <div class="form-group">
+            <label for="movementReason">Motivo</label>
+            <input type="text" id="movementReason" placeholder="Ex: Retirada para pagamento">
+        </div>
+
+        <button class="btn-primary" onclick="confirmarMovimentacao()">Confirmar Operação</button>
+    </div>
+</div>
+
+<!-- MODAL DE COMPROVANTE -->
+<div id="receiptModal" class="modal hidden">
+    <div class="modal-content receipt">
+        <h2>🍕 Bella Massa</h2>
+        <h3>Comprovante de Pagamento</h3>
+        <div id="receiptContent"></div>
+        <button class="btn-primary" onclick="window.print()">🖨️ Imprimir Comprovante</button>
+        <button class="btn-secondary" onclick="fecharComprovante()">Fechar</button>
+    </div>
+</div>
+
+<!-- Widget VLIBRAS -->
+<div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+    </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+
+<!-- CARREGAMENTO DOS SCRIPTS NA ORDEM CORRETA -->
+<script src="../../database.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

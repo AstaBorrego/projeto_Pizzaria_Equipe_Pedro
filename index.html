@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema Integrado - Pizzaria Bella Massa</title>
+  <link rel="icon" type="image/x-icon" href="/image/logoPiza.jpeg">
   <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
@@ -17,20 +18,21 @@
         <h2>Bella Massa</h2>
       </div>
 
-        <button class="menu-btn" data-module="modules/01-atendimento/index.html">
-          <i class="ph ph-headset"></i> 01. Atendimento (Pedro)
-        </button>
+        <!-- Adicione a classe "active" no botão 01 -->
+      <button class="menu-btn active" data-module="modules/01-atendimento/index.html">
+        <i class="ph ph-headset"></i> 01. Atendimento
+      </button>
 
         <button class="menu-btn" data-module="modules/02-cardapio/index.html">
           <i class="ph ph-book-open"></i> 02. Cardápio Digital
         </button>
 
         <button class="menu-btn" data-module="modules/03-tabela-precos/index.html">
-          <i class="ph ph-currency-dollar"></i> 03. Tabela de Preços (Kaick)
+          <i class="ph ph-currency-dollar"></i> 03. Tabela de Preços
         </button>
 
         <button class="menu-btn" data-module="modules/04-kds/index.html">
-          <i class="ph ph-cpu"></i> 04. Cozinha KDS
+          <i class="ph ph-cpu"></i> 04. Cozinha
         </button>
 
         <button class="menu-btn" data-module="modules/05-us005/index.html">
@@ -38,22 +40,23 @@
         </button>
 
         <button class="menu-btn" data-module="modules/06-entregas/entregas.html">
-          <i class="ph ph-moped"></i> 06. Entregas (Lucas)
+          <i class="ph ph-moped"></i> 06. Entregas
         </button>
 
         <button class="menu-btn" data-module="modules/07-caixa/index.html">
-          <i class="ph ph-cash-register"></i> 07. Caixa (Augusto)
+          <i class="ph ph-cash-register"></i> 07. Caixa
         </button>
       </nav>
-            <nav class="menu">
-        <button class="menu-btn active" data-module="modules/08-crm-clientes/index.html">
-          <i class="ph ph-users-three"></i> 08. Clientes (Tálamo)
-        </button>
-    </aside>
+      <nav class="menu">
+          <!-- Remova a classe "active" do botão 08 -->
+          <button class="menu-btn" data-module="modules/08-crm-clientes/index.html">
+          <i class="ph ph-users-three"></i> 08. Clientes
+          </button>
+      </aside>
 
     <!-- Área de Exibição dos Módulos -->
     <main class="content-area">
-      <iframe id="moduleFrame" src="modules/08-crm-clientes/index.html" frameborder="0"></iframe>
+      <iframe id="moduleFrame" src="modules/01-atendimento/index.html" frameborder="0"></iframe>
     </main>
   </div>
 

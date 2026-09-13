@@ -1,47 +1,93 @@
-// Este trecho de escuta  que recebe os dados do cliente e preenche os campos
-window.addEventListener('message', (event) => {
-  // Verifica se a ação recebida é a de carregar cliente
-  if (event.data && event.data.action === 'LOAD_CUSTOMER_DATA') {
-    const cliente = event.data.customer;
-    
-    // Preenche os inputs do formulário de atendimento do Pedro
-    if (document.getElementById('inputNome')) {
-      document.getElementById('inputNome').value = cliente.nome;
-    }
-    if (document.getElementById('inputTelefone')) {
-      document.getElementById('inputTelefone').value = cliente.telefone;
-    }
-  }
-});
-// fim
-
-
-
-const DEMO_ORDERS = [
-  { id: 12, mode: 'Balcão', type: 'balcao', status: 'ready', created: '20:11', mins: 3, customer: 'João', items: [['1x','Calabresa','Média']] },
-  { id: 18, mode: 'Balcão', type: 'balcao', status: 'ready', created: '20:15', mins: 7, customer: 'Mariana', items: [['1x','Frango com Catupiry','Grande'],['1x','Guaraná','2L']] },
-  { id: 19, mode: 'Mesa 03', type: 'salao', table: '03', status: 'ready', created: '20:18', mins: 4, customer: 'Mesa 03', items: [['1x','Quatro Queijos','Grande'],['1x','Borda Cheddar','Adicional']] },
-  { id: 20, mode: 'Mesa 05', type: 'salao', table: '05', status: 'ready', created: '20:20', mins: 9, customer: 'Mesa 05', items: [['1x','Portuguesa','Grande']] },
-  { id: 21, mode: 'Delivery', type: 'delivery', status: 'ready', created: '20:22', mins: 2, customer: 'Pedido delivery', items: [['1x','Marguerita','Grande']] }
-];
-
 const STORAGE_KEY = 'bella-massa-us005-state-v1';
 let state = loadState();
 let activeFilter = 'all';
 let timerHandle;
 
-function cloneDemo(){ return JSON.parse(JSON.stringify({orders:DEMO_ORDERS, finalized:0, calls:0})); }
-function loadState(){
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : cloneDemo();
-  } catch { return cloneDemo(); }
+// ==========================================
+// 1. ALTERNÂNCIA DE TEMA (CLAREAR / ESCURECER)
+// ==========================================
+function setTheme(mode) {
+  const btnLight = document.getElementById('btnLight');
+  const btnDark = document.getElementById('btnDark');
+
+  if (mode === 'light') {
+    document.body.classList.add('light-theme');
+    localStorage.setItem('bellaMassa_theme', 'light');
+    if (btnLight) btnLight.classList.add('active');
+    if (btnDark) btnDark.classList.remove('active');
+  } else {
+    document.body.classList.remove('light-theme');
+    localStorage.setItem('bellaMassa_theme', 'dark');
+    if (btnDark) btnDark.classList.add('active');
+    if (btnLight) btnLight.classList.remove('active');
+  }
 }
+window.setTheme = setTheme;
+
+// Listener para postMessage
+window.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'LOAD_CUSTOMER_DATA') {
+    const cliente = event.data.customer;
+    if (document.getElementById('inputNome')) {
+      document.getElementById('inputNome').value = cliente.nome || cliente.name || '';
+    }
+    if (document.getElementById('inputTelefone')) {
+      document.getElementById('inputTelefone').value = cliente.telefone || cliente.phone || '';
+    }
+  }
+});
+
+// ==========================================
+// 2. LEITURA VIA BANCO CENTRALIZADO (DB)
+// ==========================================
+function loadState() {
+  try {
+    let localPedidos = [];
+    if (typeof DB !== 'undefined') {
+      localPedidos = DB.getPedidos();
+    } else {
+      localPedidos = JSON.parse(localStorage.getItem('bellaMassa_pedidos') || '[]');
+    }
+
+    if (localPedidos.length > 0) {
+      const expedicaoPedidos = localPedidos.filter(p => p.status === 'ready');
+      return {
+        orders: expedicaoPedidos.map(p => ({
+          id: p.id,
+          mode: p.tipo || 'Balcão',
+          type: (p.tipo === 'Salao' ? 'salao' : p.tipo === 'Entrega' ? 'delivery' : 'balcao'),
+          table: p.mesa || '01',
+          status: 'ready',
+          created: p.dataHora ? new Date(p.dataHora).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) : '20:00',
+          mins: 5,
+          customer: p.cliente || 'Cliente',
+          items: Array.isArray(p.itens) 
+            ? p.itens.map(i => [`${i.quantity || 1}x`, i.product || 'Item', i.size || ''])
+            : Array.isArray(p.items) ? p.items : [['1x', 'Pizza', '']]
+        })),
+        finalized: localPedidos.filter(p => p.status === 'finished' || p.status === 'delivered').length,
+        calls: 0
+      };
+    }
+
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : { orders: [], finalized: 0, calls: 0 };
+  } catch {
+    return { orders: [], finalized: 0, calls: 0 };
+  }
+}
+
+function reloadDataAndRender() {
+  state = loadState();
+  render();
+}
+
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-function padId(id){ return String(id).padStart(4,'0'); }
+function padId(id){ return String(id).slice(-4); }
 
 function visibleOrders(){
-  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const searchInput = document.getElementById('searchInput');
+  const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
   return state.orders.filter(o => o.status === 'ready' && (activeFilter === 'all' || o.type === activeFilter) && (!q || `${o.id} ${o.customer || ''} ${o.mode}`.toLowerCase().includes(q)));
 }
 
@@ -56,14 +102,14 @@ function renderOrder(order){
     : `<button class="action waiter" data-action="waiter" data-id="${order.id}">🔔 Avisar garçom</button>`;
   else action = `<button class="action done" data-action="deliver" data-id="${order.id}">✓ Finalizar expedição</button>`;
 
-  const items = order.items.map(i => `<div class="item"><span class="qty">${i[0]}</span><span>${i[1]}<small>${i[2]}</small></span></div>`).join('');
+  const items = (order.items || []).map(i => `<div class="item"><span class="qty">${i[0]}</span><span>${i[1]} <small>${i[2] || ''}</small></span></div>`).join('');
   const badgeClass = order.type === 'balcao' ? 'gold' : order.type === 'salao' ? 'green' : 'red';
   return `<article class="order-card ${tooOld ? 'priority' : ''}">
     <div class="order-top">
       <div class="order-number">#${padId(order.id)}</div>
       <div class="order-meta"><div class="badge ${badgeClass}">${order.mode}</div><div class="timer">◷ ${order.mins} min</div><div class="order-time">Pronto às ${order.created}</div></div>
     </div>
-    <div class="customer"><strong>${order.customer || 'Cliente não identificado'}</strong><small>${order.type === 'salao' ? 'Atendimento no salão' : order.type === 'balcao' ? 'Retirada no balcão' : 'Fluxo de delivery'}</small></div>
+    <div class="customer"><strong>${order.customer || 'Cliente'}</strong><small>${order.type === 'salao' ? 'Atendimento no salão' : order.type === 'balcao' ? 'Retirada no balcão' : 'Fluxo de delivery'}</small></div>
     <div class="items">${items}</div>
     <div class="order-state"><span class="status-text">${tooOld ? 'Atenção: tempo de espera alto' : 'Aguardando expedição'}</span><div class="actions">${action}</div></div>
   </article>`;
@@ -76,16 +122,18 @@ function render(){
   const tables = state.orders.filter(o => o.status === 'ready' && o.type === 'salao');
   const oldest = readyAll.length ? Math.max(...readyAll.map(o => o.mins)) : 0;
 
-  document.getElementById('ordersList').innerHTML = orders.length ? orders.map(renderOrder).join('') : `<div class="empty">Nenhum pedido encontrado para este filtro.</div>`;
-  document.getElementById('readyBadge').textContent = `${readyAll.length} ${readyAll.length === 1 ? 'pedido' : 'pedidos'}`;
-  document.getElementById('tablesBadge').textContent = tables.length;
-  document.getElementById('statReady').textContent = readyAll.length;
-  document.getElementById('statCalled').textContent = called.length;
-  document.getElementById('statTables').textContent = tables.length;
-  document.getElementById('statOldest').textContent = `${oldest} min`;
-  document.getElementById('finalized').textContent = state.finalized;
-  document.getElementById('callCount').textContent = state.calls;
-  document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('pt-BR',{hour12:false});
+  const ordersListEl = document.getElementById('ordersList');
+  if (ordersListEl) ordersListEl.innerHTML = orders.length ? orders.map(renderOrder).join('') : `<div class="empty">Nenhum pedido encontrado para este filtro.</div>`;
+  
+  if (document.getElementById('readyBadge')) document.getElementById('readyBadge').textContent = `${readyAll.length} ${readyAll.length === 1 ? 'pedido' : 'pedidos'}`;
+  if (document.getElementById('tablesBadge')) document.getElementById('tablesBadge').textContent = tables.length;
+  if (document.getElementById('statReady')) document.getElementById('statReady').textContent = readyAll.length;
+  if (document.getElementById('statCalled')) document.getElementById('statCalled').textContent = called.length;
+  if (document.getElementById('statTables')) document.getElementById('statTables').textContent = tables.length;
+  if (document.getElementById('statOldest')) document.getElementById('statOldest').textContent = `${oldest} min`;
+  if (document.getElementById('finalized')) document.getElementById('finalized').textContent = state.finalized;
+  if (document.getElementById('callCount')) document.getElementById('callCount').textContent = state.calls;
+  if (document.getElementById('lastUpdate')) document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('pt-BR',{hour12:false});
 
   renderCalls(called);
   renderTables(tables);
@@ -95,20 +143,28 @@ function render(){
 
 function renderCalls(called){
   const el = document.getElementById('callsList');
+  if (!el) return;
   el.innerHTML = called.length ? called.map(o => `<div class="call-row"><div class="call-left"><div class="call-number">#${padId(o.id)}</div><div><div class="call-name">${o.customer}</div><div class="call-time">Chamado às ${o.calledAt || '--:--'}</div></div></div><button class="mini-action" data-action="deliver" data-id="${o.id}">Entregar</button></div>`).join('') : '<div class="empty">Nenhuma chamada aguardando retirada.</div>';
 }
+
 function renderTables(tables){
   const el = document.getElementById('tablesList');
-  el.innerHTML = tables.length ? tables.map(o => `<div class="table-row"><div class="table-left"><div class="table-chip">${o.table}</div><div class="table-info"><strong>Pedido #${padId(o.id)}</strong><span>${o.customer}</span></div></div><span class="table-status">${o.waiterNotified ? 'Garçom avisado' : 'Aguardando garçom'}</span></div>`).join('') : '<div class="empty">Nenhuma mesa aguardando atendimento.</div>';
+  if (!el) return;
+  el.innerHTML = tables.length ? tables.map(o => `<div class="table-row"><div class="table-left"><div class="table-chip">${o.table || '01'}</div><div class="table-info"><strong>Pedido #${padId(o.id)}</strong><span>${o.customer}</span></div></div><span class="table-status">${o.waiterNotified ? 'Garçom avisado' : 'Aguardando garçom'}</span></div>`).join('') : '<div class="empty">Nenhuma mesa aguardando atendimento.</div>';
 }
+
 function renderPublic(called){
-  document.getElementById('publicList').innerHTML = called.length ? called.map(o => `<div class="public-row"><strong>#${padId(o.id)}</strong><span>Pedido pronto — ${o.customer}</span></div>`).join('') : '<div class="empty">Nenhuma chamada ativa.</div>';
+  const el = document.getElementById('publicList');
+  if (!el) return;
+  el.innerHTML = called.length ? called.map(o => `<div class="public-row"><strong>#${padId(o.id)}</strong><span>Pedido pronto — ${o.customer}</span></div>`).join('') : '<div class="empty">Nenhuma chamada ativa.</div>';
 }
+
 function bindActions(){
   document.querySelectorAll('[data-action]').forEach(btn => btn.addEventListener('click', () => handleAction(btn.dataset.action, Number(btn.dataset.id))));
 }
 
-function handleAction(action,id){
+// ATUALIZAÇÃO NO BANCO CENTRALIZADO (UPDATE)
+function handleAction(action, id){
   const order = state.orders.find(o => o.id === id);
   if(!order) return;
   if(action === 'call' && order.type === 'balcao'){
@@ -118,33 +174,85 @@ function handleAction(action,id){
     order.waiterNotified = true;
     showToast(`Garçom avisado sobre o pedido #${padId(id)}.`);
   } else if(action === 'deliver'){
-    order.status = 'done'; state.finalized++;
+    order.status = 'done'; 
+    state.finalized++;
+    
+    // Atualiza status no banco central DB
+    if (typeof DB !== 'undefined') {
+      DB.atualizarStatusPedido(id, 'finished');
+    } else {
+      let localPedidos = JSON.parse(localStorage.getItem('bellaMassa_pedidos') || '[]');
+      let idx = localPedidos.findIndex(p => p.id === id);
+      if (idx !== -1) {
+        localPedidos[idx].status = 'finished';
+        localStorage.setItem('bellaMassa_pedidos', JSON.stringify(localPedidos));
+      }
+    }
     showToast(`Pedido #${padId(id)} marcado como entregue.`);
   }
-  saveState(); render();
+  saveState(); 
+  reloadDataAndRender();
 }
 
 function tick(){
   const now = new Date();
-  document.getElementById('date').textContent = now.toLocaleDateString('pt-BR');
-  document.getElementById('clock').textContent = now.toLocaleTimeString('pt-BR',{hour12:false});
+  const dateEl = document.getElementById('date');
+  const clockEl = document.getElementById('clock');
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('pt-BR');
+  if (clockEl) clockEl.textContent = now.toLocaleTimeString('pt-BR',{hour12:false});
 }
+
 function showToast(message){
-  const toast=document.getElementById('toast'); toast.textContent=message; toast.classList.add('show'); clearTimeout(timerHandle); timerHandle=setTimeout(()=>toast.classList.remove('show'),2400);
+  const toast = document.getElementById('toast'); 
+  if (!toast) return;
+  toast.textContent = message; 
+  toast.classList.add('show'); 
+  clearTimeout(timerHandle); 
+  timerHandle = setTimeout(() => toast.classList.remove('show'), 2400);
 }
-function resetDemo(){ state=cloneDemo(); saveState(); render(); showToast('Dados da demonstração restaurados.'); }
 
 function setup(){
-  document.querySelectorAll('.filter').forEach(btn => btn.addEventListener('click', () => { document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); activeFilter=btn.dataset.filter; render(); }));
-  document.getElementById('searchInput').addEventListener('input', render);
-  document.getElementById('refreshBtn').addEventListener('click', () => { render(); showToast('Painel atualizado.'); });
-  document.getElementById('resetBtn').addEventListener('click', resetDemo);
-  document.getElementById('publicPanelBtn').addEventListener('click', () => document.getElementById('publicModal').classList.remove('hidden'));
-  document.getElementById('closeModal').addEventListener('click', () => document.getElementById('publicModal').classList.add('hidden'));
-  document.getElementById('helpBtn').addEventListener('click', () => document.getElementById('helpModal').classList.remove('hidden'));
-  document.getElementById('closeHelp').addEventListener('click', () => document.getElementById('helpModal').classList.add('hidden'));
-  document.querySelectorAll('.modal-backdrop').forEach(m => m.addEventListener('click', e => { if(e.target===m) m.classList.add('hidden'); }));
-  document.getElementById('logoutBtn').addEventListener('click', () => showToast('Sessão encerrada (demonstração).'));
-  tick(); setInterval(tick,1000); render();
+  const savedTheme = localStorage.getItem('bellaMassa_theme') || 'dark';
+  setTheme(savedTheme);
+
+  document.querySelectorAll('.filter').forEach(btn => btn.addEventListener('click', () => { 
+    document.querySelectorAll('.filter').forEach(b => b.classList.remove('active')); 
+    btn.classList.add('active'); 
+    activeFilter = btn.dataset.filter; 
+    render(); 
+  }));
+
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) searchInput.addEventListener('input', render);
+
+  const refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) refreshBtn.addEventListener('click', () => { reloadDataAndRender(); showToast('Painel atualizado.'); });
+
+  const publicPanelBtn = document.getElementById('publicPanelBtn');
+  if (publicPanelBtn) publicPanelBtn.addEventListener('click', () => document.getElementById('publicModal').classList.remove('hidden'));
+
+  const closeModal = document.getElementById('closeModal');
+  if (closeModal) closeModal.addEventListener('click', () => document.getElementById('publicModal').classList.add('hidden'));
+
+  const helpBtn = document.getElementById('helpBtn');
+  if (helpBtn) helpBtn.addEventListener('click', () => document.getElementById('helpModal').classList.remove('hidden'));
+
+  const closeHelp = document.getElementById('closeHelp');
+  if (closeHelp) closeHelp.addEventListener('click', () => document.getElementById('helpModal').classList.add('hidden'));
+
+  document.querySelectorAll('.modal-backdrop').forEach(m => m.addEventListener('click', e => { if(e.target === m) m.classList.add('hidden'); }));
+
+  tick(); 
+  setInterval(tick, 1000); 
+  reloadDataAndRender();
 }
-setup();
+
+// Escuta atualizações no banco de dados central em tempo real
+window.addEventListener('db:pedidosUpdated', reloadDataAndRender);
+window.addEventListener('db:externalChange', (e) => {
+  if (e.detail && e.detail.key === 'bellaMassa_pedidos') {
+    reloadDataAndRender();
+  }
+});
+
+document.addEventListener('DOMContentLoaded', setup);

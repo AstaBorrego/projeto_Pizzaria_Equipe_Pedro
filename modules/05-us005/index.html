@@ -7,40 +7,31 @@
   <link rel="stylesheet" href="css/expedicao.css" />
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-icon">🍕</div>
-        <div class="brand-name">Bella Massa</div>
-        <div class="brand-subtitle">P I Z Z A R I A</div>
-      </div>
-
-      <nav class="menu">
-        <a class="menu-item" href="../kds/kds.html"><span>♨</span> Painel KDS</a>
-        <a class="menu-item active" href="expedicao.html"><span>▣</span> Expedição</a>
-        <button class="menu-item" id="publicPanelBtn"><span>◉</span> Painel Público</button>
-        <button class="menu-item" id="helpBtn"><span>?</span> Ajuda</button>
-      </nav>
-
-      <div class="sidebar-footer">
-        <button class="logout" id="logoutBtn"><span>⇥</span> Sair</button>
-        <div class="version">Bella Massa<br />US-005 • Versão 1.0.0</div>
-      </div>
-    </aside>
-
-    <main class="main-content">
-      <header class="topbar">
+  <div class="container">
+    <header class="page-header">
+      <div class="brand-title">
+        <span class="pizza-icon" title="Expedição">🍕</span>
         <div>
-          <div class="eyebrow">US-005</div>
+          <span class="eyebrow">Módulo 05</span>
           <h1>Expedição e <strong>Balcão / Salão</strong></h1>
           <p>Organize pedidos prontos, chamadas de balcão e entregas nas mesas.</p>
         </div>
-        <div class="topbar-status">
-          <div class="connection"><span class="dot"></span> KDS conectado <span>⌁</span></div>
-          <div class="clock-box"><small id="date"></small><strong id="clock"></strong></div>
-        </div>
-      </header>
+      </div>
 
+      <div class="header-right">
+        <!-- BOTÕES DE ALTERNÂNCIA DE TEMA -->
+        <div class="theme-switch">
+          <button type="button" id="btnLight" onclick="setTheme('light')" title="Clarear modo" aria-label="Clarear">☀️ Clarear</button>
+          <button type="button" id="btnDark" onclick="setTheme('dark')" title="Escurecer modo" aria-label="Escurecer">🌙 Escurecer</button>
+        </div>
+        <div class="topbar-status">
+          <div class="connection"><span class="dot"></span> KDS conectado</div>
+          <div class="clock-box"><small id="date"></small><strong id="clock">--:--:--</strong></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content-expedicao">
       <section class="stats-grid">
         <article class="stat-card"><span class="stat-icon gold">✓</span><div><strong id="statReady">0</strong><span>Prontos para expedição</span></div></article>
         <article class="stat-card"><span class="stat-icon amber">♢</span><div><strong id="statCalled">0</strong><span>Aguardando retirada</span></div></article>
@@ -57,6 +48,8 @@
         <div class="toolbar-actions">
           <label class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar pedido, nome ou mesa..." /></label>
           <button class="refresh" id="refreshBtn">⟳ Atualizar</button>
+          <button class="refresh" id="publicPanelBtn">◉ Painel Público</button>
+          <button class="refresh" id="helpBtn">? Ajuda</button>
         </div>
       </div>
 
@@ -103,15 +96,29 @@
 
   <div class="modal-backdrop hidden" id="helpModal">
     <div class="modal help-modal">
-      <div class="modal-head"><div><span class="eyebrow">US-005</span><h2>Como usar</h2></div><button class="close" id="closeHelp">×</button></div>
+      <div class="modal-head"><div><span class="eyebrow">Ajuda</span><h2>Como usar</h2></div><button class="close" id="closeHelp">×</button></div>
       <div class="help-content">
         <p><strong>Balcão:</strong> clique em <em>Chamar cliente</em> para mandar o pedido ao painel público. Depois, marque como entregue.</p>
         <p><strong>Salão:</strong> clique em <em>Avisar garçom</em>. O pedido entra na fila da mesa até ser marcado como entregue.</p>
-        <p><strong>Integração com US-004:</strong> a tela considera como entrada os pedidos com <code>status = ready</code>.</p>
+        <p><strong>Integração com Cozinha:</strong> a tela considera como entrada os pedidos com status de prontos (<code>status = ready</code>).</p>
       </div>
     </div>
   </div>
 
+  <!-- Widget VLIBRAS -->
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+  </script>
+
+  <!-- SCRIPTS CENTRALIZADOS E ESPECÍFICOS -->
+  <script src="../../database.js"></script>
   <script src="js/expedicao.js"></script>
 </body>
 </html>

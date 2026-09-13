@@ -8,7 +8,6 @@
     <!-- Ícones Phosphor -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="css/estilo.css">
-    <link rel="stylesheet" href="css/crud-cardapio.css">
 </head>
 
 <body>
@@ -19,6 +18,18 @@
                 <span class="eyebrow"><i class="ph ph-book-open"></i> Módulo 02</span>
                 <h1>Gestão do <strong>Cardápio Digital</strong></h1>
                 <p>Cadastre, edite e gerencie a disponibilidade dos itens da pizzaria.</p>
+            </div>
+
+            <!-- BOTÕES DE TEMA (CLAREAR / ESCURECER) -->
+            <div class="theme-switch-wrapper">
+                <div class="theme-switch">
+                    <button type="button" onclick="setTheme('light')" id="btn-light" title="Modo Claro">
+                        <i class="ph ph-sun"></i> Clarear
+                    </button>
+                    <button type="button" onclick="setTheme('dark')" id="btn-dark" class="active" title="Modo Escuro">
+                        <i class="ph ph-moon"></i> Escurecer
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -109,6 +120,19 @@
         </main>
     </div>
 
+    <!-- Widget VLIBRAS -->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
+    </script>
+
+    <!-- Script Principal e CRUD -->
     <script src="js/crud-cardapio.js"></script>
 </body>
 

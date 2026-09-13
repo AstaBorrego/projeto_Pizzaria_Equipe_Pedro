@@ -18,6 +18,101 @@ body, html {
     height: 100vh;
 }
 
+/* =======================================================
+   PADRONIZAÇÃO GLOBAL DE CONTAINERS E FORMULÁRIOS
+   ======================================================= */
+
+/* Container geral da aplicação */
+.container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Todas as seções ativas mantêm o alinhamento centralizado */
+.page-section {
+    display: none;
+    width: 100%;
+}
+
+.page-section.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* REGRA DE LARGURA ÚNICA PARA TODOS OS FORMULÁRIOS E CARDS */
+.form-box,
+form,
+.module-card,
+.auth-box,
+.cart-summary,
+.order-card {
+    width: 100%;
+    max-width: 600px;
+    /* Largura padrão fixa para todos os formulários */
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin: 1rem 0;
+    box-sizing: border-box;
+}
+
+/* Padronização dos campos dos formulários */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 100%;
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333333;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #c82333;
+    outline: none;
+}
+
+/* Botões com a mesma largura do formulário */
+.btn-primary,
+.btn-submit {
+    width: 100%;
+    padding: 0.85rem;
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover,
+.btn-submit:hover {
+    background-color: #218838;
+}
+
 /* Sidebar */
 .sidebar {
     width: 280px;

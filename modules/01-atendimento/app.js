@@ -1,22 +1,12 @@
-// Este trecho de escuta  que recebe os dados do cliente e preenche os campos
-window.addEventListener('message', (event) => {
-  // Verifica se a ação recebida é a de carregar cliente
-  if (event.data && event.data.action === 'LOAD_CUSTOMER_DATA') {
-    const cliente = event.data.customer;
-    
-    // Preenche os inputs do formulário de atendimento do Pedro
-    if (document.getElementById('inputNome')) {
-      document.getElementById('inputNome').value = cliente.nome;
-    }
-    if (document.getElementById('inputTelefone')) {
-      document.getElementById('inputTelefone').value = cliente.telefone;
-    }
-  }
-});
-// fim
+/* ==========================================
+   BELLA MASSA - ATENDIMENTO (app.js)
+   ========================================== */
 
-// Base de Dados dos Produtos
-const MENU_DATA = {
+const CLIENTE_ATIVO_KEY = 'bella_massa_cliente_selecionado';
+const CARDAPIO_KEY = 'bella_massa_cardapio';
+const PIZZARIA_ORIGEM = "07043-000, Brasil";
+
+const DEFAULT_MENU = {
   pizzas: [
     { name: "Pizza Calabresa", price: 45.00 },
     { name: "Pizza 4 Queijos", price: 50.00 },
@@ -42,41 +32,86 @@ const MENU_DATA = {
   ]
 };
 
-// Endereço base da Pizzaria ajustado para o CEP 07043-000
-const PIZZARIA_ORIGEM = "07043-000, Brasil";
-
-// Estado do Pedido (Sessão sempre inicia zerada ao abrir/recarregar a tela)
 let orderItems = JSON.parse(localStorage.getItem('bellaMassa_items')) || [];
-let sessionCounter = 0; 
+let sessionCounter = parseInt(localStorage.getItem('bellaMassa_counter') || '0', 10); 
 let totalAmount = 0;
+let clienteAtual = null;
 
-// Garante que o localStorage também inicie limpo para a sessão
-localStorage.setItem('bellaMassa_counter', '0');
+function getMenuData() {
+  const savedCardapio = localStorage.getItem(CARDAPIO_KEY);
+  if (!savedCardapio) return DEFAULT_MENU;
 
-window.onload = function() {
-  // Carregar tema salvo
-  const savedTheme = localStorage.getItem('bellaMassa_theme');
-  if (savedTheme === 'light') {
+  try {
+    const lista = JSON.parse(savedCardapio);
+    const pizzas = lista.filter(i => (i.categoria.includes('Pizza') || i.categoria === 'Sobremesa') && i.disponivel === 'Disponível')
+                         .map(i => ({ name: i.nome, price: parseFloat(i.preco) }));
+    const bebidas = lista.filter(i => i.categoria === 'Bebida' && i.disponivel === 'Disponível')
+                         .map(i => ({ name: i.nome, price: parseFloat(i.preco) }));
+    const bordas = lista.filter(i => i.categoria === 'Borda Recheada' && i.disponivel === 'Disponível')
+                        .map(i => ({ name: i.nome, price: parseFloat(i.preco) }));
+
+    return {
+      pizzas: pizzas.length > 0 ? pizzas : DEFAULT_MENU.pizzas,
+      bebidas: bebidas.length > 0 ? bebidas : DEFAULT_MENU.bebidas,
+      bordas: [{ name: "Sem Borda", price: 0.00 }, ...(bordas.length > 0 ? bordas : DEFAULT_MENU.bordas)]
+    };
+  } catch (e) {
+    return DEFAULT_MENU;
+  }
+}
+
+function setTheme(mode) {
+  const btnLight = document.getElementById('btnLight') || document.getElementById('btn-light');
+  const btnDark = document.getElementById('btnDark') || document.getElementById('btn-dark');
+
+  if (mode === 'light') {
     document.body.classList.add('light-theme');
+    localStorage.setItem('bellaMassa_theme', 'light');
+    if (btnLight) btnLight.classList.add('active');
+    if (btnDark) btnDark.classList.remove('active');
+  } else {
+    document.body.classList.remove('light-theme');
+    localStorage.setItem('bellaMassa_theme', 'dark');
+    if (btnDark) btnDark.classList.add('active');
+    if (btnLight) btnLight.classList.remove('active');
+  }
+}
+window.setTheme = setTheme;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('bellaMassa_theme') || 'dark';
+  setTheme(savedTheme);
+
+  const clienteAtivo = localStorage.getItem(CLIENTE_ATIVO_KEY);
+  if (clienteAtivo) {
+    try {
+      clienteAtual = JSON.parse(clienteAtivo);
+      preencherDadosClienteForm(clienteAtual);
+    } catch(e) {}
   }
 
   populateSelects();
   handleCategoryChange();
-  document.getElementById('counter').innerText = sessionCounter;
-  renderOrder();
-  resetFields(); // Limpa e posiciona o cursor ao acessar pela primeira vez
-};
-
-// Função para Alternar Tema (Clarear / Escurecer)
-function setTheme(mode) {
-  const body = document.body;
-  if (mode === 'light') {
-    body.classList.add('light-theme');
-    localStorage.setItem('bellaMassa_theme', 'light');
-  } else {
-    body.classList.remove('light-theme');
-    localStorage.setItem('bellaMassa_theme', 'dark');
+  
+  const modalityEl = document.getElementById('modality');
+  if (modalityEl) {
+    modalityEl.value = 'Balcao';
+    toggleModalityFields();
   }
+  
+  const counterEl = document.getElementById('counter');
+  if (counterEl) counterEl.innerText = sessionCounter;
+  
+  renderOrder();
+});
+
+function preencherDadosClienteForm(cliente) {
+  if (!cliente) return;
+  const inputNome = document.getElementById('nomeCliente') || document.getElementById('inputNome');
+  const inputTelefone = document.getElementById('telefoneCliente') || document.getElementById('inputTelefone');
+  
+  if (inputNome) inputNome.value = cliente.nome || cliente.name || '';
+  if (inputTelefone) inputTelefone.value = cliente.telefone || cliente.phone || '';
 }
 
 function saveToLocalStorage() {
@@ -86,13 +121,17 @@ function saveToLocalStorage() {
 
 function updatePizzaFlavorPrices() {
   const sizeSelect = document.getElementById('sizeSelect');
-  const sizeRatio = sizeSelect.value ? parseFloat(sizeSelect.options[sizeSelect.selectedIndex].dataset.ratio) : 1.00;
+  if (!sizeSelect) return;
 
+  const sizeRatio = sizeSelect.value ? parseFloat(sizeSelect.options[sizeSelect.selectedIndex].dataset.ratio) : 1.00;
   const f1 = document.getElementById('flavor1Select');
   const f2 = document.getElementById('flavor2Select');
 
+  if (!f1 || !f2) return;
+
   const currentF1 = f1.value;
   const currentF2 = f2.value;
+  const MENU_DATA = getMenuData();
 
   f1.innerHTML = '<option value="">Selecione</option>';
   f2.innerHTML = '<option value="Nenhum">Selecione</option>';
@@ -110,6 +149,8 @@ function updatePizzaFlavorPrices() {
 }
 
 function populateSelects() {
+  const MENU_DATA = getMenuData();
+
   const drink = document.getElementById('drinkSelect');
   if (drink) {
     drink.innerHTML = '<option value="">Selecione</option>';
@@ -130,12 +171,21 @@ function populateSelects() {
 }
 
 function handleCategoryChange() {
-  const catVal = document.getElementById('category').value;
+  const categoryEl = document.getElementById('category');
+  if (!categoryEl) return;
+  
+  const catVal = categoryEl.value;
   const isPizza = catVal === 'pizza';
-  document.getElementById('sizeGroup').classList.toggle('hidden', !isPizza && catVal !== '');
-  document.getElementById('pizzaFlavorsGroup').classList.toggle('hidden', !isPizza && catVal !== '');
-  document.getElementById('borderGroup').classList.toggle('hidden', !isPizza && catVal !== '');
-  document.getElementById('drinkGroup').classList.toggle('hidden', catVal !== 'bebida');
+  
+  const sizeGroup = document.getElementById('sizeGroup');
+  const pizzaFlavorsGroup = document.getElementById('pizzaFlavorsGroup');
+  const borderGroup = document.getElementById('borderGroup');
+  const drinkGroup = document.getElementById('drinkGroup');
+
+  if (sizeGroup) sizeGroup.classList.toggle('hidden', !isPizza && catVal !== '');
+  if (pizzaFlavorsGroup) pizzaFlavorsGroup.classList.toggle('hidden', !isPizza && catVal !== '');
+  if (borderGroup) borderGroup.classList.toggle('hidden', !isPizza && catVal !== '');
+  if (drinkGroup) drinkGroup.classList.toggle('hidden', catVal !== 'bebida');
 
   if (isPizza) {
     updatePizzaFlavorPrices();
@@ -143,45 +193,60 @@ function handleCategoryChange() {
 }
 
 function toggleModalityFields() {
-  const modality = document.getElementById('modality').value;
+  const modalityEl = document.getElementById('modality');
+  if (!modalityEl) return;
+  
+  const modality = modalityEl.value;
   const mesaGroup = document.getElementById('mesaGroup');
   const deliveryGroup = document.getElementById('deliveryGroup');
 
-  if (modality === 'Salao') {
-    mesaGroup.classList.remove('hidden');
-    mesaGroup.style.display = 'block';
-  } else {
-    mesaGroup.classList.add('hidden');
-    mesaGroup.style.display = 'none';
+  if (mesaGroup) {
+    if (modality === 'Salao') {
+      mesaGroup.classList.remove('hidden');
+      mesaGroup.style.display = 'block';
+    } else {
+      mesaGroup.classList.add('hidden');
+      mesaGroup.style.display = 'none';
+    }
   }
 
-  if (modality === 'Entrega') {
-    deliveryGroup.classList.remove('hidden');
-    deliveryGroup.style.display = 'block';
-  } else {
-    deliveryGroup.classList.add('hidden');
-    deliveryGroup.style.display = 'none';
+  if (deliveryGroup) {
+    if (modality === 'Entrega') {
+      deliveryGroup.classList.remove('hidden');
+      deliveryGroup.style.display = 'block';
+    } else {
+      deliveryGroup.classList.add('hidden');
+      deliveryGroup.style.display = 'none';
+    }
   }
 
   renderOrder();
 }
 
 function toggleCashFields() {
-  const method = document.getElementById('paymentMethod').value;
+  const methodEl = document.getElementById('paymentMethod');
+  if (!methodEl) return;
+  
+  const method = methodEl.value;
   const cashGroup = document.getElementById('cashGroup');
-  if (method === 'Dinheiro') {
-    cashGroup.classList.remove('hidden');
-    cashGroup.style.display = 'block';
-  } else {
-    cashGroup.classList.add('hidden');
-    cashGroup.style.display = 'none';
+  if (cashGroup) {
+    if (method === 'Dinheiro') {
+      cashGroup.classList.remove('hidden');
+      cashGroup.style.display = 'block';
+    } else {
+      cashGroup.classList.add('hidden');
+      cashGroup.style.display = 'none';
+    }
   }
 }
 
 function calculateChange() {
-  const cash = parseFloat(document.getElementById('cashAmountInput').value) || 0;
-  const change = cash - totalAmount;
+  const cashInput = document.getElementById('cashAmountInput');
   const changeDisplay = document.getElementById('changeDisplay');
+  if (!cashInput || !changeDisplay) return;
+
+  const cash = parseFloat(cashInput.value) || 0;
+  const change = cash - totalAmount;
 
   if (cash > 0 && change >= 0) {
     changeDisplay.innerText = `Troco: R$ ${change.toFixed(2).replace('.', ',')}`;
@@ -195,18 +260,22 @@ function calculateChange() {
 }
 
 function addItem() {
-  const modality = document.getElementById('modality').value;
-  const category = document.getElementById('category').value;
+  const modalityEl = document.getElementById('modality');
+  const categoryEl = document.getElementById('category');
+  if (!modalityEl || !categoryEl) return;
+
+  const modality = modalityEl.value;
+  const category = categoryEl.value;
 
   if (!modality) {
     alert('Por favor, selecione a Modalidade de Atendimento!');
-    document.getElementById('modality').focus();
+    modalityEl.focus();
     return;
   }
 
   if (!category) {
     alert('Por favor, selecione a Categoria do Item!');
-    document.getElementById('category').focus();
+    categoryEl.focus();
     return;
   }
 
@@ -220,6 +289,7 @@ function addItem() {
     return;
   }
 
+  const MENU_DATA = getMenuData();
   let itemData = {};
 
   if (category === 'pizza') {
@@ -244,11 +314,11 @@ function addItem() {
     const f1Obj = MENU_DATA.pizzas.find(p => p.name === f1Name);
     const f2Obj = f2Name !== "Nenhum" ? MENU_DATA.pizzas.find(p => p.name === f2Name) : null;
 
-    let basePrice = f1Obj.price;
+    let basePrice = f1Obj ? f1Obj.price : 0;
     let desc = f1Name;
 
     if (f2Obj) {
-      basePrice = Math.max(f1Obj.price, f2Obj.price);
+      basePrice = Math.max(f1Obj ? f1Obj.price : 0, f2Obj.price);
       desc = `½ ${f1Name} / ½ ${f2Name}`;
     }
 
@@ -260,8 +330,9 @@ function addItem() {
     }
     const borderName = borderSelect.value;
     const borderObj = MENU_DATA.bordas.find(b => b.name === borderName);
+    const borderPrice = borderObj ? borderObj.price : 0;
 
-    const unitPrice = (basePrice * sizeRatio) + borderObj.price;
+    const unitPrice = (basePrice * sizeRatio) + borderPrice;
 
     itemData = {
       type: 'pizza',
@@ -291,7 +362,7 @@ function addItem() {
       flavor2: 'Nenhum',
       border: 'N/A',
       obs: obs,
-      unitPrice: drinkObj.price
+      unitPrice: drinkObj ? drinkObj.price : 0
     };
   }
 
@@ -343,6 +414,7 @@ function removeItem(id) {
 
 function renderOrder() {
   const tbody = document.getElementById('orderBody');
+  if (!tbody) return;
   tbody.innerHTML = '';
   let subtotalSum = 0;
 
@@ -371,15 +443,17 @@ function renderOrder() {
     tbody.appendChild(row);
   });
 
-  const modality = document.getElementById('modality').value;
+  const modalityEl = document.getElementById('modality');
+  const modality = modalityEl ? modalityEl.value : '';
   let deliveryFee = 0;
   
   if (modality === 'Entrega') {
-    deliveryFee = parseFloat(document.getElementById('deliveryFeeInput').value) || 7.00;
+    const feeInput = document.getElementById('deliveryFeeInput');
+    deliveryFee = feeInput ? (parseFloat(feeInput.value) || 7.00) : 7.00;
     
-    // Adiciona a linha do frete na tabela de itens
     const rowFee = document.createElement('tr');
-    const distanciaText = document.getElementById('distanciaInfo').innerText || "";
+    const distanciaInfo = document.getElementById('distanciaInfo');
+    const distanciaText = distanciaInfo ? distanciaInfo.innerText : "";
     rowFee.innerHTML = `
       <td><strong>1x Taxa de Entrega</strong></td>
       <td>Entrega por distância ${distanciaText}</td>
@@ -390,23 +464,24 @@ function renderOrder() {
   }
 
   totalAmount = subtotalSum + deliveryFee;
-  document.getElementById('totalPrice').innerText = `R$ ${totalAmount.toFixed(2).replace('.', ',')}`;
+  const totalPriceEl = document.getElementById('totalPrice');
+  if (totalPriceEl) totalPriceEl.innerText = `R$ ${totalAmount.toFixed(2).replace('.', ',')}`;
   calculateChange();
 }
 
 function confirmOrder() {
-  const modality = document.getElementById('modality').value;
-  const paymentMethod = document.getElementById('paymentMethod').value;
+  const modalityEl = document.getElementById('modality');
+  const paymentMethodEl = document.getElementById('paymentMethod');
   const mesaInput = document.getElementById('mesaInput');
   const addressInput = document.getElementById('addressInput');
   const numeroInput = document.getElementById('numeroInput');
-  const complementoInput = document.getElementById('complementoInput');
 
-  if (!modality) {
+  if (!modalityEl || !modalityEl.value) {
     alert('Por favor, selecione a Modalidade de Atendimento!');
-    document.getElementById('modality').focus();
+    if (modalityEl) modalityEl.focus();
     return;
   }
+  const modality = modalityEl.value;
 
   if (modality === 'Salao' && (!mesaInput.value || mesaInput.value <= 0)) {
     alert('Por favor, informe um número de mesa válido!');
@@ -432,11 +507,12 @@ function confirmOrder() {
     return;
   }
 
-  if (!paymentMethod) {
+  if (!paymentMethodEl || !paymentMethodEl.value) {
     alert('Por favor, selecione a Forma de Pagamento!');
-    document.getElementById('paymentMethod').focus();
+    if (paymentMethodEl) paymentMethodEl.focus();
     return;
   }
+  const paymentMethod = paymentMethodEl.value;
 
   const cash = parseFloat(document.getElementById('cashAmountInput').value) || 0;
   let payInfo = paymentMethod;
@@ -454,6 +530,7 @@ function confirmOrder() {
   }).join('<br>');
 
   let destInfo = `<strong>Modalidade:</strong> Retirada Balcão`;
+  let enderecoCompleto = '';
   if (modality === 'Salao') {
     destInfo = `<strong>Modalidade:</strong> Salão (Mesa ${mesaInput.value})`;
   } else if (modality === 'Entrega') {
@@ -462,99 +539,137 @@ function confirmOrder() {
     
     const ruaBairro = addressInput.value.trim();
     const numero = numeroInput.value.trim();
-    const complemento = complementoInput.value.trim();
-    const enderecoCompleto = `${ruaBairro}, Nº ${numero}${complemento ? ' - ' + complemento : ''}`;
+    const complementoInput = document.getElementById('complementoInput');
+    const complemento = complementoInput ? complementoInput.value.trim() : '';
+    enderecoCompleto = `${ruaBairro}, Nº ${numero}${complemento ? ' - ' + complemento : ''}`;
 
     destInfo = `<strong>Modalidade:</strong> Entrega<br><strong>Endereço:</strong> ${enderecoCompleto}<br><strong>Taxa de Frete:</strong> R$ ${deliveryFee.toFixed(2).replace('.', ',')} ${distanciaText}`;
   }
 
+  const novoPedido = {
+    id: Date.now(),
+    cliente: clienteAtual ? (clienteAtual.nome || clienteAtual.name) : 'Cliente Balcão',
+    telefone: clienteAtual ? (clienteAtual.telefone || clienteAtual.phone) : '',
+    endereco: enderecoCompleto,
+    mesa: modality === 'Salao' ? mesaInput.value : null,
+    tipo: modality,
+    status: 'pending',
+    itens: orderItems,
+    total: totalAmount,
+    formaPagamento: paymentMethod,
+    detalhesPagamento: payInfo,
+    dataHora: new Date().toISOString()
+  };
+
+  if (typeof DB !== 'undefined') {
+    DB.salvarPedido(novoPedido);
+  }
+
   const receiptDetails = document.getElementById('receiptDetails');
-  receiptDetails.innerHTML = `
-    ${destInfo}<br><br>
-    <strong>Itens do Pedido:</strong><br>
-    ${itemsListHTML}<br><br>
-    <strong>Forma de Pagamento:</strong> ${payInfo}<br><br>
-    <strong>Valor Total:</strong> R$ ${totalAmount.toFixed(2).replace('.', ',')}
-  `;
+  if (receiptDetails) {
+    receiptDetails.innerHTML = `
+      ${destInfo}<br><br>
+      <strong>Itens do Pedido:</strong><br>
+      ${itemsListHTML}<br><br>
+      <strong>Forma de Pagamento:</strong> ${payInfo}<br><br>
+      <strong>Valor Total:</strong> R$ ${totalAmount.toFixed(2).replace('.', ',')}
+    `;
+  }
 
-  // Zera e limpa o contador da sessão instantaneamente ao confirmar/finalizar o pedido
-  sessionCounter = 0;
-  document.getElementById('counter').innerText = sessionCounter;
-  localStorage.setItem('bellaMassa_counter', '0');
-
-  saveToLocalStorage();
-  document.getElementById('receiptModal').classList.remove('hidden');
+  const receiptModal = document.getElementById('receiptModal');
+  if (receiptModal) receiptModal.classList.remove('hidden');
 }
 
+// FECHAMENTO E LIMPEZA DA SESSÃO/PEDIDO ATUAL
 function closeModal() {
-  document.getElementById('receiptModal').classList.add('hidden');
+  const receiptModal = document.getElementById('receiptModal');
+  if (receiptModal) receiptModal.classList.add('hidden');
   
-  // Limpa os itens do pedido e garante a sessão zerada
+  // Limpa itens e reseta a sessão atual
   orderItems = [];
   sessionCounter = 0;
-  document.getElementById('counter').innerText = sessionCounter;
-  
+
+  const counterEl = document.getElementById('counter');
+  if (counterEl) counterEl.innerText = sessionCounter;
+
   localStorage.removeItem('bellaMassa_items');
   localStorage.setItem('bellaMassa_counter', '0');
-  
+
   renderOrder();
-  resetFields(); // Limpa o formulário e posiciona o cursor no primeiro campo
+  resetFields();
 }
 
 function resetFields() {
-  document.getElementById('modality').value = "";
-  document.getElementById('mesaInput').value = '';
+  const modality = document.getElementById('modality');
+  if (modality) modality.value = "Balcao";
+  
+  const mesaInput = document.getElementById('mesaInput');
+  if (mesaInput) mesaInput.value = '';
   
   const cepInput = document.getElementById('cepInput');
-  if(cepInput) cepInput.value = '';
+  if (cepInput) cepInput.value = '';
   
-  document.getElementById('addressInput').value = '';
+  const addressInput = document.getElementById('addressInput');
+  if (addressInput) addressInput.value = '';
 
-  // Limpeza dos campos de Número e Complemento
   const numeroInput = document.getElementById('numeroInput');
-  if(numeroInput) numeroInput.value = '';
+  if (numeroInput) numeroInput.value = '';
 
   const complementoInput = document.getElementById('complementoInput');
-  if(complementoInput) complementoInput.value = '';
+  if (complementoInput) complementoInput.value = '';
 
-  document.getElementById('deliveryFeeInput').value = '7.00';
+  const feeInput = document.getElementById('deliveryFeeInput');
+  if (feeInput) feeInput.value = '7.00';
   
   const distanciaInfo = document.getElementById('distanciaInfo');
-  if(distanciaInfo) distanciaInfo.innerText = '';
+  if (distanciaInfo) distanciaInfo.innerText = '';
   
   const mapsLink = document.getElementById('mapsLink');
-  if(mapsLink) mapsLink.style.display = 'none';
+  if (mapsLink) mapsLink.style.display = 'none';
   
-  document.getElementById('category').value = "";
-  document.getElementById('sizeSelect').value = "";
-  document.getElementById('flavor1Select').value = "";
-  document.getElementById('flavor2Select').value = "Nenhum";
-  document.getElementById('drinkSelect').value = "";
-  document.getElementById('borderSelect').value = "";
+  const category = document.getElementById('category');
+  if (category) category.value = "";
   
-  document.getElementById('obsInput').value = '';
-  document.getElementById('quantityInput').value = 1;
-  document.getElementById('paymentMethod').value = "";
+  const sizeSelect = document.getElementById('sizeSelect');
+  if (sizeSelect) sizeSelect.value = "";
+  
+  const f1 = document.getElementById('flavor1Select');
+  if (f1) f1.value = "";
+  
+  const f2 = document.getElementById('flavor2Select');
+  if (f2) f2.value = "Nenhum";
+  
+  const drinkSelect = document.getElementById('drinkSelect');
+  if (drinkSelect) drinkSelect.value = "";
+  
+  const borderSelect = document.getElementById('borderSelect');
+  if (borderSelect) borderSelect.value = "";
+  
+  const obsInput = document.getElementById('obsInput');
+  if (obsInput) obsInput.value = '';
+  
+  const quantityInput = document.getElementById('quantityInput');
+  if (quantityInput) quantityInput.value = 1;
+  
+  const paymentMethod = document.getElementById('paymentMethod');
+  if (paymentMethod) paymentMethod.value = "";
   
   const cashAmountInput = document.getElementById('cashAmountInput');
-  if(cashAmountInput) cashAmountInput.value = '';
+  if (cashAmountInput) cashAmountInput.value = '';
   
   const changeDisplay = document.getElementById('changeDisplay');
-  if(changeDisplay) changeDisplay.innerText = 'Troco: R$ 0,00';
+  if (changeDisplay) changeDisplay.innerText = 'Troco: R$ 0,00';
   
   toggleModalityFields();
   handleCategoryChange();
   toggleCashFields();
-  
-  // Posiciona o cursor no primeiro campo da tela ao carregar ou reiniciar
-  document.getElementById('modality').focus();
 }
 
 async function buscarCEP(cep) {
   cep = cep.replace(/\D/g, '');
   if (cep !== "") {
     let validacep = /^[0-9]{8}$/;
-    if(validacep.test(cep)) {
+    if (validacep.test(cep)) {
       document.getElementById('addressInput').value = 'Buscando endereço e calculando frete...';
       try {
         const responseCep = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
@@ -564,9 +679,8 @@ async function buscarCEP(cep) {
           const enderecoCompleto = `${dataCep.logradouro}, ${dataCep.bairro}, ${dataCep.localidade} - ${dataCep.uf}`;
           document.getElementById('addressInput').value = enderecoCompleto;
           
-          // Foca automaticamente no campo Número após encontrar o endereço pelo CEP
           const numeroInput = document.getElementById('numeroInput');
-          if(numeroInput) numeroInput.focus();
+          if (numeroInput) numeroInput.focus();
           
           const mapsLink = document.getElementById('mapsLink');
           if (mapsLink) {
@@ -635,3 +749,15 @@ async function calcularFretePorDistancia(enderecoDestino) {
     renderOrder();
   }
 }
+
+window.toggleModalityFields = toggleModalityFields;
+window.handleCategoryChange = handleCategoryChange;
+window.updatePizzaFlavorPrices = updatePizzaFlavorPrices;
+window.toggleCashFields = toggleCashFields;
+window.calculateChange = calculateChange;
+window.addItem = addItem;
+window.updateQty = updateQty;
+window.removeItem = removeItem;
+window.confirmOrder = confirmOrder;
+window.closeModal = closeModal;
+window.buscarCEP = buscarCEP;
