@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bella Massa | Cardápio Digital</title>
+    <!-- Ícones Phosphor -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/estilo.css">
+    <link rel="stylesheet" href="css/crud-cardapio.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <header class="page-header">
+            <div>
+                <span class="eyebrow"><i class="ph ph-book-open"></i> Módulo 02</span>
+                <h1>Gestão do <strong>Cardápio Digital</strong></h1>
+                <p>Cadastre, edite e gerencie a disponibilidade dos itens da pizzaria.</p>
+            </div>
+        </header>
+
+        <main class="main-layout">
+            <!-- Formulário de Cadastro / Edição -->
+            <section class="card form-card" id="cadastro">
+                <div class="card-header">
+                    <h2 id="formTitle"><i class="ph ph-plus-circle"></i> Cadastrar Item</h2>
+                </div>
+
+                <form id="formCardapio" onsubmit="event.preventDefault(); cadastrarPizza();">
+                    <div class="form-group">
+                        <label for="nomePizza">Nome do Item *</label>
+                        <input type="text" id="nomePizza" placeholder="Ex.: Calabresa Especial" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoria">Categoria *</label>
+                        <select id="categoria" required>
+                            <option value="">Selecione a categoria</option>
+                            <option value="Pizza Tradicional">Pizza Tradicional</option>
+                            <option value="Pizza Doce">Pizza Doce</option>
+                            <option value="Bebida">Bebida</option>
+                            <option value="Borda Recheada">Borda Recheada</option>
+                            <option value="Sobremesa">Sobremesa</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="precoPizza">Preço (R$) *</label>
+                        <input type="number" id="precoPizza" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ingredientes">Ingredientes / Descrição</label>
+                        <textarea id="ingredientes" placeholder="Ex.: Molho de tomate, muçarela, calabresa fatiada e cebola"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="disponivel">Status de Disponibilidade</label>
+                        <select id="disponivel">
+                            <option value="Disponível">Disponível</option>
+                            <option value="Esgotado">Esgotado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="btnSalvar" class="btn btn-primary">
+                            <i class="ph ph-floppy-disk"></i> Salvar Item
+                        </button>
+                        <button type="button" id="btnCancelar" class="btn btn-secondary hidden" onclick="cancelarEdicao()">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Tabela de Itens do Cardápio -->
+            <section class="card table-card" id="listaCardapio">
+                <div class="card-header flex-between">
+                    <div>
+                        <h2><i class="ph ph-list-bullets"></i> Itens do Cardápio</h2>
+                    </div>
+                    <div class="search-box">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar por nome ou categoria..." onkeyup="filtrarTabela()">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Preço</th>
+                                <th>Ingredientes</th>
+                                <th>Status</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaCardapio">
+                            <!-- Inserido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/crud-cardapio.js"></script>
+</body>
+
+</html>

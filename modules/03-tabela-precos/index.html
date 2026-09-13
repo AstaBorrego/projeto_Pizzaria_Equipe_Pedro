@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Bella Massa - Gestão de Preços</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <header>
+      <div class="brand-title">
+        <span class="pizza-icon">🍕</span>
+
+        <div>
+          <h1>Bella Massa</h1>
+          <p>Gestão de Preços e Tamanhos</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="theme-switch">
+          <button type="button" onclick="setTheme('light')" title="Modo claro">
+            ☀️
+          </button>
+
+          <button type="button" onclick="setTheme('dark')" title="Modo escuro">
+            🌙
+          </button>
+        </div>
+      </div>
+    </header>
+
+
+    <!-- Tamanhos -->
+
+    <section class="section-card">
+
+      <div class="section-title">
+        <div>
+          <h2>📏 Tamanhos de Pizza</h2>
+          <p>Defina o multiplicador utilizado no cálculo dos preços.</p>
+        </div>
+      </div>
+
+      <div class="size-grid">
+
+        <div class="price-card">
+          <div class="card-icon">🍕</div>
+
+          <div class="card-info">
+            <h3>Broto</h3>
+            <span>4 fatias</span>
+          </div>
+
+          <div class="input-wrapper">
+            <label for="broto">Multiplicador</label>
+
+            <div class="input-unit">
+              <input
+                type="number"
+                id="broto"
+                min="0"
+                step="0.01"
+              >
+
+              <span>x</span>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="price-card">
+          <div class="card-icon">🍕</div>
+
+          <div class="card-info">
+            <h3>Média</h3>
+            <span>6 fatias</span>
+          </div>
+
+          <div class="input-wrapper">
+            <label for="media">Multiplicador</label>
+
+            <div class="input-unit">
+              <input
+                type="number"
+                id="media"
+                min="0"
+                step="0.01"
+              >
+
+              <span>x</span>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="price-card">
+          <div class="card-icon">🍕</div>
+
+          <div class="card-info">
+            <h3>Grande</h3>
+            <span>8 fatias</span>
+          </div>
+
+          <div class="input-wrapper">
+            <label for="grande">Multiplicador</label>
+
+            <div class="input-unit">
+              <input
+                type="number"
+                id="grande"
+                min="0"
+                step="0.01"
+              >
+
+              <span>x</span>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="price-card">
+          <div class="card-icon">🍕</div>
+
+          <div class="card-info">
+            <h3>Família</h3>
+            <span>12 fatias</span>
+          </div>
+
+          <div class="input-wrapper">
+            <label for="familia">Multiplicador</label>
+
+            <div class="input-unit">
+              <input
+                type="number"
+                id="familia"
+                min="0"
+                step="0.01"
+              >
+
+              <span>x</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- Bordas -->
+
+    <section class="section-card">
+
+      <div class="section-title">
+        <div>
+          <h2>🧀 Preços das Bordas</h2>
+          <p>Configure o valor adicional de cada tipo de borda.</p>
+        </div>
+      </div>
+
+
+      <div class="border-list">
+
+        <div class="border-row">
+
+          <div class="border-name">
+            <span class="border-icon">⭕</span>
+
+            <div>
+              <strong>Sem Borda</strong>
+              <small>Sem acréscimo</small>
+            </div>
+          </div>
+
+          <div class="money-input">
+            <span>R$</span>
+
+            <input
+              type="number"
+              id="semBorda"
+              min="0"
+              step="0.01"
+            >
+          </div>
+
+        </div>
+
+
+        <div class="border-row">
+
+          <div class="border-name">
+            <span class="border-icon">🧀</span>
+
+            <div>
+              <strong>Catupiry</strong>
+              <small>Borda recheada</small>
+            </div>
+          </div>
+
+          <div class="money-input">
+            <span>R$</span>
+
+            <input
+              type="number"
+              id="catupiry"
+              min="0"
+              step="0.01"
+            >
+          </div>
+
+        </div>
+
+
+        <div class="border-row">
+
+          <div class="border-name">
+            <span class="border-icon">🧀</span>
+
+            <div>
+              <strong>Cheddar</strong>
+              <small>Borda recheada</small>
+            </div>
+          </div>
+
+          <div class="money-input">
+            <span>R$</span>
+
+            <input
+              type="number"
+              id="cheddar"
+              min="0"
+              step="0.01"
+            >
+          </div>
+
+        </div>
+
+
+        <div class="border-row">
+
+          <div class="border-name">
+            <span class="border-icon">🍫</span>
+
+            <div>
+              <strong>Chocolate</strong>
+              <small>Borda doce</small>
+            </div>
+          </div>
+
+          <div class="money-input">
+            <span>R$</span>
+
+            <input
+              type="number"
+              id="chocolate"
+              min="0"
+              step="0.01"
+            >
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- Meio a meio -->
+
+    <section class="section-card">
+
+      <div class="section-title">
+
+        <div>
+          <h2>🍕 Pizza Meio a Meio</h2>
+
+          <p>
+            Escolha como o sistema deve calcular o preço
+            quando forem selecionados dois sabores.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="half-pizza-preview">
+
+        <div class="half left">
+          <span>🍕</span>
+        </div>
+
+        <div class="half right">
+          <span>🍕</span>
+        </div>
+
+      </div>
+
+
+      <div class="rules">
+
+        <label class="rule-option">
+
+          <input
+            type="radio"
+            name="meioAMeio"
+            value="maior"
+          >
+
+          <div class="radio-content">
+
+            <strong>
+              Cobrar o sabor de maior preço
+            </strong>
+
+            <span>
+              O sistema considera o sabor mais caro.
+            </span>
+
+          </div>
+
+        </label>
+
+
+        <label class="rule-option">
+
+          <input
+            type="radio"
+            name="meioAMeio"
+            value="media"
+          >
+
+          <div class="radio-content">
+
+            <strong>
+              Calcular a média dos sabores
+            </strong>
+
+            <span>
+              Soma os dois preços e divide por dois.
+            </span>
+
+          </div>
+
+        </label>
+
+
+        <label class="rule-option">
+
+          <input
+            type="radio"
+            name="meioAMeio"
+            value="metade"
+          >
+
+          <div class="radio-content">
+
+            <strong>
+              Metade de cada sabor
+            </strong>
+
+            <span>
+              Cada sabor contribui com 50% do seu preço.
+            </span>
+
+          </div>
+
+        </label>
+
+
+        <label class="rule-option">
+
+          <input
+            type="radio"
+            name="meioAMeio"
+            value="menor"
+          >
+
+          <div class="radio-content">
+
+            <strong>
+              Cobrar o sabor de menor preço
+            </strong>
+
+            <span>
+              O sistema considera o sabor mais barato.
+            </span>
+
+          </div>
+
+        </label>
+
+      </div>
+
+    </section>
+
+
+    <!-- Exemplo -->
+
+    <section class="section-card example-card">
+
+      <div class="section-title">
+        <div>
+          <h2>💡 Exemplo de Cálculo</h2>
+
+          <p>
+            Visualize como as configurações afetam o preço final.
+          </p>
+        </div>
+      </div>
+
+
+      <div class="example-form">
+
+        <div class="form-group">
+
+          <label for="exampleBase">
+            Preço base da pizza
+          </label>
+
+          <div class="money-input full">
+            <span>R$</span>
+
+            <input
+              type="number"
+              id="exampleBase"
+              value="50"
+              min="0"
+              step="0.01"
+              oninput="calculateExample()"
+            >
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="exampleSize">
+            Tamanho
+          </label>
+
+          <select
+            id="exampleSize"
+            onchange="calculateExample()"
+          >
+            <option value="broto">Broto</option>
+            <option value="media">Média</option>
+            <option value="grande" selected>Grande</option>
+            <option value="familia">Família</option>
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="exampleBorder">
+            Borda
+          </label>
+
+          <select
+            id="exampleBorder"
+            onchange="calculateExample()"
+          >
+            <option value="semBorda">Sem Borda</option>
+            <option value="catupiry" selected>Catupiry</option>
+            <option value="cheddar">Cheddar</option>
+            <option value="chocolate">Chocolate</option>
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <div class="calculation-result">
+
+        <div>
+          <span>Preço base</span>
+          <strong id="resultBase">R$ 50,00</strong>
+        </div>
+
+        <div>
+          <span>Multiplicador</span>
+          <strong id="resultMultiplier">1,00x</strong>
+        </div>
+
+        <div>
+          <span>Borda</span>
+          <strong id="resultBorder">R$ 8,00</strong>
+        </div>
+
+        <div class="result-total">
+          <span>Preço final</span>
+          <strong id="resultTotal">R$ 58,00</strong>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- Botões -->
+
+    <div class="actions">
+
+      <button
+        type="button"
+        class="btn-secondary"
+        onclick="resetDefaults()"
+      >
+        ↺ Restaurar Padrões
+      </button>
+
+      <button
+        type="button"
+        class="btn-primary"
+        onclick="saveSettings()"
+      >
+        ✓ Salvar Configurações
+      </button>
+
+    </div>
+
+
+    <div
+      id="statusMessage"
+      class="status-message hidden"
+    ></div>
+
+  </div>
+
+
+  <script src="app.js"></script>
+
+</body>
+</html>

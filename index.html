@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Integrado - Pizzaria Bella Massa</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+  <div class="app-layout">
+    <!-- Sidebar de Navegação dos 8 Módulos -->
+    <aside class="sidebar">
+      <div class="brand">
+        <i class="ph ph-pizza"></i>
+        <h2>Bella Massa</h2>
+      </div>
+
+        <button class="menu-btn" data-module="modules/01-atendimento/index.html">
+          <i class="ph ph-headset"></i> 01. Atendimento (Pedro)
+        </button>
+
+        <button class="menu-btn" data-module="modules/02-cardapio/index.html">
+          <i class="ph ph-book-open"></i> 02. Cardápio Digital
+        </button>
+
+        <button class="menu-btn" data-module="modules/03-tabela-precos/index.html">
+          <i class="ph ph-currency-dollar"></i> 03. Tabela de Preços (Kaick)
+        </button>
+
+        <button class="menu-btn" data-module="modules/04-kds/index.html">
+          <i class="ph ph-cpu"></i> 04. Cozinha KDS
+        </button>
+
+        <button class="menu-btn" data-module="modules/05-us005/index.html">
+          <i class="ph ph-map-pin"></i> 05. Regras / Frete
+        </button>
+
+        <button class="menu-btn" data-module="modules/06-entregas/entregas.html">
+          <i class="ph ph-moped"></i> 06. Entregas (Lucas)
+        </button>
+
+        <button class="menu-btn" data-module="modules/07-caixa/index.html">
+          <i class="ph ph-cash-register"></i> 07. Caixa (Augusto)
+        </button>
+      </nav>
+            <nav class="menu">
+        <button class="menu-btn active" data-module="modules/08-crm-clientes/index.html">
+          <i class="ph ph-users-three"></i> 08. Clientes (Tálamo)
+        </button>
+    </aside>
+
+    <!-- Área de Exibição dos Módulos -->
+    <main class="content-area">
+      <iframe id="moduleFrame" src="modules/08-crm-clientes/index.html" frameborder="0"></iframe>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

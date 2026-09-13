@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bella Massa | KDS - Cozinha</title>
+  <link rel="stylesheet" href="css/kds.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🍕</div>
+        <div class="brand-name">Bella Massa</div>
+        <div class="brand-subtitle">P I Z Z A R I A</div>
+      </div>
+
+      <nav class="menu">
+        <button class="menu-item active"><span>♨</span> Painel KDS</button>
+        <a class="menu-item" href="../us005/expedicao.html"><span>▣</span> Expedição</a>
+        <button class="menu-item"><span>▥</span> Estatísticas</button>
+        <button class="menu-item"><span>⚙</span> Configurações</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout"><span>⇥</span> Sair</button>
+        <div class="version">Bella Massa<br />Versão 1.0.0</div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <h1>KDS - <strong>Cozinha</strong></h1>
+          <p>Acompanhe e gerencie os pedidos em tempo real</p>
+        </div>
+        <div class="topbar-status">
+          <div class="connection"><span class="dot"></span> Conectado <span>⌁</span></div>
+          <div class="clock-box"><small id="date"></small><strong id="clock"></strong></div>
+        </div>
+      </header>
+
+      <section class="kds-grid">
+        <div class="column queue">
+          <div class="column-header">
+            <div class="column-title"><span class="title-icon">⌛</span><div><h2>Fila de Pedidos <span id="queueCount" class="count">0</span></h2><p>Pedidos aguardando preparo</p></div></div>
+          </div>
+          <div id="queueList" class="orders-list"></div>
+        </div>
+
+        <div class="column preparing">
+          <div class="column-header">
+            <div class="column-title"><span class="title-icon">⚙</span><div><h2>Em Preparo <span id="preparingCount" class="count">0</span></h2><p>Pedidos em produção</p></div></div>
+          </div>
+          <div id="preparingList" class="orders-list"></div>
+        </div>
+
+        <div class="column ready">
+          <div class="column-header">
+            <div class="column-title"><span class="title-icon">✓</span><div><h2>Prontos <span id="readyCount" class="count">0</span></h2><p>Finalizados, aguardando expedição</p></div></div>
+          </div>
+          <div id="readyList" class="orders-list"></div>
+        </div>
+      </section>
+
+      <footer class="summary-bar">
+        <div class="summary-item"><span class="summary-icon red">▥</span><div><strong id="dayOrders">0</strong><span>Pedidos no dia</span></div></div>
+        <div class="summary-item"><span class="summary-icon red">◷</span><div><strong id="avgTime">0 min</strong><span>Tempo médio de preparo</span></div></div>
+        <div class="summary-item"><span class="summary-icon green">✓</span><div><strong id="finalized">0</strong><span>Pedidos finalizados</span></div></div>
+        <button class="refresh" id="refreshBtn">⟳ &nbsp; Atualizar</button>
+      </footer>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="js/kds.js"></script>
+</body>
+</html>

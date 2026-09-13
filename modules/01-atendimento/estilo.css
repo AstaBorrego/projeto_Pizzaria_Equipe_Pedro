@@ -1,0 +1,387 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+  --pizza-red: #D32F2F;
+  --pizza-red-dark: #B71C1C;
+  --cheese-gold: #FFB300;
+  --basil-green: #2E7D32;
+  --bg-oven: #181515;
+  --card-bg: #242020;
+  --card-header: #2E2828;
+  --text-light: #FBFADA;
+  --text-muted: #A39B98;
+  --border-color: #3D3535;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: var(--bg-oven);
+  background-image: radial-gradient(#2c2424 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: var(--text-light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 620px;
+  background-color: var(--card-bg);
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(211, 47, 47, 0.15);
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--pizza-red), var(--cheese-gold), var(--basil-green));
+}
+
+header {
+  border-bottom: 2px dashed var(--border-color);
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pizza-icon {
+  font-size: 2.2rem;
+  display: inline-block;
+  animation: floatPizza 3s ease-in-out infinite;
+  cursor: pointer;
+}
+
+.pizza-icon:hover {
+  animation: spinPizza 0.8s ease-in-out;
+}
+
+@keyframes floatPizza {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(8deg); }
+}
+
+@keyframes spinPizza {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+header h1 {
+  font-family: 'Fredoka', cursive;
+  font-size: 1.7rem;
+  color: var(--cheese-gold);
+  letter-spacing: 0.5px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Controles Superiores Direitos e Tema */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.theme-switch {
+  display: flex;
+  background: var(--card-header);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.theme-switch button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 4px 8px;
+  border-radius: 50%;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.theme-switch button:hover {
+  transform: scale(1.15);
+}
+
+/* Modo Claro (Clarear) */
+body.light-theme {
+  --bg-oven: #f4f4f4;
+  --card-bg: #ffffff;
+  --card-header: #eaeaea;
+  --text-light: #222222;
+  --border-color: #cccccc;
+}
+
+body.light-theme select, body.light-theme input {
+  background-color: #ffffff;
+  color: #222222;
+}
+
+.badge {
+  background: linear-gradient(135deg, var(--basil-green), #1b5e20);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-light);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+select, input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-header);
+  color: var(--text-light);
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+/* Correção da largura do input de CEP e Botão Buscar */
+.cep-container {
+  display: flex !important;
+  gap: 10px !important;
+  width: 100% !important;
+  align-items: center !important;
+}
+
+.cep-container input#cepInput {
+  flex: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.cep-container button.btn-cep-buscar,
+.cep-container button.btn-primary {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 110px !important;
+  margin-top: 0 !important;
+  padding: 12px 18px !important;
+}
+
+select:focus, input:focus {
+  outline: none;
+  border-color: var(--cheese-gold);
+  box-shadow: 0 0 8px rgba(255, 179, 0, 0.3);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.order-table th {
+  background-color: var(--card-header);
+  color: var(--cheese-gold);
+  padding: 12px;
+  text-align: left;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.order-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.95rem;
+}
+
+.order-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.total-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 22px;
+  padding: 15px 18px;
+  background-color: var(--card-header);
+  border-radius: 10px;
+  border: 1px dashed var(--cheese-gold);
+}
+
+.total-container span {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.total-price {
+  font-family: 'Fredoka', cursive;
+  font-size: 1.6rem;
+  color: var(--cheese-gold);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.btn-primary {
+  width: 100%;
+  background: linear-gradient(135deg, var(--pizza-red), var(--pizza-red-dark));
+  color: #FFF;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 18px;
+  box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(211, 47, 47, 0.6);
+}
+
+.btn-add {
+  background: linear-gradient(135deg, #2980b9, #1c5980);
+  box-shadow: 0 4px 12px rgba(41, 128, 185, 0.3);
+  margin-top: 5px;
+}
+
+.btn-add:hover {
+  box-shadow: 0 6px 15px rgba(41, 128, 185, 0.5);
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--card-bg);
+  padding: 30px;
+  border-radius: 16px;
+  max-width: 420px;
+  width: 90%;
+  border: 2px solid var(--cheese-gold);
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  animation: popIn 0.3s ease-out;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-content h2 {
+  font-family: 'Fredoka', cursive;
+  color: var(--cheese-gold);
+  margin-bottom: 12px;
+}
+
+.modal-details {
+  text-align: left;
+  background-color: var(--card-header);
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
+/* Responsividade Automática para telas menores */
+@media (max-width: 540px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Regras de Impressão */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #receiptModal, #receiptModal * {
+    visibility: visible;
+  }
+  #receiptModal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    background: white;
+    color: black;
+  }
+  .modal-content {
+    box-shadow: none;
+    border: none;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    background: white;
+    color: black;
+  }
+  #receiptModal h2, #receiptModal .modal-details {
+    color: black;
+  }
+  #receiptModal button {
+    display: none !important;
+  }
+}

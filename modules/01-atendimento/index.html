@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bella Massa - Registrar Pedido</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="brand-title">
+        <span class="pizza-icon" title="Clique para girar!">🍕</span>
+        <h1>Bella Massa</h1>
+      </div>
+      
+      <!-- Controles Superiores Direitos: Tema (Sol/Lua) e Sessão -->
+      <div class="header-right">
+        <div class="theme-switch">
+          <button type="button" id="btnLight" onclick="setTheme('light')" title="Clarear modo" aria-label="Clarear">☀️</button>
+          <button type="button" id="btnDark" onclick="setTheme('dark')" title="Escurecer modo" aria-label="Escurecer">🌙</button>
+        </div>
+        <span class="badge">Sessão: <span id="counter">0</span> pedidos</span>
+      </div>
+    </header>
+
+    <!-- Modalidade de Atendimento -->
+    <div class="form-group">
+      <label for="modality">Modalidade de Atendimento</label>
+      <select id="modality" onchange="toggleModalityFields()">
+        <option value="" disabled selected>Selecione</option>
+        <option value="Balcao">🍕 Balcão</option>
+        <option value="Salao">🪑 Salão / Mesa</option>
+        <option value="Entrega">🛵 Entrega (Delivery)</option>
+      </select>
+    </div>
+
+    <!-- Campo Condicional da Mesa -->
+    <div class="form-group hidden" id="mesaGroup">
+      <label for="mesaInput">Número da Mesa *</label>
+      <input type="number" id="mesaInput" min="1" step="1" placeholder="Ex: 05">
+    </div>
+
+    <!-- Campos de Delivery -->
+  <!-- Campos de Delivery -->
+    <div id="deliveryGroup" class="hidden">
+      <div class="form-group">
+        <label for="cepInput">CEP da Entrega</label>
+        <div class="cep-container">
+          <input type="text" id="cepInput" placeholder="Ex: 07043000" maxlength="8" onblur="buscarCEP(this.value)">
+          <button type="button" class="btn-primary btn-cep-buscar" onclick="buscarCEP(document.getElementById('cepInput').value)">Buscar</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="addressInput">Endereço de Entrega *</label>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="text" id="addressInput" placeholder="Rua, Bairro, Cidade - UF" style="flex: 1;">
+          <a id="mapsLink" href="#" target="_blank" style="display: none; background: #2E7D32; color: #FBFADA; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center; white-space: nowrap;">Ver no Maps</a>
+        </div>
+      </div>
+
+      <!-- Novos campos de Número e Complemento -->
+      <div style="display: flex; gap: 10px;">
+        <div class="form-group" style="flex: 1;">
+          <label for="numeroInput">Número *</label>
+          <input type="text" id="numeroInput" placeholder="Ex: 123">
+        </div>
+        <div class="form-group" style="flex: 2;">
+          <label for="complementoInput">Complemento</label>
+          <input type="text" id="complementoInput" placeholder="Ex: Apto 42, Bloco B">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="deliveryFeeInput">Taxa de Entrega (R$) <small id="distanciaInfo" style="color: var(--cheese-gold); font-weight: normal;"></small></label>
+        <input type="number" id="deliveryFeeInput" value="7.00" min="7.00" step="0.50" onchange="renderOrder()">
+      </div>
+    </div>
+
+    <!-- Categoria do Item -->
+    <div class="form-group">
+      <label for="category">Categoria do Item</label>
+      <select id="category" onchange="handleCategoryChange()">
+        <option value="" disabled selected>Selecione</option>
+        <option value="pizza">🍕 Pizza</option>
+        <option value="bebida">🥤 Bebida</option>
+      </select>
+    </div>
+
+    <!-- Tamanho da Pizza -->
+    <div class="form-group" id="sizeGroup">
+      <label for="sizeSelect">Tamanho da Pizza</label>
+      <select id="sizeSelect" onchange="updatePizzaFlavorPrices()">
+        <option value="" disabled selected>Selecione</option>
+        <option value="Broto" data-ratio="0.70">Broto (4 Fatias)</option>
+        <option value="Media" data-ratio="0.85">Média (6 Fatias)</option>
+        <option value="Grande" data-ratio="1.00">Grande (8 Fatias)</option>
+        <option value="Familia" data-ratio="1.20">Família (12 Fatias)</option>
+      </select>
+    </div>
+
+    <!-- Seleção de Sabores -->
+    <div id="pizzaFlavorsGroup">
+      <div class="form-group">
+        <label for="flavor1Select">Sabor 1 (ou Inteira)</label>
+        <select id="flavor1Select"></select>
+      </div>
+
+      <div class="form-group">
+        <label for="flavor2Select">Sabor 2 (Opcional - Meio a Meio)</label>
+        <select id="flavor2Select">
+          <option value="Nenhum">Selecione</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Seleção de Bebidas -->
+    <div class="form-group hidden" id="drinkGroup">
+      <label for="drinkSelect">Bebida</label>
+      <select id="drinkSelect"></select>
+    </div>
+
+    <!-- Borda Recheada -->
+    <div class="form-group" id="borderGroup">
+      <label for="borderSelect" id="borderLabel">Borda Recheada</label>
+      <select id="borderSelect"></select>
+    </div>
+
+    <!-- Observações -->
+    <div class="form-group">
+      <label for="obsInput">Observações / Personalização</label>
+      <input type="text" id="obsInput" placeholder="Ex: Sem cebola, massa bem assada">
+    </div>
+
+    <!-- Quantidade -->
+    <div class="form-group">
+      <label for="quantityInput">Quantidade *</label>
+      <input type="number" id="quantityInput" value="1" min="1" step="1">
+    </div>
+
+    <button type="button" class="btn-primary btn-add" onclick="addItem()">+ Adicionar ao Pedido</button>
+
+    <!-- Resumo do Pedido -->
+    <table class="order-table">
+      <thead>
+        <tr>
+          <th>Qtd. / Item</th>
+          <th>Detalhes / Borda</th>
+          <th>Subtotal</th>
+          <th style="text-align: center;">Ação</th>
+        </tr>
+      </thead>
+      <tbody id="orderBody">
+        <!-- Inserção dinâmica via JS -->
+      </tbody>
+    </table>
+
+    <div class="total-container">
+      <span>Total do Pedido:</span>
+      <span class="total-price" id="totalPrice">R$ 0,00</span>
+    </div>
+
+    <!-- Forma de Pagamento -->
+    <div class="form-group" style="margin-top: 20px;">
+      <label for="paymentMethod">Forma de Pagamento</label>
+      <select id="paymentMethod" onchange="toggleCashFields()">
+        <option value="" disabled selected>Selecione</option>
+        <option value="Cartão de Crédito">Cartão de Crédito</option>
+        <option value="Cartão de Débito">Cartão de Débito</option>
+        <option value="Pix">Pix</option>
+        <option value="Dinheiro">Dinheiro</option>
+      </select>
+    </div>
+
+    <div class="form-group hidden" id="cashGroup">
+      <label for="cashAmountInput">Valor Pago pelo Cliente (R$)</label>
+      <input type="number" id="cashAmountInput" step="0.50" placeholder="Ex: 100.00" oninput="calculateChange()">
+      <div id="changeDisplay" style="margin-top: 5px; font-weight: bold; color: #D32F2F;">Troco: R$ 0,00</div>
+    </div>
+
+    <button class="btn-primary" onclick="confirmOrder()">🔥 Confirmar & Enviar para o Forno</button>
+  </div>
+
+  <!-- Modal Pedido -->
+  <div id="receiptModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>🎉 Pedido Gerado!</h2>
+      <div class="modal-details" id="receiptDetails"></div>
+      <button class="btn-primary" onclick="window.print()" style="margin-bottom: 10px; background-color: #555;">🖨️ Imprimir Pedido</button>
+      <button class="btn-primary" onclick="closeModal()">Novo Pedido</button>
+    </div>
+  </div>
+
+  <!-- Widget VLIBRAS -->
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+  </script>
+
+  <script src="app.js"></script>
+</body>
+</html>

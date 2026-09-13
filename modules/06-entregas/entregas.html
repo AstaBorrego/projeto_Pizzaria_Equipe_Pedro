@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bella Massa - Gestão de Entregas</title>
+  <link rel="stylesheet" href="entregas.css">
+</head>
+<body>
+  <main class="delivery-shell">
+    <header class="topbar">
+      <div class="brand-title">
+        <span class="pizza-icon">🍕</span>
+        <div>
+          <h1>Bella Massa</h1>
+          <p>Gestão de Entregas e Motoboys</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="user-badge">Lucas • Delivery</span>
+        <div class="theme-switch" aria-label="Tema">
+          <button type="button" onclick="setTheme('light')" title="Modo claro">☀️</button>
+          <button type="button" onclick="setTheme('dark')" title="Modo escuro">🌙</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="page-heading">
+      <div>
+        <span class="eyebrow">MODALIDADE DELIVERY</span>
+        <h2>Painel de Entregas</h2>
+        <p>Atribua pedidos aos motoboys, acompanhe entregas em trânsito e feche as taxas do turno.</p>
+      </div>
+      <button class="btn btn-primary" type="button" onclick="openAssignModal()">+ Atribuir entrega</button>
+    </section>
+
+    <section class="stats-grid" aria-label="Resumo do delivery">
+      <article class="stat-card">
+        <span class="stat-label">Aguardando motoboy</span>
+        <strong id="statWaiting">0</strong>
+        <small>pedidos prontos</small>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Em trânsito</span>
+        <strong id="statTransit">0</strong>
+        <small>entregas na rua</small>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Entregues hoje</span>
+        <strong id="statDelivered">0</strong>
+        <small>pedidos concluídos</small>
+      </article>
+      <article class="stat-card accent-card">
+        <span class="stat-label">Taxas do turno</span>
+        <strong id="statFees">R$ 0,00</strong>
+        <small>valor acumulado</small>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel orders-panel">
+        <div class="panel-header">
+          <div>
+            <h3>Pedidos Delivery</h3>
+            <p>Acompanhe e atualize o andamento das entregas.</p>
+          </div>
+          <select id="statusFilter" onchange="renderOrders()" aria-label="Filtrar pedidos">
+            <option value="Todos">Todos</option>
+            <option value="Aguardando motoboy">Aguardando motoboy</option>
+            <option value="Em trânsito">Em trânsito</option>
+            <option value="Entregue">Entregue</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table class="delivery-table">
+            <thead>
+              <tr>
+                <th>Pedido</th>
+                <th>Cliente / Endereço</th>
+                <th>Motoboy</th>
+                <th>Taxa</th>
+                <th>Status</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
+        <div id="emptyOrders" class="empty-state hidden">Nenhum pedido encontrado neste filtro.</div>
+      </article>
+
+      <aside class="panel riders-panel">
+        <div class="panel-header compact">
+          <div>
+            <h3>Motoboys</h3>
+            <p>Disponibilidade no turno.</p>
+          </div>
+        </div>
+        <div id="ridersList" class="riders-list"></div>
+      </aside>
+    </section>
+
+    <section class="panel closing-panel">
+      <div class="panel-header">
+        <div>
+          <h3>Fechamento de Taxas por Motoboy</h3>
+          <p>Resumo das entregas concluídas e do valor a receber no turno.</p>
+        </div>
+        <button class="btn btn-secondary" type="button" onclick="closeShift()">Fechar turno</button>
+      </div>
+      <div id="closingCards" class="closing-grid"></div>
+    </section>
+  </main>
+
+  <div id="assignModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="assignTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">NOVA ROTA</span>
+          <h3 id="assignTitle">Atribuir entrega</h3>
+        </div>
+        <button class="icon-btn" onclick="closeAssignModal()" aria-label="Fechar">×</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="orderSelect">Pedido aguardando *</label>
+          <select id="orderSelect"></select>
+        </div>
+        <div class="form-group">
+          <label for="riderSelect">Motoboy disponível *</label>
+          <select id="riderSelect"></select>
+        </div>
+        <div class="form-group full">
+          <label for="routeNote">Orientação da rota</label>
+          <input id="routeNote" type="text" placeholder="Ex: priorizar Av. principal / evitar trânsito no centro">
+        </div>
+      </div>
+
+      <div class="route-preview" id="routePreview">
+        Selecione um pedido para visualizar os dados da rota.
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" type="button" onclick="closeAssignModal()">Cancelar</button>
+        <button class="btn btn-primary" type="button" onclick="assignDelivery()">Confirmar atribuição</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="entregas.js"></script>
+</body>
+</html>

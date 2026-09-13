@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Bella Massa - Caixa</title>
+
+    <link rel="stylesheet" href="estilo.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- CABEÇALHO -->
+    <header>
+
+        <div class="brand-title">
+            <span class="pizza-icon">🍕</span>
+
+            <div>
+                <h1>Bella Massa</h1>
+                <p>Caixa e Operações Financeiras</p>
+            </div>
+        </div>
+
+        <div class="header-right">
+
+            <div class="theme-switch">
+                <button onclick="setTheme('light')" title="Modo claro">☀️</button>
+                <button onclick="setTheme('dark')" title="Modo escuro">🌙</button>
+            </div>
+
+            <span class="status-badge">
+                ● Caixa Aberto
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <!-- RESUMO DO CAIXA -->
+    <section class="dashboard">
+
+        <div class="summary-card">
+            <span class="summary-icon">💰</span>
+
+            <div>
+                <p>Saldo Inicial</p>
+                <strong id="saldoInicial">R$ 100,00</strong>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <span class="summary-icon">🟢</span>
+
+            <div>
+                <p>Entradas</p>
+                <strong id="totalEntradas">R$ 850,00</strong>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <span class="summary-icon">🔴</span>
+
+            <div>
+                <p>Saídas</p>
+                <strong id="totalSaidas">R$ 0,00</strong>
+            </div>
+        </div>
+
+        <div class="summary-card destaque">
+            <span class="summary-icon">💵</span>
+
+            <div>
+                <p>Saldo Atual</p>
+                <strong id="saldoAtual">R$ 950,00</strong>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- PAGAMENTOS -->
+    <section class="card">
+
+        <div class="section-title">
+            <div>
+                <h2>🧾 Pedidos Aguardando Pagamento</h2>
+                <p>Selecione um pedido para realizar o pagamento.</p>
+            </div>
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Pedido</th>
+                        <th>Cliente</th>
+                        <th>Modalidade</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+
+                <tbody id="pedidosBody">
+
+                    <tr>
+                        <td><strong>#001</strong></td>
+                        <td>João Silva</td>
+                        <td>🍕 Balcão</td>
+                        <td>R$ 58,00</td>
+
+                        <td>
+                            <span class="status-pendente">
+                                Pendente
+                            </span>
+                        </td>
+
+                        <td>
+                            <button class="btn-small" onclick="abrirPagamento(1)">
+                                💳 Pagar
+                            </button>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td><strong>#002</strong></td>
+                        <td>Maria Oliveira</td>
+                        <td>🪑 Mesa 05</td>
+                        <td>R$ 92,00</td>
+
+                        <td>
+                            <span class="status-pendente">
+                                Pendente
+                            </span>
+                        </td>
+
+                        <td>
+                            <button class="btn-small" onclick="abrirPagamento(2)">
+                                💳 Pagar
+                            </button>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td><strong>#003</strong></td>
+                        <td>Lucas Santos</td>
+                        <td>🛵 Delivery</td>
+                        <td>R$ 76,50</td>
+
+                        <td>
+                            <span class="status-pendente">
+                                Pendente
+                            </span>
+                        </td>
+
+                        <td>
+                            <button class="btn-small" onclick="abrirPagamento(3)">
+                                💳 Pagar
+                            </button>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- OPERAÇÕES -->
+    <section class="operations">
+
+        <!-- SANGRIA -->
+        <div class="card operation-card">
+
+            <div class="operation-icon">
+                💸
+            </div>
+
+            <div>
+                <h2>Sangria</h2>
+
+                <p>
+                    Retirar dinheiro do caixa.
+                </p>
+
+                <button class="btn-danger" onclick="abrirMovimentacao('sangria')">
+                    Registrar Sangria
+                </button>
+            </div>
+
+        </div>
+
+
+        <!-- REFORÇO -->
+        <div class="card operation-card">
+
+            <div class="operation-icon">
+                💰
+            </div>
+
+            <div>
+                <h2>Reforço de Caixa</h2>
+
+                <p>
+                    Adicionar dinheiro ao caixa.
+                </p>
+
+                <button class="btn-green" onclick="abrirMovimentacao('reforco')">
+                    Registrar Reforço
+                </button>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RESUMO POR PAGAMENTO -->
+    <section class="card">
+
+        <div class="section-title">
+
+            <div>
+                <h2>📊 Resumo das Vendas</h2>
+                <p>Valores recebidos por forma de pagamento.</p>
+            </div>
+
+        </div>
+
+
+        <div class="payment-summary">
+
+            <div class="payment-box">
+                <span>💠 PIX</span>
+                <strong id="totalPix">R$ 250,00</strong>
+            </div>
+
+            <div class="payment-box">
+                <span>💳 Crédito</span>
+                <strong id="totalCredito">R$ 300,00</strong>
+            </div>
+
+            <div class="payment-box">
+                <span>💳 Débito</span>
+                <strong id="totalDebito">R$ 200,00</strong>
+            </div>
+
+            <div class="payment-box">
+                <span>💵 Dinheiro</span>
+                <strong id="totalDinheiro">R$ 100,00</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- HISTÓRICO -->
+    <section class="card">
+
+        <div class="section-title">
+
+            <div>
+                <h2>📋 Histórico de Movimentações</h2>
+                <p>Últimas operações realizadas no caixa.</p>
+            </div>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Horário</th>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+
+                <tbody id="historicoBody">
+
+                    <tr>
+                        <td>18:20</td>
+
+                        <td>
+                            <span class="tag entrada">
+                                Entrada
+                            </span>
+                        </td>
+
+                        <td>Pedido #001 - PIX</td>
+
+                        <td class="valor-entrada">
+                            + R$ 58,00
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>18:35</td>
+
+                        <td>
+                            <span class="tag entrada">
+                                Entrada
+                            </span>
+                        </td>
+
+                        <td>Pedido #002 - Crédito</td>
+
+                        <td class="valor-entrada">
+                            + R$ 92,00
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- FECHAMENTO -->
+    <section class="closing-card">
+
+        <div>
+
+            <h2>🔒 Fechamento do Caixa</h2>
+
+            <p>
+                Confira os valores antes de encerrar o caixa.
+            </p>
+
+        </div>
+
+
+        <div class="closing-values">
+
+            <div>
+                <span>Total de Vendas</span>
+                <strong id="fechamentoVendas">
+                    R$ 850,00
+                </strong>
+            </div>
+
+            <div>
+                <span>Entradas/Saídas</span>
+                <strong id="fechamentoMovimentacoes">
+                    R$ 0,00
+                </strong>
+            </div>
+
+            <div class="final-value">
+                <span>Valor Esperado</span>
+
+                <strong id="valorEsperado">
+                    R$ 950,00
+                </strong>
+            </div>
+
+        </div>
+
+
+        <button class="btn-close" onclick="fecharCaixa()">
+            🔒 Fechar Caixa
+        </button>
+
+    </section>
+
+
+</div>
+
+
+<!-- MODAL DE PAGAMENTO -->
+<div id="paymentModal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <button class="close-modal" onclick="fecharModalPagamento()">
+            ×
+        </button>
+
+        <h2>💳 Finalizar Pagamento</h2>
+
+        <div class="order-info">
+
+            <p>
+                Pedido:
+                <strong id="modalPedido">#001</strong>
+            </p>
+
+            <p>
+                Cliente:
+                <strong id="modalCliente">João Silva</strong>
+            </p>
+
+            <div class="modal-total">
+                Total:
+                <strong id="modalTotal">
+                    R$ 58,00
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="discountInput">
+                Desconto / Cupom
+            </label>
+
+            <input
+                type="number"
+                id="discountInput"
+                value="0"
+                min="0"
+                step="0.01"
+                oninput="calcularPagamento()"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="paymentSelect">
+                Forma de Pagamento
+            </label>
+
+            <select id="paymentSelect" onchange="alternarDinheiro()">
+
+                <option value="PIX">
+                    💠 PIX
+                </option>
+
+                <option value="Credito">
+                    💳 Cartão de Crédito
+                </option>
+
+                <option value="Debito">
+                    💳 Cartão de Débito
+                </option>
+
+                <option value="Dinheiro">
+                    💵 Dinheiro
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div
+            class="form-group hidden"
+            id="cashPaymentGroup"
+        >
+
+            <label for="cashInput">
+                Valor Recebido
+            </label>
+
+            <input
+                type="number"
+                id="cashInput"
+                min="0"
+                step="0.01"
+                placeholder="Ex: 100.00"
+                oninput="calcularPagamento()"
+            >
+
+            <div id="changeInfo" class="change-info">
+                Troco: R$ 0,00
+            </div>
+
+        </div>
+
+
+        <div class="payment-final">
+
+            <span>Total a pagar</span>
+
+            <strong id="paymentFinalValue">
+                R$ 58,00
+            </strong>
+
+        </div>
+
+
+        <button class="btn-primary" onclick="confirmarPagamento()">
+            ✅ Confirmar Pagamento
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL DE SANGRIA / REFORÇO -->
+<div id="movementModal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <button class="close-modal" onclick="fecharMovimentacao()">
+            ×
+        </button>
+
+        <h2 id="movementTitle">
+            💸 Sangria
+        </h2>
+
+        <div class="form-group">
+
+            <label for="movementValue">
+                Valor
+            </label>
+
+            <input
+                type="number"
+                id="movementValue"
+                min="0.01"
+                step="0.01"
+                placeholder="R$ 0,00"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="movementReason">
+                Motivo
+            </label>
+
+            <input
+                type="text"
+                id="movementReason"
+                placeholder="Ex: Retirada para pagamento"
+            >
+
+        </div>
+
+
+        <button
+            class="btn-primary"
+            onclick="confirmarMovimentacao()"
+        >
+            Confirmar Operação
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL DE COMPROVANTE -->
+<div id="receiptModal" class="modal hidden">
+
+    <div class="modal-content receipt">
+
+        <h2>🍕 Bella Massa</h2>
+
+        <h3>Comprovante de Pagamento</h3>
+
+        <div id="receiptContent"></div>
+
+        <button
+            class="btn-primary"
+            onclick="window.print()"
+        >
+            🖨️ Imprimir Comprovante
+        </button>
+
+        <button
+            class="btn-secondary"
+            onclick="fecharComprovante()"
+        >
+            Fechar
+        </button>
+
+    </div>
+
+</div>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>

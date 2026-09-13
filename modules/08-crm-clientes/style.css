@@ -1,0 +1,357 @@
+:root {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --input-bg: #334155;
+    --border-color: #475569;
+
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+
+    --primary: #ff5722;
+    /* Laranja Pizzaria */
+    --primary-hover: #e64a19;
+    --accent: #10b981;
+    /* Verde Sucesso / Novo Pedido */
+    --accent-hover: #059669;
+    --warning: #f59e0b;
+    /* Destaque VIP */
+
+    --radius: 8px;
+    --transition: all 0.2s ease-in-out;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.crm-container {
+    width: 100%;
+    max-width: 1300px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Header & Busca */
+.crm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-bg);
+    padding: 16px 24px;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+.search-bar-container {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    max-width: 600px;
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1.2rem;
+}
+
+.search-bar-container input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+.search-bar-container input:focus {
+    outline: 2px solid var(--primary);
+}
+
+/* Botões */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+    background-color: var(--input-bg);
+    color: var(--text-main);
+}
+
+.btn-secondary:hover {
+    background-color: var(--border-color);
+}
+
+.btn-success {
+    background-color: var(--accent);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn-accent {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-accent:hover {
+    background-color: #2563eb;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+/* Layout Grid */
+.crm-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 900px) {
+    .crm-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.badge {
+    background-color: var(--input-bg);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+/* Lista de Clientes */
+.customer-list {
+    list-style: none;
+    max-height: 600px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.customer-item {
+    padding: 12px;
+    background-color: var(--input-bg);
+    border-radius: var(--radius);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.customer-item:hover, .customer-item.active {
+    border-color: var(--primary);
+    background-color: #243347;
+}
+
+.customer-item-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.customer-item-sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: var(--text-muted);
+    text-align: center;
+    gap: 12px;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: var(--border-color);
+}
+
+/* Formulário */
+.crm-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.vip-badge {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.span-2 {
+    grid-column: span 2;
+}
+
+@media (max-width: 600px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .span-2 {
+        grid-column: span 1;
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.form-group input {
+    padding: 10px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-main);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Histórico de Pedidos */
+.history-section {
+    margin-top: 30px;
+    border-top: 2px dashed var(--border-color);
+    padding-top: 20px;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.history-card {
+    background-color: var(--input-bg);
+    padding: 14px;
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+}
+
+.history-card-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.history-items {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    color: var(--text-main);
+}
+
+.history-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none !important;
+}

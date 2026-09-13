@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo CRM - Pizzaria</title>
+  <link rel="stylesheet" href="style.css">
+<!-- ou href="crm.css" conforme o nome exato do arquivo -->">
+  <!-- Ícones Phosphor Icons para UI moderna -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+  <div class="crm-container">
+    
+    <!-- Header com Busca Rápida -->
+    <header class="crm-header">
+      <div class="header-title">
+        <i class="ph ph-users-three"></i>
+        <h2>Gestão de Clientes</h2>
+      </div>
+      
+      <div class="search-bar-container">
+        <i class="ph ph-magnifying-glass search-icon"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Buscar por nome, telefone ou CPF..."
+          autocomplete="off"
+        >
+        <button id="btnNewCustomer" class="btn btn-primary">
+          <i class="ph ph-user-plus"></i> Novo Cliente
+        </button>
+      </div>
+    </header>
+
+    <!-- Conteúdo Principal Grid -->
+    <main class="crm-grid">
+
+      <!-- Painel Esquerdo: Lista de Clientes Encontrados -->
+      <section class="card customer-list-card">
+        <div class="card-header">
+          <h3>Clientes Encontrados</h3>
+          <span id="customerCount" class="badge">0</span>
+        </div>
+        <ul id="customerList" class="customer-list">
+          <!-- Renderizado via JavaScript -->
+        </ul>
+      </section>
+
+      <!-- Painel Central/Direito: Cadastro / Detalhes + Histórico -->
+      <section class="card customer-detail-card">
+        
+        <!-- Estado Vazio (Nenhum cliente selecionado) -->
+        <div id="emptyState" class="empty-state">
+          <i class="ph ph-user-focus"></i>
+          <p>Selecione um cliente na busca ou clique em "Novo Cliente" para começar.</p>
+        </div>
+
+        <!-- Formulário de Cadastro / Edição -->
+        <form id="customerForm" class="crm-form hidden">
+          <div class="form-header">
+            <h3 id="formTitle">Novo Cadastro</h3>
+            <span class="vip-badge hidden" id="vipTag"><i class="ph ph-crown"></i> Cliente VIP</span>
+          </div>
+
+          <input type="hidden" id="customerId">
+
+          <div class="form-grid">
+            <div class="form-group span-2">
+              <label for="name">Nome Completo *</label>
+              <input type="text" id="name" required placeholder="Ex: João da Silva">
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Telefone / WhatsApp *</label>
+              <input type="tel" id="phone" required placeholder="(11) 99999-9999">
+            </div>
+
+            <div class="form-group">
+              <label for="cpf">CPF (Opcional)</label>
+              <input type="text" id="cpf" placeholder="000.000.000-00">
+            </div>
+
+            <div class="form-group span-2">
+              <label for="street">Endereço de Entrega *</label>
+              <input type="text" id="street" required placeholder="Rua, Av, Número, Bloco/Apto">
+            </div>
+
+            <div class="form-group">
+              <label for="neighborhood">Bairro *</label>
+              <input type="text" id="neighborhood" required placeholder="Centro">
+            </div>
+
+            <div class="form-group">
+              <label for="complement">Complemento / Ponto de Ref.</label>
+              <input type="text" id="complement" placeholder="Portão azul, próx ao mercado">
+            </div>
+
+            <div class="form-group span-2">
+              <label for="notes">Observações do Cliente (Restrições / Preferências)</label>
+              <input type="text" id="notes" placeholder="Ex: Alérgico a cebola. Sempre pede borda recheada.">
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="btnCancel" class="btn btn-secondary">Cancelar</button>
+            <button type="submit" class="btn btn-success">
+              <i class="ph ph-floppy-disk"></i> Salvar Cliente
+            </button>
+          </div>
+        </form>
+
+        <!-- Histórico de Pedidos (Exibido ao selecionar cliente) -->
+        <div id="historySection" class="history-section hidden">
+          <div class="history-header">
+            <h3><i class="ph ph-clock-counter-clockwise"></i> Histórico de Pedidos</h3>
+            <button id="btnNewOrderForCustomer" class="btn btn-sm btn-accent">
+              <i class="ph ph-pizza"></i> Iniciar Pedido para este Cliente
+            </button>
+          </div>
+
+          <div id="historyList" class="history-list">
+            <!-- Renderizado via JavaScript -->
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
