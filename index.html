@@ -1,65 +1,52 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema Integrado - Pizzaria Bella Massa</title>
-  <link rel="icon" type="image/x-icon" href="/image/logoPiza.jpeg">
+  <title>Bella Massa - Painel Principal</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- colocando icone na aba do sistema-->
+  <link rel="icon" href="./image/logoPiza.jpeg" type="image/jpeg">
 </head>
+
 <body>
 
-  <div class="app-layout">
-    <!-- Sidebar de Navegação dos 8 Módulos -->
-    <aside class="sidebar">
-      <div class="brand">
-        <i class="ph ph-pizza"></i>
-        <h2>Bella Massa</h2>
-      </div>
+  <!-- Único Menu Lateral do Sistema -->
+  <aside class="sidebar no-print" id="appSidebar">
+    <div class="sidebar-brand">
+      <span style="font-size: 1.8rem;">🍕</span>
+      <h2>Bella Massa</h2>
+    </div>
+    <!-- Início da barra de navegação lateral do sistema -->
+    <nav class="sidebar-nav">
+      <!-- Botão de navegação para o módulo de Atendimento -->
+      <button class="menu-btn active" data-module="./modules/01-atendimento/index.html">🍕 01. Atendimento</button>
+      <!-- Botão de navegação para o módulo de Cardápio Digital -->
+      <button class="menu-btn" data-module="./modules/02-cardapio/index.html">📖 02. Cadastrar Itens</button>
+      <!-- Botão de navegação para o módulo de Tabela de Preços -->
+      <button class="menu-btn" data-module="./modules/03-tabela-precos/index.html">💲 03. Tabela de Preços</button>
+      <!-- Botão de navegação para o módulo de Cozinha / KDS -->
+      <button class="menu-btn" data-module="./modules/04-kds/index.html">🍳 04. Cozinha</button>
+      <!-- Botão de navegação para o módulo de Regras e Frete -->
+      <button class="menu-btn" data-module="./modules/05-us005/index.html">📍 05. Balcão / Salão</button>
+      <!-- Botão de navegação corrigido para apontar para a página de entregas na raiz -->
+      <button class="menu-btn" data-module="./modules/06-entregas/index.html">🛵 06. Entregas</button>
+      <!-- Botão de navegação para o módulo de Caixa -->
+      <button class="menu-btn" data-module="./modules/07-caixa/index.html">💵 07. Caixa</button>
+      <!-- Botão de navegação para o módulo de Clientes / CRM -->
+      <!--<button class="menu-btn" data-module="./modules/08-crm-clientes/index.html">👥 08. Clientes</button>-->
+      <!-- Botão de navegação para o módulo de Dashboard -->
+      <button class="menu-btn" data-module="./modules/09-DashBoard/index.html">📊 08. Dashboard</button>
+    </nav>
+  </aside>
 
-        <!-- Adicione a classe "active" no botão 01 -->
-      <button class="menu-btn active" data-module="modules/01-atendimento/index.html">
-        <i class="ph ph-headset"></i> 01. Atendimento
-      </button>
-
-        <button class="menu-btn" data-module="modules/02-cardapio/index.html">
-          <i class="ph ph-book-open"></i> 02. Cardápio Digital
-        </button>
-
-        <button class="menu-btn" data-module="modules/03-tabela-precos/index.html">
-          <i class="ph ph-currency-dollar"></i> 03. Tabela de Preços
-        </button>
-
-        <button class="menu-btn" data-module="modules/04-kds/index.html">
-          <i class="ph ph-cpu"></i> 04. Cozinha
-        </button>
-
-        <button class="menu-btn" data-module="modules/05-us005/index.html">
-          <i class="ph ph-map-pin"></i> 05. Regras / Frete
-        </button>
-
-        <button class="menu-btn" data-module="modules/06-entregas/entregas.html">
-          <i class="ph ph-moped"></i> 06. Entregas
-        </button>
-
-        <button class="menu-btn" data-module="modules/07-caixa/index.html">
-          <i class="ph ph-cash-register"></i> 07. Caixa
-        </button>
-      </nav>
-      <nav class="menu">
-          <!-- Remova a classe "active" do botão 08 -->
-          <button class="menu-btn" data-module="modules/08-crm-clientes/index.html">
-          <i class="ph ph-users-three"></i> 08. Clientes
-          </button>
-      </aside>
-
-    <!-- Área de Exibição dos Módulos -->
-    <main class="content-area">
-      <iframe id="moduleFrame" src="modules/01-atendimento/index.html" frameborder="0"></iframe>
-    </main>
-  </div>
+  <!-- Área Onde as Telas Serão Carregadas via Iframe -->
+  <main class="content-area">
+    <iframe id="moduleFrame" src="modules/01-atendimento/index.html" frameborder="0"></iframe>
+  </main>
 
   <script src="app.js"></script>
 </body>
+
 </html>

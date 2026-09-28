@@ -1,293 +1,220 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bella Massa - Caixa</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bella Massa - Caixa e Finanças</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Estilos do Modal Centralizado */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-box {
+      background-color: var(--card-bg);
+      border: 2px solid var(--cheese-gold);
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-box h2 {
+      font-family: 'Fredoka', cursive;
+      color: var(--cheese-gold);
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .modal-box p {
+      color: var(--text-light);
+      font-size: 1.05rem;
+      margin-bottom: 25px;
+    }
+  </style>
 </head>
+
 <body>
-
-<div class="container">
-    <!-- CABEÇALHO UNIFICADO -->
+  <div class="container">
     <header class="page-header">
-        <div class="brand-title">
-            <span class="pizza-icon">🍕</span>
-            <div>
-                <span class="eyebrow">Módulo 07</span>
-                <h1>Bella Massa | <strong>Caixa e Finanças</strong></h1>
-                <p>Gerencie pagamentos, movimentações de caixa e fechamento.</p>
-            </div>
+      <div class="brand-title">
+        <span class="pizza-icon">🍕</span>
+        <div>
+          <h1>Bella Massa | Caixa e Finanças</h1>
+          <p>Gerencie pagamentos, movimentações de caixa e fechamento.</p>
         </div>
+      </div>
 
-        <div class="header-right">
-            <!-- BOTÕES DE ALTERNÂNCIA DE TEMA -->
-            <div class="theme-switch-wrapper">
-                <div class="theme-switch">
-                    <button type="button" id="btnLight" onclick="setTheme('light')" title="Modo Claro">☀️ Clarear</button>
-                    <button type="button" id="btnDark" onclick="setTheme('dark')" class="active" title="Modo Escuro">🌙 Escurecer</button>
-                </div>
-            </div>
-
-            <span class="status-badge" id="caixaStatusBadge">
-                ● Caixa Aberto
-            </span>
+      <div class="header-right">
+        <span class="cash-badge">🟢 Caixa Aberto</span>
+        <div class="theme-switch-wrapper">
+          <div class="theme-switch">
+            <button type="button" id="btnLight" onclick="setTheme('light')" title="Modo Claro"
+              aria-label="Modo Claro">☀️</button>
+            <button type="button" id="btnDark" onclick="setTheme('dark')" class="active" title="Modo Escuro"
+              aria-label="Modo Escuro">🌙</button>
+          </div>
         </div>
+      </div>
     </header>
 
-    <!-- RESUMO DO CAIXA -->
-    <section class="dashboard">
-        <div class="summary-card">
-            <span class="summary-icon">💰</span>
-            <div>
-                <p>Saldo Inicial</p>
-                <strong id="saldoInicial">R$ 100,00</strong>
-            </div>
-        </div>
-
-        <div class="summary-card">
-            <span class="summary-icon">🟢</span>
-            <div>
-                <p>Entradas</p>
-                <strong id="totalEntradas">R$ 0,00</strong>
-            </div>
-        </div>
-
-        <div class="summary-card">
-            <span class="summary-icon">🔴</span>
-            <div>
-                <p>Saídas</p>
-                <strong id="totalSaidas">R$ 0,00</strong>
-            </div>
-        </div>
-
-        <div class="summary-card destaque">
-            <span class="summary-icon">💵</span>
-            <div>
-                <p>Saldo Atual</p>
-                <strong id="saldoAtual">R$ 100,00</strong>
-            </div>
-        </div>
+    <!-- RESUMO DOS SALDOS -->
+    <section class="stats-grid">
+      <article class="stat-card">
+        <span class="stat-label">Saldo Inicial</span>
+        <strong id="statSaldoInicial">R$ 100,00</strong>
+        <small>Abertura do caixa</small>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Entradas</span>
+        <strong id="statEntradas">R$ 0,00</strong>
+        <small>Total recebido</small>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Saídas</span>
+        <strong id="statSaidas">R$ 0,00</strong>
+        <small>Sangrias e retiradas</small>
+      </article>
+      <article class="stat-card accent-card">
+        <span class="stat-label">Saldo Atual</span>
+        <strong id="statSaldoAtual">R$ 100,00</strong>
+        <small>Dinheiro em espécie</small>
+      </article>
     </section>
 
-    <!-- PAGAMENTOS -->
-    <section class="card">
-        <div class="section-title">
-            <div>
-                <h2>🧾 Pedidos Aguardando Pagamento</h2>
-                <p>Selecione um pedido para realizar o pagamento.</p>
-            </div>
-        </div>
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="content-grid-fin">
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Pedido</th>
-                        <th>Cliente</th>
-                        <th>Modalidade</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Ação</th>
-                    </tr>
-                </thead>
-                <tbody id="pedidosBody">
-                    <!-- Preenchido dinamicamente via JS -->
-                </tbody>
+      <!-- COLUNA ESQUERDA: PEDIDOS PENDENTES E MOVIMENTAÇÕES -->
+      <div class="left-column">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Pedidos Aguardando Pagamento</h3>
+              <p>Selecione um pedido para realizar o pagamento.</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="delivery-table">
+              <thead>
+                <tr>
+                  <th>Pedido</th>
+                  <th>Cliente</th>
+                  <th>Modalidade</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Ação</th>
+                </tr>
+              </thead>
+              <tbody id="paymentOrdersBody">
+                <!-- Preenchido dinamicamente via JS -->
+              </tbody>
             </table>
-        </div>
-    </section>
+          </div>
+          <div id="emptyPaymentOrders" class="empty-state hidden">Nenhum pedido aguardando pagamento.</div>
+        </article>
 
-    <!-- OPERAÇÕES -->
-    <section class="operations">
-        <!-- SANGRIA -->
-        <div class="card operation-card">
-            <div class="operation-icon">💸</div>
-            <div>
-                <h2>Sangria</h2>
+        <!-- AÇÕES RÁPIDAS (SANGRIA E REFORÇO LADO A LADO) -->
+        <div class="actions-row">
+          <div class="panel action-box">
+            <div class="panel-header compact">
+              <div>
+                <h3>Sangria</h3>
                 <p>Retirar dinheiro do caixa.</p>
-                <button class="btn-danger" onclick="abrirMovimentacao('sangria')">Registrar Sangria</button>
+              </div>
             </div>
-        </div>
+            <div class="panel-body">
+              <button class="btn btn-secondary full-btn" type="button" onclick="registrarSangria()">Registrar
+                Sangria</button>
+            </div>
+          </div>
 
-        <!-- REFORÇO -->
-        <div class="card operation-card">
-            <div class="operation-icon">💰</div>
-            <div>
-                <h2>Reforço de Caixa</h2>
+          <div class="panel action-box">
+            <div class="panel-header compact">
+              <div>
+                <h3>Reforço de Caixa</h3>
                 <p>Adicionar dinheiro ao caixa.</p>
-                <button class="btn-green" onclick="abrirMovimentacao('reforco')">Registrar Reforço</button>
+              </div>
             </div>
+            <div class="panel-body">
+              <button class="btn btn-secondary full-btn" type="button" onclick="registrarReforço()">Registrar
+                Reforço</button>
+            </div>
+          </div>
         </div>
-    </section>
+      </div>
 
-    <!-- RESUMO POR PAGAMENTO -->
-    <section class="card">
-        <div class="section-title">
+      <!-- COLUNA DIREITA: RESUMO DE VENDAS -->
+      <aside class="right-column">
+        <article class="panel summary-panel">
+          <div class="panel-header">
             <div>
-                <h2>📊 Resumo das Vendas</h2>
-                <p>Valores recebidos por forma de pagamento.</p>
+              <h3>Resumo das Vendas</h3>
+              <p>Valores recebidos por forma de pagamento.</p>
             </div>
-        </div>
+          </div>
 
-        <div class="payment-summary">
-            <div class="payment-box">
-                <span>💠 PIX</span>
+          <div class="methods-list">
+            <div class="method-item">
+              <span class="method-icon pix">💠</span>
+              <div class="method-info">
+                <span>PIX</span>
                 <strong id="totalPix">R$ 0,00</strong>
+              </div>
             </div>
-            <div class="payment-box">
-                <span>💳 Crédito</span>
+            <div class="method-item">
+              <span class="method-icon credit">💳</span>
+              <div class="method-info">
+                <span>Crédito</span>
                 <strong id="totalCredito">R$ 0,00</strong>
+              </div>
             </div>
-            <div class="payment-box">
-                <span>💳 Débito</span>
+            <div class="method-item">
+              <span class="method-icon debit">💳</span>
+              <div class="method-info">
+                <span>Débito</span>
                 <strong id="totalDebito">R$ 0,00</strong>
+              </div>
             </div>
-            <div class="payment-box">
-                <span>💵 Dinheiro</span>
+            <div class="method-item">
+              <span class="method-icon cash">💵</span>
+              <div class="method-info">
+                <span>Dinheiro</span>
                 <strong id="totalDinheiro">R$ 0,00</strong>
+              </div>
             </div>
-        </div>
-    </section>
+          </div>
+        </article>
+      </aside>
 
-    <!-- HISTÓRICO -->
-    <section class="card">
-        <div class="section-title">
-            <div>
-                <h2>📋 Histórico de Movimentações</h2>
-                <p>Últimas operações realizadas no caixa.</p>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Horário</th>
-                        <th>Tipo</th>
-                        <th>Descrição</th>
-                        <th>Valor</th>
-                    </tr>
-                </thead>
-                <tbody id="historicoBody">
-                    <!-- Histórico dinâmico -->
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- FECHAMENTO -->
-    <section class="closing-card">
-        <div>
-            <h2>🔒 Fechamento do Caixa</h2>
-            <p>Confira os valores antes de encerrar o caixa.</p>
-        </div>
-
-        <div class="closing-values">
-            <div>
-                <span>Total de Vendas</span>
-                <strong id="fechamentoVendas">R$ 0,00</strong>
-            </div>
-            <div>
-                <span>Entradas/Saídas</span>
-                <strong id="fechamentoMovimentacoes">R$ 0,00</strong>
-            </div>
-            <div class="final-value">
-                <span>Valor Esperado</span>
-                <strong id="valorEsperado">R$ 100,00</strong>
-            </div>
-        </div>
-
-        <button class="btn-close" onclick="fecharCaixa()">🔒 Fechar Caixa</button>
-    </section>
-</div>
-
-<!-- MODAL DE PAGAMENTO -->
-<div id="paymentModal" class="modal hidden">
-    <div class="modal-content">
-        <button class="close-modal" onclick="fecharModalPagamento()">×</button>
-        <h2>💳 Finalizar Pagamento</h2>
-        <div class="order-info">
-            <p>Pedido: <strong id="modalPedido">#001</strong></p>
-            <p>Cliente: <strong id="modalCliente">João Silva</strong></p>
-            <div class="modal-total">Total: <strong id="modalTotal">R$ 0,00</strong></div>
-        </div>
-
-        <div class="form-group">
-            <label for="discountInput">Desconto / Cupom</label>
-            <input type="number" id="discountInput" value="0" min="0" step="0.01" oninput="calcularPagamento()">
-        </div>
-
-        <div class="form-group">
-            <label for="paymentSelect">Forma de Pagamento</label>
-            <select id="paymentSelect" onchange="alternarDinheiro()">
-                <option value="PIX">💠 PIX</option>
-                <option value="Credito">💳 Cartão de Crédito</option>
-                <option value="Debito">💳 Cartão de Débito</option>
-                <option value="Dinheiro">💵 Dinheiro</option>
-            </select>
-        </div>
-
-        <div class="form-group hidden" id="cashPaymentGroup">
-            <label for="cashInput">Valor Recebido</label>
-            <input type="number" id="cashInput" min="0" step="0.01" placeholder="Ex: 100.00" oninput="calcularPagamento()">
-            <div id="changeInfo" class="change-info">Troco: R$ 0,00</div>
-        </div>
-
-        <div class="payment-final">
-            <span>Total a pagar</span>
-            <strong id="paymentFinalValue">R$ 0,00</strong>
-        </div>
-
-        <button class="btn-primary" onclick="confirmarPagamento()">✅ Confirmar Pagamento</button>
     </div>
-</div>
+  </div>
 
-<!-- MODAL DE SANGRIA / REFORÇO -->
-<div id="movementModal" class="modal hidden">
-    <div class="modal-content">
-        <button class="close-modal" onclick="fecharMovimentacao()">×</button>
-        <h2 id="movementTitle">💸 Sangria</h2>
-
-        <div class="form-group">
-            <label for="movementValue">Valor</label>
-            <input type="number" id="movementValue" min="0.01" step="0.01" placeholder="R$ 0,00">
-        </div>
-
-        <div class="form-group">
-            <label for="movementReason">Motivo</label>
-            <input type="text" id="movementReason" placeholder="Ex: Retirada para pagamento">
-        </div>
-
-        <button class="btn-primary" onclick="confirmarMovimentacao()">Confirmar Operação</button>
+  <!-- Modal Centralizado de Sucesso -->
+  <div id="successModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h2>🎉 Sucesso!</h2>
+      <p id="successModalMessage">Pedido pago com sucesso!</p>
+      <button class="btn btn-primary full-btn" onclick="fecharModalSucesso()">OK</button>
     </div>
-</div>
+  </div>
 
-<!-- MODAL DE COMPROVANTE -->
-<div id="receiptModal" class="modal hidden">
-    <div class="modal-content receipt">
-        <h2>🍕 Bella Massa</h2>
-        <h3>Comprovante de Pagamento</h3>
-        <div id="receiptContent"></div>
-        <button class="btn-primary" onclick="window.print()">🖨️ Imprimir Comprovante</button>
-        <button class="btn-secondary" onclick="fecharComprovante()">Fechar</button>
-    </div>
-</div>
-
-<!-- Widget VLIBRAS -->
-<div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-        <div class="vw-plugin-top-wrapper"></div>
-    </div>
-</div>
-<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-<script>
-    new window.VLibras.Widget('https://vlibras.gov.br/app');
-</script>
-
-<!-- CARREGAMENTO DOS SCRIPTS NA ORDEM CORRETA -->
-<script src="../../database.js"></script>
-<script src="app.js"></script>
+  <script src="../../database.js"></script>
+  <script src="app.js"></script>
 </body>
+
 </html>

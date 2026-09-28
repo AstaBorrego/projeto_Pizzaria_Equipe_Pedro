@@ -13,7 +13,6 @@
   --border-color: #3D3535;
 }
 
-/* MODO CLARO (CLAREAR) */
 body.light-theme {
   --bg-oven: #f4f4f4;
   --card-bg: #ffffff;
@@ -30,25 +29,44 @@ body.light-theme {
   font-family: 'Poppins', sans-serif;
 }
 
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0; 
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
 body {
   background-color: var(--bg-oven);
   background-image: radial-gradient(#2c2424 1px, transparent 1px);
   background-size: 20px 20px;
   color: var(--text-light);
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  padding: 20px;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* CONTAINER PRINCIPAL (LARGURA FIXA DE 1200PX) */
-.container,
-.page-section.active {
+.main-content {
+  flex: 1;
+  display: flex;
   width: 100%;
-  max-width: 1200px;
+  justify-content: center; /* Centraliza o conteúdo horizontalmente */
+  align-items: flex-start;
+  padding: 30px 15px; /* Espaço para não encostar nas bordas */
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+
+.form-box { /* Ponto adicionado aqui para aplicar a classe corretamente */
+  width: 100%;
+  max-width: 960px; /* Mantém a largura elegante do formulário */
   margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 100%;
   background-color: var(--card-bg);
   padding: 30px;
   border-radius: 18px;
@@ -67,13 +85,6 @@ body {
   background: linear-gradient(90deg, var(--pizza-red), var(--cheese-gold), var(--basil-green));
 }
 
-/* FORMULÁRIOS INTERNOS EXPANDE PARA 100% DA CONTAINER */
-form,
-.form-box {
-  width: 100%;
-  box-sizing: border-box;
-}
-
 header {
   border-bottom: 2px dashed var(--border-color);
   padding-bottom: 18px;
@@ -89,6 +100,11 @@ header {
   gap: 12px;
 }
 
+
+body.light-theme .brand-title h1 {
+    color: #0f172a;
+}
+
 .pizza-icon {
   font-size: 2.2rem;
   display: inline-block;
@@ -96,19 +112,12 @@ header {
   cursor: pointer;
 }
 
-.pizza-icon:hover {
-  animation: spinPizza 0.8s ease-in-out;
-}
-
-@keyframes floatPizza {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-6px) rotate(8deg); }
-}
-
-@keyframes spinPizza {
-  0% { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(180deg) scale(1.2); }
-  100% { transform: rotate(360deg) scale(1); }
+header h1 {
+  font-family: 'Fredoka', cursive;
+  font-size: 1.7rem;
+  color: var(--cheese-gold);
+  letter-spacing: 0.5px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 header h1 {
@@ -144,10 +153,6 @@ header h1 {
   padding: 4px 8px;
   border-radius: 50%;
   transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.theme-switch button:hover {
-  transform: scale(1.15);
 }
 
 .badge {
@@ -191,6 +196,52 @@ select:focus, input:focus, textarea:focus {
   box-shadow: 0 0 8px rgba(255, 179, 0, 0.3);
 }
 
+.option-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.option-card {
+  flex: 1;
+  min-width: 110px;
+  background-color: var(--card-header);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.option-card input[type="radio"] {
+  accent-color: var(--pizza-red);
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.option-card:hover {
+  border-color: var(--cheese-gold);
+}
+
+@keyframes blinkBorder {
+  0% { border-color: var(--pizza-red); box-shadow: 0 0 10px var(--pizza-red); }
+  50% { border-color: var(--cheese-gold); box-shadow: 0 0 20px var(--cheese-gold); }
+  100% { border-color: var(--pizza-red); box-shadow: 0 0 10px var(--pizza-red); }
+}
+
+.piscando {
+  animation: blinkBorder 0.6s infinite ease-in-out;
+}
+
 .btn-primary {
   width: 100%;
   background: linear-gradient(135deg, var(--pizza-red), var(--pizza-red-dark));
@@ -215,14 +266,58 @@ select:focus, input:focus, textarea:focus {
   display: none !important;
 }
 
-@media (max-width: 540px) {
-  header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  max-width: 90%;
+  z-index: 1000;
+  background-color: var(--card-bg);
+  border: 2px solid var(--pizza-red);
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+}
+
+#receiptModal {
+  top: 20px;
+  right: 20px;
+  left: auto;
+  transform: none;
+  width: 340px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+}
+
+/* Regras de Impressão (Exibe apenas o recibo) */
+@media print {
+  body * {
+    visibility: hidden !important;
   }
-  .header-right {
-    width: 100%;
-    justify-content: space-between;
+  #receiptModal,
+  #receiptModal *,
+  #printArea,
+  #printArea * {
+    visibility: visible !important;
+  }
+  #receiptModal {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-height: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 10px !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+  .no-print {
+    display: none !important;
   }
 }

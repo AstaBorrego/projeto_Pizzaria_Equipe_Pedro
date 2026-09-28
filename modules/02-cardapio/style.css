@@ -1,0 +1,381 @@
+/* ========================================== */
+/* VARIÁVEIS DE CORES E TEMA (PADRÃO)         */
+/* ========================================== */
+:root {
+  --bg-dark: #121212;
+  --card-bg: #1e1e1e;
+  --card-header: #282828;
+  --text-light: #ffffff;
+  --text-muted: #aaaaaa;
+  --border-color: #333333;
+  --cheese-gold: #ffb300;
+  --pizza-red: #d32f2f;
+  --basil-green: #388e3c;
+}
+
+body.light-theme {
+  --bg-dark: #f5f5f5;
+  --card-bg: #ffffff;
+  --card-header: #eeeeee;
+  --text-light: #222222;
+  --text-muted: #666666;
+  --border-color: #dddddd;
+  --cheese-gold: #e65100;
+  --pizza-red: #c62828;
+  --basil-green: #2e7d32;
+}
+
+/* ========================================== */
+/* ESTILOS GERAIS DA PÁGINA                   */
+/* ========================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  min-height: 100vh;
+  padding: 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ========================================== */
+/* PAINEL EXTERNO PRINCIPAL (COM GRADIENTE)   */
+/* ========================================== */
+.main-wrapper {
+  position: relative;
+  background-color: #161616;
+  border: 1px solid #282828;
+  border-radius: 16px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 30px 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  overflow: hidden; /* Garante que o gradiente respeite as bordas arredondadas */
+}
+
+body.light-theme .main-wrapper {
+  background-color: #fafafa;
+  border-color: #dddddd;
+}
+
+/* BARRA DE GRADIENTE NO TOPO DO PAINEL PRINCIPAL */
+.top-gradient-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #ff3b30, #ffcc00, #34c759);
+}
+
+/* ========================================== */
+/* HEADER / TOPO                              */
+/* ========================================== */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pizza-icon {
+  font-size: 2.5rem;
+}
+
+header h1 {
+    font-family: 'Fredoka', cursive;
+    font-size: 1.7rem;
+    color: var(--cheese-gold);
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+body.light-theme .brand-title h1 {
+    color: #0f172a;
+}
+
+body.light-theme .section-title h2 {
+  color: #0f172a;
+}
+
+h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  color: var(--cheese-gold);
+}
+
+
+p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.theme-switch button {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-light);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.theme-switch button:hover {
+  background: var(--card-header);
+}
+
+/* ========================================== */
+/* LAYOUT E SEÇÕES (OCUPA TODO O ESPAÇO)      */
+/* ========================================== */
+.catalog-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* Quando a tabela estiver oculta, faz o formulário ocupar 100% da largura disponível do container */
+.catalog-layout.tabela-oculta {
+  grid-template-columns: 1fr;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.catalog-layout.tabela-oculta .form-section {
+  width: 100%; /* Ocupa toda a largura disponível de ponta a ponta */
+  max-width: none; /* Remove qualquer trava de largura máxima */
+}
+
+.catalog-layout.tabela-oculta .table-section {
+  display: none;
+}
+
+.section-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 30px; /* Aumenta o espaçamento interno para preencher bem o espaço */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================== */
+/* FORMULÁRIO                                 */
+/* ========================================== */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+}
+
+.form-group input[type="text"],
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  background: var(--card-header);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-light);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.custom-select-wrapper {
+  position: relative;
+}
+
+.custom-select-wrapper select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.money-input {
+  display: flex;
+  align-items: center;
+  background: var(--card-header);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.money-input span {
+  padding-left: 12px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.money-input input {
+  border: none !important;
+  background: transparent !important;
+  padding: 12px !important;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  text-align: center;
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--cheese-gold);
+  color: #121212;
+}
+
+.btn-secondary {
+  background-color: var(--card-header);
+  border: 1px solid var(--border-color);
+  color: var(--text-light);
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+  opacity: 0.9;
+}
+
+/* ========================================== */
+/* TABELA                                     */
+/* ========================================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+th, td {
+  padding: 12px 10px;
+}
+
+th {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* ========================================== */
+/* UTILITÁRIOS E ESTADOS                      */
+/* ========================================== */
+.hidden {
+  display: none !important;
+}
+
+.status-message {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+/* ========================================== */
+/* ESTILOS DO MODAL CENTRALIZADO              */
+/* ========================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal-content {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 24px 28px;
+  width: 90%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 179, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.modal-icon {
+  font-size: 2.2rem;
+}
+
+#modalMessage {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.modal-content button {
+  width: 100%;
+  padding: 10px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ========================================== */
+/* RESPONSIVIDADE                             */
+/* ========================================== */
+@media (max-width: 768px) {
+  .catalog-layout {
+    grid-template-columns: 1fr;
+  }
+}

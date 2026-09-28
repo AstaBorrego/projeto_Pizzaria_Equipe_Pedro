@@ -1,0 +1,381 @@
+/* ==========================================
+   BELLA MASSA - ESTILOS DO DASHBOARD GERAL
+   ========================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Fredoka', cursive;
+}
+
+:root {
+  --cheese-gold: #f59e0b; 
+}
+
+/* Fundo geral da página (equivalente ao modelo) */
+body {
+  background-color: #181515;
+  color: var(--cheese-gold);
+  padding: 25px;
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Altera o título principal para preto no tema claro */
+body.light-theme .header-title-wrapper .dark h1 {
+  color: #000000 !important;
+}
+
+/* Barra decorativa gradiente fixa no topo */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+  z-index: 1000;
+}
+
+/* Container principal com fundo #242020 e apenas a borda superior colorida */
+.dashboard-container, .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 25px;
+  background-color: #242020;
+  border-radius: 0 0 16px 16px;
+  position: relative;
+  border-top: 4px solid #f59e0b;
+  border-right: none;
+  border-bottom: none;
+  border-left: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  transition: background-color 0.3s;
+}
+
+body.light-theme .dashboard-container,
+body.light-theme .container {
+  background-color: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Cabeçalho superior com fundo #2E2828 e borda suave */
+.dash-header {
+  background-color: #2E2828;
+  border: 1px solid #3D3535;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+body.light-theme .dash-header {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.header-title-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  color: var(--cheese-gold);
+}
+
+.pizza-logo {
+  background: #242020;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.light-theme .pizza-logo {
+  background: #e2e8f0;
+}
+
+.header-title-wrapper h1 {
+  font-size: 1.5rem;
+  margin: 4px 0;
+  font-family: 'Fredoka', cursive;
+  color: var(--cheese-gold);
+}
+
+/* Subtítulo ajustado para a cor #A39B98 e fonte Poppins */
+.header-title-wrapper .dark p {
+  color: #A39B98 !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 0.88rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.theme-toggle-box {
+  background: transparent;
+  border: 1px solid #3D3535;
+  border-radius: 30px;
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+}
+
+body.light-theme .theme-toggle-box {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+.theme-btn {
+  background: transparent;
+  border: none;
+  color: #f59e0b; /* Ícone do sol passa a ter a mesma cor dourada da lua */
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.theme-btn.active {
+  background: #3D3535;
+  color: #f59e0b;
+}
+
+/* Garante que os dois ícones também tenham a mesma cor no tema claro */
+body.light-theme .theme-btn {
+  color: #d97706; 
+}
+
+body.light-theme .theme-btn.active {
+  background: #ffffff;
+  color: #d97706;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.status-badge {
+  background-color: #064e3b;
+  color: #34d399;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #065f46;
+}
+
+.status-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background-color: #34d399;
+  border-radius: 50%;
+}
+
+/* Barra de filtros com fundo #2E2828 */
+.filter-bar {
+  background-color: #2E2828;
+  border: 1px solid #3D3535;
+  border-radius: 12px;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+body.light-theme .filter-bar {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.filter-bar h3 {
+  font-size: 1.1rem;
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-box label {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.filter-box select {
+  background-color: #181515;
+  color: #fff;
+  border: 1px solid #3D3535;
+  padding: 8px 14px;
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+body.light-theme .filter-box select {
+  background-color: #ffffff;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+/* Grelha de KPIs */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.kpi-card {
+  background-color: #2E2828;
+  border: 1px solid #3D3535;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+body.light-theme .kpi-card {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.kpi-card.highlight {
+  border: 1px solid #f59e0b;
+}
+
+.kpi-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.bg-orange { background-color: #f97316; }
+.bg-blue { background-color: #0ea5e9; }
+.bg-green { background-color: #10b981; }
+.bg-purple { background-color: #8b5cf6; }
+
+.kpi-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-info .title {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-family: 'Poppins', sans-serif;
+}
+
+.kpi-info strong {
+  font-size: 1.5rem;
+  margin-top: 4px;
+  color: #ffffff;
+  font-weight: 700;
+  font-family: 'Fredoka', cursive;
+}
+
+body.light-theme .kpi-info strong {
+  color: #0f172a;
+}
+
+/* Grelha inferior dos cartões detalhados */
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.dash-card {
+  background-color: #2E2828;
+  border: 1px solid #3D3535;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+body.light-theme .dash-card {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.dash-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #3D3535;
+}
+
+body.light-theme .dash-card h3 {
+  color: #0f172a;
+  border-bottom-color: #e2e8f0;
+}
+
+.stats-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.stats-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #3D3535;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  font-family: 'Poppins', sans-serif;
+}
+
+body.light-theme .stats-list li {
+  color: #334155;
+  border-bottom-color: #cbd5e1;
+}
+
+.stats-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.text-warning { color: #f59e0b; font-weight: 600; }
+.text-success { color: #34d399; font-weight: 600; }
+.text-danger { color: #ef4444; font-weight: 600; }
+
+body.light-theme .text-success { color: #16a34a; }
+body.light-theme .text-warning { color: #d97706; }
+body.light-theme .text-danger { color: #dc2626; }

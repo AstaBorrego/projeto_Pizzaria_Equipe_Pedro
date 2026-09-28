@@ -1,0 +1,190 @@
+<!-- Declaração do tipo de documento como HTML5 -->
+<!DOCTYPE html>
+<!-- Início do elemento HTML principal especificando o idioma português do Brasil -->
+<html lang="pt-BR">
+<!-- Início do cabeçalho do documento contendo metadados e folhas de estilo -->
+
+<head>
+  <!-- Definição da codificação de caracteres para suportar acentuação (UTF-8) -->
+  <meta charset="UTF-8">
+  <!-- Configuração de responsividade para adaptação correta em dispositivos móveis -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Título exibido na aba do navegador web -->
+  <title>Dashboard - Bella Massa</title>
+  <!-- Importação da folha de estilos CSS externa -->
+  <link rel="stylesheet" href="style.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Importação da biblioteca de ícones Phosphor Icons via CDN -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Fim do cabeçalho -->
+</head>
+<!-- Início do corpo do documento HTML -->
+
+<body>
+  <!-- Container principal que abraça todo o dashboard e possui a borda gradiente -->
+  <div class="dashboard-container">
+
+    <!-- Cabeçalho do Dashboard contendo logotipo, título e botões de controle -->
+    <header class="dash-header">
+      <!-- Wrapper para agrupar o ícone e os títulos textuais -->
+
+      
+      <div class="header-title-wrapper">
+        <!-- Ícone representativo de pizza -->
+        <div class="pizza-logo">🍕</div>
+        <!-- Bloco de títulos descritivos -->
+        <div class="dark">
+          <h1>Bella Massa | Dashboard Geral</h1>
+          <p>Visão geral do desempenho de Pedidos, Entregas e Faturamento</p>
+        </div>
+      </div>
+
+      <!-- Container das ações do cabeçalho (tema e status) -->
+      <div class="header-actions">
+        <!-- Caixa com botões de alternância de tema -->
+        <div class="theme-toggle-box">
+          <!-- Botão para ativar o tema claro (clarear) -->
+          <button class="theme-btn" id="btnLight" onclick="setTheme('light')" title="Tema Claro"><i
+              class="ph ph-sun"></i></button>
+          <!-- Botão para ativar o tema escuro (escurecer) -->
+          <button class="theme-btn active" id="btnDark" onclick="setTheme('dark')" title="Tema Escuro"><i
+              class="ph ph-moon"></i></button>
+        </div>
+        <!-- Badge indicando que o caixa está aberto -->
+        <div class="status-badge">Caixa Aberto</div>
+      </div>
+    </header>
+
+    <!-- Barra de título secundária contendo o filtro de período -->
+    <div class="filter-bar">
+      <!-- Título indicador da seção -->
+      <h3><i class="ph ph-chart-line-up"></i> Indicadores de Desempenho</h3>
+      <!-- Container do seletor de filtro de período -->
+      <div class="filter-box">
+        <!-- Rótulo do campo select -->
+        <label for="periodoFilter"><i class="ph ph-funnel"></i> Filtrar Período:</label>
+        <!-- Elemento select para alternar o período dos dados exibidos -->
+        <select id="periodoFilter">
+          <option value="hoje">Hoje</option>
+          <option value="semana">Últimos 7 dias</option>
+          <option value="mes">Este Mês</option>
+          <option value="todos" selected>Todo o Período</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Seção em grade contendo os cartões de KPIs principais -->
+    <section class="kpi-grid">
+      <!-- Cartão KPI: Total de Pedidos -->
+      <div class="kpi-card">
+        <div class="kpi-icon bg-orange"><i class="ph ph-receipt"></i></div>
+        <div class="kpi-info">
+          <span class="title">Total de Pedidos</span>
+          <strong id="totalPedidos">0</strong>
+        </div>
+      </div>
+
+      <!-- Cartão KPI: Entregas Concluídas -->
+      <div class="kpi-card">
+        <div class="kpi-icon bg-blue"><i class="ph ph-moped"></i></div>
+        <div class="kpi-info">
+          <span class="title">Entregas Concluídas</span>
+          <strong id="totalEntregas">0</strong>
+        </div>
+      </div>
+
+      <!-- Cartão KPI: Faturamento Total -->
+      <div class="kpi-card">
+        <div class="kpi-icon bg-green"><i class="ph ph-currency-dollar"></i></div>
+        <div class="kpi-info">
+          <span class="title">Faturamento Total</span>
+          <strong id="faturamentoTotal">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <!-- Cartão KPI em destaque: Faturamento Médio -->
+      <div class="kpi-card highlight">
+        <div class="kpi-icon bg-purple"><i class="ph ph-trend-up"></i></div>
+        <div class="kpi-info">
+          <span class="title">Faturamento Médio</span>
+          <strong id="ticketMedio">R$ 0,00</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção em grade inferior contendo os detalhamentos -->
+    <section class="dash-grid">
+
+      <!-- Cartão Detalhado: Status dos Pedidos -->
+      <div class="dash-card">
+        <h3><i class="ph ph-chart-bar"></i> Status dos Pedidos</h3>
+        <ul class="stats-list">
+          <li>
+            <span><i class="ph ph-clock text-warning"></i> Pendentes / Em Preparo</span>
+            <b id="pedidosPendentes">0</b>
+          </li>
+          <li>
+            <span><i class="ph ph-check-circle text-success"></i> Concluídos</span>
+            <b id="pedidosConcluidos">0</b>
+          </li>
+          <li>
+            <span><i class="ph ph-x-circle text-danger"></i> Cancelados</span>
+            <b id="pedidosCancelados">0</b>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Cartão Detalhado: Modalidades de Entregas -->
+      <div class="dash-card">
+        <h3><i class="ph ph-moped"></i> Modalidades de Entregas</h3>
+        <ul class="stats-list">
+          <li>
+            <span><i class="ph ph-moped"></i> Pedidos Delivery</span>
+            <b id="qtdDelivery">0</b>
+          </li>
+          <li>
+            <span><i class="ph ph-storefront"></i> Pedidos Balcão / Retirada</span>
+            <b id="qtdBalcao">0</b>
+          </li>
+          <li>
+            <span><i class="ph ph-check text-success"></i> Taxa de Conclusão de Entrega</span>
+            <b id="taxaEntrega">0%</b>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Cartão Detalhado: Resumo de Faturamento -->
+      <div class="dash-card">
+        <h3><i class="ph ph-wallet"></i> Resumo de Faturamento</h3>
+        <ul class="stats-list">
+          <li>
+            <span>Faturamento Bruto (Todos)</span>
+            <b id="fatBruto">R$ 0,00</b>
+          </li>
+          <li>
+            <span>Faturamento Concluído</span>
+            <b id="fatConcluido" class="text-success">R$ 0,00</b>
+          </li>
+          <li>
+            <span>Valor em Aberto / Pendente</span>
+            <b id="fatPendente" class="text-warning">R$ 0,00</b>
+          </li>
+        </ul>
+      </div>
+
+    </section>
+    <!-- Fim do container principal -->
+  </div>
+
+  <!-- Importação do arquivo de banco de dados externo -->
+  <script src="../../database.js"></script>
+  <!-- Importação do arquivo de script JavaScript externo -->
+  <script src="script.js"></script>
+  <!-- Fim do corpo do documento -->
+</body>
+<!-- Fim do documento HTML -->
+
+</html>

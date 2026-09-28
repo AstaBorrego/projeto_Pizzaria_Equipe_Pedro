@@ -1,412 +1,305 @@
-/* ==========================================
-   BELLA MASSA
-   US-007 - CAIXA E OPERAÇÕES FINANCEIRAS
-   ========================================== */
+// ==========================================
+// ESTADO GLOBAL DO CAIXA (AUTOMATIZADO)
+// ==========================================
+let caixaState = {
+  saldoInicial: 100.00,
+  entradas: 0.00,
+  saidas: 0.00,
+  vendasPix: 0.00,
+  vendasCredito: 0.00,
+  vendasDebito: 0.00,
+  vendasDinheiro: 0.00,
+  pedidosProcessados: [],
+  movimentacoes: []
+};
 
-// Listener para postMessage
-window.addEventListener('message', (event) => {
-  if (event.data && event.data.action === 'LOAD_CUSTOMER_DATA') {
-    const cliente = event.data.customer;
-    if (document.getElementById('inputNome')) {
-      document.getElementById('inputNome').value = cliente.nome || cliente.name || '';
+// Formatar valor para Real (R$)
+function money(value) {
+  return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Leitura automática e processamento direto dos dados da Tela 1
+function loadCaixaData() {
+  let dbPedidos = [];
+  if (typeof DB !== 'undefined') {
+    dbPedidos = DB.getPedidos();
+  } else {
+    dbPedidos = JSON.parse(localStorage.getItem('bellaMassa_pedidos') || '[]');
+  }
+
+  if (dbPedidos && dbPedidos.length > 0) {
+    caixaState.entradas = 0.00;
+    caixaState.vendasPix = 0.00;
+    caixaState.vendasCredito = 0.00;
+    caixaState.vendasDebito = 0.00;
+    caixaState.vendasDinheiro = 0.00;
+    caixaState.pedidosProcessados = [];
+    caixaState.movimentacoes = [];
+
+    dbPedidos.forEach(p => {
+      const valorTotal = Number(p.total || p.valor || 0);
+      const formaPagamento = String(p.formaPagamento || 'Pix').toLowerCase();
+      
+      let tipoVenda = 'vendasPix';
+      let nomeForma = 'PIX';
+      
+      if (formaPagamento.includes('crédito') || formaPagamento.includes('credito')) {
+        tipoVenda = 'vendasCredito';
+        nomeForma = 'Cartão de Crédito';
+      } else if (formaPagamento.includes('débito') || formaPagamento.includes('debito')) {
+        tipoVenda = 'vendasDebito';
+        nomeForma = 'Cartão de Débito';
+      } else if (formaPagamento.includes('dinheiro')) {
+        tipoVenda = 'vendasDinheiro';
+        nomeForma = 'Dinheiro';
+      }
+
+      caixaState.entradas += valorTotal;
+      caixaState[tipoVenda] += valorTotal;
+
+      const horaPedido = p.dataHora ? new Date(p.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '---';
+      caixaState.movimentacoes.push({
+        hora: horaPedido,
+        tipo: 'Entrada (Venda)',
+        descricao: `Pedido #${String(p.id).slice(-4)} (${nomeForma})`,
+        valor: valorTotal,
+        fluxo: 'entrada'
+      });
+
+      caixaState.pedidosProcessados.push({
+        id: p.id,
+        cliente: p.cliente || 'Cliente',
+        modalidade: p.tipo || 'Balcão',
+        total: valorTotal,
+        formaPagamento: nomeForma,
+        status: 'Pago'
+      });
+    });
+  }
+
+  renderCaixa();
+}
+
+// Atualizar Interface e Totais no Ecrã
+function renderCaixa() {
+  const saldoAtual = caixaState.saldoInicial + caixaState.entradas - caixaState.saidas;
+  
+  if (document.getElementById('statSaldoInicial')) document.getElementById('statSaldoInicial').textContent = money(caixaState.saldoInicial);
+  if (document.getElementById('statEntradas')) document.getElementById('statEntradas').textContent = money(caixaState.entradas);
+  if (document.getElementById('statSaidas')) document.getElementById('statSaidas').textContent = money(caixaState.saidas);
+  if (document.getElementById('statSaldoAtual')) document.getElementById('statSaldoAtual').textContent = money(saldoAtual);
+
+  if (document.getElementById('totalPix')) document.getElementById('totalPix').textContent = money(caixaState.vendasPix);
+  if (document.getElementById('totalCredito')) document.getElementById('totalCredito').textContent = money(caixaState.vendasCredito);
+  if (document.getElementById('totalDebito')) document.getElementById('totalDebito').textContent = money(caixaState.vendasDebito);
+  if (document.getElementById('totalDinheiro')) document.getElementById('totalDinheiro').textContent = money(caixaState.vendasDinheiro);
+
+  const tbody = document.getElementById('paymentOrdersBody');
+  const emptyState = document.getElementById('emptyPaymentOrders');
+  if (tbody) {
+    tbody.innerHTML = '';
+    if (caixaState.pedidosProcessados.length === 0) {
+      if (emptyState) emptyState.classList.remove('hidden');
+    } else {
+      if (emptyState) emptyState.classList.add('hidden');
+      caixaState.pedidosProcessados.forEach(pedido => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="order-id">#${String(pedido.id).slice(-4)}</span></td>
+          <td><strong>${pedido.cliente}</strong></td>
+          <td>${pedido.modalidade}</td>
+          <td><strong>${money(pedido.total)}</strong></td>
+          <td><span class="status delivered" style="color: var(--basil-green);">${pedido.status} (${pedido.formaPagamento})</span></td>
+          <td><span style="font-size: 0.85rem; color: var(--text-muted);">Registado</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
-    if (document.getElementById('inputTelefone')) {
-      document.getElementById('inputTelefone').value = cliente.telefone || cliente.phone || '';
+  }
+
+  renderHistoricoMovimentacoes();
+}
+
+// Renderizar Histórico de Movimentações
+function renderHistoricoMovimentacoes() {
+  const historicoContainer = document.getElementById('historicoMovimentacoesBody') || document.getElementById('movimentacoesList') || document.getElementById('paymentHistoryBody');
+  if (!historicoContainer) return;
+
+  historicoContainer.innerHTML = caixaState.movimentacoes.length === 0 
+    ? '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Nenhuma movimentação registada.</td></tr>' 
+    : caixaState.movimentacoes.map(m => `
+        <tr>
+          <td>${m.hora}</td>
+          <td>${m.tipo}</td>
+          <td>${m.descricao}</td>
+          <td style="color: ${m.fluxo === 'entrada' ? 'var(--basil-green)' : 'var(--pizza-red)'}; font-weight: bold;">
+            ${m.fluxo === 'entrada' ? '+' : '-'} ${money(m.valor)}
+          </td>
+        </tr>
+      `).join('');
+}
+
+// ==========================================
+// RENDERIZAÇÃO INLINE DE SANGRIA E REFORÇO
+// ==========================================
+function injetarFormulariosInline() {
+  const botoesAcao = document.querySelectorAll('.action-box, .action-card, button.action-btn');
+  
+  botoesAcao.forEach((box, index) => {
+    if (index === 0 && !document.getElementById('formSangriaInline')) {
+      const container = document.createElement('div');
+      container.id = 'formSangriaInline';
+      container.className = 'inline-action-form hidden';
+      container.style.cssText = 'margin-top: 15px; padding: 15px; background: var(--card-header); border: 1px solid var(--border-color); border-radius: 10px;';
+      container.innerHTML = `
+        <h3 style="color: var(--cheese-gold); font-size: 1.1rem; margin-bottom: 10px;">Registar Sangria (Retirada)</h3>
+        <div style="margin-bottom: 10px;">
+          <label style="display: block; font-size: 0.9rem; margin-bottom: 5px;">Valor da Sangria (R$):</label>
+          <input type="number" id="inputValorSangria" step="0.50" placeholder="Ex: 50.00" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-light);">
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary" onclick="executarSangriaInline()" style="flex: 1; background: var(--pizza-red); border: none; padding: 8px; border-radius: 6px; color: white; font-weight: bold; cursor: pointer;">Confirmar</button>
+          <button class="btn btn-secondary" onclick="alternarFormulario('sangria')" style="flex: 1; background: var(--border-color); border: none; padding: 8px; border-radius: 6px; color: var(--text-light); font-weight: bold; cursor: pointer;">Cancelar</button>
+        </div>
+      `;
+      box.appendChild(container);
+    } else if (index === 1 && !document.getElementById('formReforcoInline')) {
+      const container = document.createElement('div');
+      container.id = 'formReforcoInline';
+      container.className = 'inline-action-form hidden';
+      container.style.cssText = 'margin-top: 15px; padding: 15px; background: var(--card-header); border: 1px solid var(--border-color); border-radius: 10px;';
+      container.innerHTML = `
+        <h3 style="color: var(--cheese-gold); font-size: 1.1rem; margin-bottom: 10px;">Registar Reforço de Caixa</h3>
+        <div style="margin-bottom: 10px;">
+          <label style="display: block; font-size: 0.9rem; margin-bottom: 5px;">Valor do Suprimento (R$):</label>
+          <input type="number" id="inputValorReforco" step="0.50" placeholder="Ex: 100.00" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-light);">
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary" onclick="executarReforcoInline()" style="flex: 1; background: var(--basil-green); border: none; padding: 8px; border-radius: 6px; color: white; font-weight: bold; cursor: pointer;">Confirmar</button>
+          <button class="btn btn-secondary" onclick="alternarFormulario('reforco')" style="flex: 1; background: var(--border-color); border: none; padding: 8px; border-radius: 6px; color: var(--text-light); font-weight: bold; cursor: pointer;">Cancelar</button>
+        </div>
+      `;
+      box.appendChild(container);
     }
+  });
+}
+
+function alternarFormulario(tipo) {
+  if (tipo === 'sangria') {
+    const f = document.getElementById('formSangriaInline');
+    if (f) f.classList.toggle('hidden');
+  } else if (tipo === 'reforco') {
+    const f = document.getElementById('formReforcoInline');
+    if (f) f.classList.toggle('hidden');
+  }
+}
+
+// Executar Sangria Inline
+function executarSangriaInline() {
+  const input = document.getElementById('inputValorSangria');
+  if (!input) return;
+  const valor = parseFloat(input.value.replace(',', '.'));
+
+  if (isNaN(valor) || valor <= 0) {
+    mostrarModalSucesso("Por favor, informe um valor válido.");
+    return;
+  }
+
+  const saldoAtual = caixaState.saldoInicial + caixaState.entradas - caixaState.saidas;
+  
+  if ((saldoAtual - valor) < 100.00) {
+    mostrarModalSucesso(`Operação negada! O saldo em caixa não pode ficar abaixo de R$ 100,00 (Limite máximo para sangria: ${money(saldoAtual - 100.00)}).`);
+    return;
+  }
+
+  caixaState.saidas += valor;
+  caixaState.movimentacoes.unshift({
+    hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    tipo: 'Saída (Sangria)',
+    descricao: 'Retirada de numerário',
+    valor: valor,
+    fluxo: 'saida'
+  });
+
+  input.value = '';
+  alternarFormulario('sangria');
+  renderCaixa();
+  mostrarModalSucesso(`Sangria de ${money(valor)} registada com sucesso.`);
+}
+
+// Executar Reforço Inline
+function executarReforcoInline() {
+  const input = document.getElementById('inputValorReforco');
+  if (!input) return;
+  const valor = parseFloat(input.value.replace(',', '.'));
+
+  if (isNaN(valor) || valor <= 0) {
+    mostrarModalSucesso("Por favor, informe um valor válido.");
+    return;
+  }
+
+  caixaState.saldoInicial += valor;
+  caixaState.movimentacoes.unshift({
+    hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    tipo: 'Entrada (Reforço)',
+    descricao: 'Suprimento de caixa',
+    valor: valor,
+    fluxo: 'entrada'
+  });
+
+  input.value = '';
+  alternarFormulario('reforco');
+  renderCaixa();
+  mostrarModalSucesso(`Reforço de ${money(valor)} adicionado ao caixa.`);
+}
+
+// Gestão de Modais de Mensagens
+function mostrarModalSucesso(mensagem) {
+  const modal = document.getElementById('successModal');
+  const msgEl = document.getElementById('successModalMessage');
+  if (msgEl) msgEl.textContent = mensagem;
+  if (modal) modal.classList.remove('hidden');
+}
+
+function fecharModalSucesso() {
+  const modal = document.getElementById('successModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+// Tema Claro / Escuro
+function setTheme(mode) {
+  if (mode === 'light') {
+    document.body.classList.add('light-theme');
+    localStorage.setItem('bellaMassa_theme', 'light');
+    document.getElementById('btnLight')?.classList.add('active');
+    document.getElementById('btnDark')?.classList.remove('active');
+  } else {
+    document.body.classList.remove('light-theme');
+    localStorage.setItem('bellaMassa_theme', 'dark');
+    document.getElementById('btnDark')?.classList.add('active');
+    document.getElementById('btnLight')?.classList.remove('active');
+  }
+}
+window.setTheme = setTheme;
+
+// Sincronização automática em tempo real via storage
+window.addEventListener('storage', (e) => {
+  if (e.key === 'bellaMassa_pedidos') {
+    loadCaixaData();
   }
 });
 
-let pedidos = [];
-let saldoInicial = 100;
-let totalEntradas = 0;
-let totalSaidas = 0;
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('bellaMassa_theme') || 'dark';
+  setTheme(savedTheme);
+  loadCaixaData();
+  injetarFormulariosInline();
 
-let pagamentos = {
-    PIX: 0,
-    Credito: 0,
-    Debito: 0,
-    Dinheiro: 0
-};
-
-let pedidoAtual = null;
-let tipoMovimentacao = "";
-
-/* ==========================================
-   INICIALIZAÇÃO & LEITURA BANCO (READ)
-   ========================================== */
-window.onload = function () {
-    carregarTema();
-    carregarPedidosCaixa();
-};
-
-function carregarPedidosCaixa() {
-    let dbPedidos = [];
-    if (typeof DB !== 'undefined') {
-        dbPedidos = DB.getPedidos();
-    } else {
-        dbPedidos = JSON.parse(localStorage.getItem('bellaMassa_pedidos') || '[]');
-    }
-
-    // Filtra apenas pedidos que ainda não foram pagos/finalizados no caixa
-    pedidos = dbPedidos.filter(p => p.status !== 'paid' && p.status !== 'closed').map(p => ({
-        id: p.id,
-        cliente: p.cliente || 'Cliente Balcão',
-        modalidade: p.tipo === 'Salao' ? `🪑 Mesa ${p.mesa || '01'}` : p.tipo === 'Entrega' ? '🛵 Delivery' : '🍕 Balcão',
-        total: parseFloat(p.total) || 0,
-        origem: p
-    }));
-
-    renderTabelaPedidos();
-    atualizarDashboard();
-}
-
-function renderTabelaPedidos() {
-    const tbody = document.getElementById("pedidosBody");
-    if (!tbody) return;
-
-    if (pedidos.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Nenhum pedido aguardando pagamento.</td></tr>`;
-        return;
-    }
-
-    tbody.innerHTML = pedidos.map(p => `
-        <tr>
-            <td><strong>#${String(p.id).slice(-4)}</strong></td>
-            <td>${p.cliente}</td>
-            <td>${p.modalidade}</td>
-            <td>${moeda(p.total)}</td>
-            <td><span class="status-pendente">Pendente</span></td>
-            <td>
-                <button class="btn-small" onclick="abrirPagamento('${p.id}')">💳 Pagar</button>
-            </td>
-        </tr>
-    `).join('');
-}
-
-// Sincronização em tempo real do banco de dados
-window.addEventListener('db:pedidosUpdated', carregarPedidosCaixa);
-window.addEventListener('db:externalChange', (e) => {
-  if (e.detail && e.detail.key === 'bellaMassa_pedidos') carregarPedidosCaixa();
+  // Vincula os botões principais de Ação Rápida para alternar os formulários inline
+  const botoesAcao = document.querySelectorAll('.action-box button, button.action-btn');
+  if (botoesAcao.length >= 2) {
+    botoesAcao[0].setAttribute('onclick', "alternarFormulario('sangria')");
+    botoesAcao[1].setAttribute('onclick', "alternarFormulario('reforco')");
+  }
 });
-
-/* ==========================================
-   ALTERNÂNCIA DE TEMA
-   ========================================== */
-function setTheme(mode) {
-    const btnLight = document.getElementById('btnLight');
-    const btnDark = document.getElementById('btnDark');
-
-    if (mode === "light") {
-        document.body.classList.add("light-theme");
-        localStorage.setItem("bellaMassa_theme", "light");
-        if (btnLight) btnLight.classList.add('active');
-        if (btnDark) btnDark.classList.remove('active');
-    } else {
-        document.body.classList.remove("light-theme");
-        localStorage.setItem("bellaMassa_theme", "dark");
-        if (btnDark) btnDark.classList.add('active');
-        if (btnLight) btnLight.classList.remove('active');
-    }
-}
-
-function carregarTema() {
-    let tema = localStorage.getItem("bellaMassa_theme") || "dark";
-    setTheme(tema);
-}
-
-function moeda(valor) {
-    return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
-function atualizarDashboard() {
-    let saldoAtual = saldoInicial + totalEntradas - totalSaidas;
-
-    const saldoInicialEl = document.getElementById("saldoInicial");
-    if (saldoInicialEl) saldoInicialEl.innerText = moeda(saldoInicial);
-
-    const totalEntradasEl = document.getElementById("totalEntradas");
-    if (totalEntradasEl) totalEntradasEl.innerText = moeda(totalEntradas);
-
-    const totalSaidasEl = document.getElementById("totalSaidas");
-    if (totalSaidasEl) totalSaidasEl.innerText = moeda(totalSaidas);
-
-    const saldoAtualEl = document.getElementById("saldoAtual");
-    if (saldoAtualEl) saldoAtualEl.innerText = moeda(saldoAtual);
-
-    const totalPixEl = document.getElementById("totalPix");
-    if (totalPixEl) totalPixEl.innerText = moeda(pagamentos.PIX);
-
-    const totalCreditoEl = document.getElementById("totalCredito");
-    if (totalCreditoEl) totalCreditoEl.innerText = moeda(pagamentos.Credito);
-
-    const totalDebitoEl = document.getElementById("totalDebito");
-    if (totalDebitoEl) totalDebitoEl.innerText = moeda(pagamentos.Debito);
-
-    const totalDinheiroEl = document.getElementById("totalDinheiro");
-    if (totalDinheiroEl) totalDinheiroEl.innerText = moeda(pagamentos.Dinheiro);
-
-    const fechamentoVendasEl = document.getElementById("fechamentoVendas");
-    if (fechamentoVendasEl) fechamentoVendasEl.innerText = moeda(totalEntradas);
-
-    let movimentacoes = totalEntradas - totalSaidas;
-
-    const fechamentoMovEl = document.getElementById("fechamentoMovimentacoes");
-    if (fechamentoMovEl) fechamentoMovEl.innerText = moeda(movimentacoes);
-
-    const valorEsperadoEl = document.getElementById("valorEsperado");
-    if (valorEsperadoEl) valorEsperadoEl.innerText = moeda(saldoAtual);
-}
-
-/* ==========================================
-   PAGAMENTO E ATUALIZAÇÃO BANCO (UPDATE)
-   ========================================== */
-function abrirPagamento(id) {
-    pedidoAtual = pedidos.find(p => String(p.id) === String(id));
-
-    if (!pedidoAtual) {
-        alert("Pedido não encontrado.");
-        return;
-    }
-
-    document.getElementById("modalPedido").innerText = "#" + String(pedidoAtual.id).slice(-4);
-    document.getElementById("modalCliente").innerText = pedidoAtual.cliente;
-    document.getElementById("modalTotal").innerText = moeda(pedidoAtual.total);
-
-    document.getElementById("discountInput").value = 0;
-    document.getElementById("cashInput").value = "";
-    document.getElementById("paymentSelect").value = "PIX";
-    document.getElementById("cashPaymentGroup").classList.add("hidden");
-
-    calcularPagamento();
-    document.getElementById("paymentModal").classList.remove("hidden");
-}
-
-function fecharModalPagamento() {
-    document.getElementById("paymentModal").classList.add("hidden");
-}
-
-function alternarDinheiro() {
-    let metodo = document.getElementById("paymentSelect").value;
-    let grupo = document.getElementById("cashPaymentGroup");
-
-    if (metodo === "Dinheiro") {
-        grupo.classList.remove("hidden");
-    } else {
-        grupo.classList.add("hidden");
-    }
-
-    calcularPagamento();
-}
-
-function calcularPagamento() {
-    if (!pedidoAtual) return;
-
-    let desconto = parseFloat(document.getElementById("discountInput").value) || 0;
-    if (desconto < 0) desconto = 0;
-    if (desconto > pedidoAtual.total) desconto = pedidoAtual.total;
-
-    let total = pedidoAtual.total - desconto;
-    document.getElementById("paymentFinalValue").innerText = moeda(total);
-
-    let metodo = document.getElementById("paymentSelect").value;
-
-    if (metodo === "Dinheiro") {
-        let recebido = parseFloat(document.getElementById("cashInput").value) || 0;
-        let troco = recebido - total;
-        let changeInfo = document.getElementById("changeInfo");
-
-        if (recebido === 0) {
-            changeInfo.innerText = "Troco: R$ 0,00";
-            changeInfo.style.color = "#FFB300";
-        } else if (troco >= 0) {
-            changeInfo.innerText = "Troco: " + moeda(troco);
-            changeInfo.style.color = "#81C784";
-        } else {
-            changeInfo.innerText = "Faltam: " + moeda(Math.abs(troco));
-            changeInfo.style.color = "#EF5350";
-        }
-    }
-}
-
-function confirmarPagamento() {
-    if (!pedidoAtual) return;
-
-    let desconto = parseFloat(document.getElementById("discountInput").value) || 0;
-    let total = pedidoAtual.total - desconto;
-    let metodo = document.getElementById("paymentSelect").value;
-
-    if (metodo === "Dinheiro") {
-        let recebido = parseFloat(document.getElementById("cashInput").value) || 0;
-        if (recebido < total) {
-            alert("O valor recebido é menor que o total do pedido.");
-            return;
-        }
-    }
-
-    totalEntradas += total;
-    pagamentos[metodo] += total;
-
-    let agora = new Date();
-    let hora = agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-
-    let historico = document.getElementById("historicoBody");
-    let nomeMetodo = obterNomeMetodo(metodo);
-
-    let novaLinha = document.createElement("tr");
-    novaLinha.innerHTML = `
-        <td>${hora}</td>
-        <td><span class="tag entrada">Entrada</span></td>
-        <td>Pedido #${String(pedidoAtual.id).slice(-4)} - ${nomeMetodo}</td>
-        <td class="valor-entrada">+ ${moeda(total)}</td>
-    `;
-
-    historico.prepend(novaLinha);
-    gerarComprovante(total, desconto, metodo);
-
-    // Atualiza status no Banco de Dados DB Central
-    if (typeof DB !== 'undefined') {
-        DB.atualizarStatusPedido(pedidoAtual.id, 'paid');
-    }
-
-    carregarPedidosCaixa();
-    fecharModalPagamento();
-    document.getElementById("receiptModal").classList.remove("hidden");
-}
-
-function obterNomeMetodo(metodo) {
-    if (metodo === "PIX") return "PIX";
-    if (metodo === "Credito") return "Cartão de Crédito";
-    if (metodo === "Debito") return "Cartão de Débito";
-    if (metodo === "Dinheiro") return "Dinheiro";
-    return metodo;
-}
-
-function gerarComprovante(total, desconto, metodo) {
-    let recebido = parseFloat(document.getElementById("cashInput").value) || 0;
-    let troco = recebido - total;
-    let textoTroco = "";
-
-    if (metodo === "Dinheiro") {
-        textoTroco = `
-            <p>Valor recebido: <strong>${moeda(recebido)}</strong></p>
-            <p>Troco: <strong>${moeda(troco)}</strong></p>
-        `;
-    }
-
-    document.getElementById("receiptContent").innerHTML = `
-        <p><strong>Pedido:</strong> #${String(pedidoAtual.id).slice(-4)}</p>
-        <p><strong>Cliente:</strong> ${pedidoAtual.cliente}</p>
-        <p><strong>Modalidade:</strong> ${pedidoAtual.modalidade}</p>
-        <hr>
-        <p>Valor original: ${moeda(pedidoAtual.total)}</p>
-        <p>Desconto: ${moeda(desconto)}</p>
-        <p>Forma de pagamento: ${obterNomeMetodo(metodo)}</p>
-        ${textoTroco}
-        <hr>
-        <p><strong>Total pago:</strong> ${moeda(total)}</p>
-        <p>Obrigado pela preferência!</p>
-    `;
-}
-
-function fecharComprovante() {
-    document.getElementById("receiptModal").classList.add("hidden");
-}
-
-function abrirMovimentacao(tipo) {
-    tipoMovimentacao = tipo;
-    let titulo = document.getElementById("movementTitle");
-
-    if (tipo === "sangria") {
-        titulo.innerText = "💸 Registrar Sangria";
-    } else {
-        titulo.innerText = "💰 Registrar Reforço";
-    }
-
-    document.getElementById("movementValue").value = "";
-    document.getElementById("movementReason").value = "";
-    document.getElementById("movementModal").classList.remove("hidden");
-}
-
-function fecharMovimentacao() {
-    document.getElementById("movementModal").classList.add("hidden");
-}
-
-function confirmarMovimentacao() {
-    let valor = parseFloat(document.getElementById("movementValue").value);
-    let motivo = document.getElementById("movementReason").value.trim();
-
-    if (!valor || valor <= 0) {
-        alert("Informe um valor válido.");
-        return;
-    }
-
-    if (!motivo) {
-        alert("Informe o motivo da operação.");
-        return;
-    }
-
-    let agora = new Date();
-    let hora = agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-    let historico = document.getElementById("historicoBody");
-    let linha = document.createElement("tr");
-
-    if (tipoMovimentacao === "sangria") {
-        totalSaidas += valor;
-        linha.innerHTML = `
-            <td>${hora}</td>
-            <td><span class="tag saida">Saída</span></td>
-            <td>Sangria - ${motivo}</td>
-            <td class="valor-saida">- ${moeda(valor)}</td>
-        `;
-    } else {
-        totalEntradas += valor;
-        linha.innerHTML = `
-            <td>${hora}</td>
-            <td><span class="tag entrada">Entrada</span></td>
-            <td>Reforço - ${motivo}</td>
-            <td class="valor-entrada">+ ${moeda(valor)}</td>
-        `;
-    }
-
-    historico.prepend(linha);
-    atualizarDashboard();
-    fecharMovimentacao();
-}
-
-function fecharCaixa() {
-    let saldo = saldoInicial + totalEntradas - totalSaidas;
-
-    let confirmar = confirm(
-        "Deseja realmente fechar o caixa?\n\n" +
-        "Valor esperado: " + moeda(saldo)
-    );
-
-    if (!confirmar) return;
-
-    alert("Caixa fechado com sucesso!\n\nValor final: " + moeda(saldo));
-
-    let status = document.getElementById("caixaStatusBadge");
-    if (status) {
-        status.innerText = "● Caixa Fechado";
-        status.style.background = "#555";
-    }
-
-    const btnClose = document.querySelector(".btn-close");
-    if (btnClose) {
-        btnClose.disabled = true;
-        btnClose.innerText = "🔒 Caixa Fechado";
-    }
-}
-
-// Globalização das funções para chamadas em atributos inline
-window.setTheme = setTheme;
-window.abrirPagamento = abrirPagamento;
-window.fecharModalPagamento = fecharModalPagamento;
-window.alternarDinheiro = alternarDinheiro;
-window.calcularPagamento = calcularPagamento;
-window.confirmarPagamento = confirmarPagamento;
-window.fecharComprovante = fecharComprovante;
-window.abrirMovimentacao = abrirMovimentacao;
-window.fecharMovimentacao = fecharMovimentacao;
-window.confirmarMovimentacao = confirmarMovimentacao;
-window.fecharCaixa = fecharCaixa;

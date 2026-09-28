@@ -34,7 +34,7 @@ body {
     background-color: var(--bg-oven);
     background-image: radial-gradient(#2c2424 1px, transparent 1px);
     background-size: 20px 20px;
-    color: var(--text-light);
+    color: var(--cheese-gold);
     min-height: 100vh;
     padding: 25px 20px;
     display: flex;
@@ -91,6 +91,18 @@ body {
     gap: 15px;
 }
 
+/* TÍTULO AJUSTADO COM FONTE FREDOKA E COR CHEESE-GOLD */
+.brand-title h1 {
+    font-family: 'Fredoka', cursive;
+    color: var(--cheese-gold);
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+body.light-theme .brand-title h1 {
+    color: var(--cheese-gold);
+}
+
 .pizza-icon {
     font-size: 2.8rem;
     display: inline-block;
@@ -104,12 +116,6 @@ body {
     letter-spacing: 1.5px;
     margin-bottom: 3px;
     text-transform: uppercase;
-}
-
-.page-header h1 {
-    font-family: 'Fredoka', cursive;
-    color: var(--text-light);
-    font-size: 1.8rem;
 }
 
 .page-header h1 strong {
@@ -148,11 +154,14 @@ body {
     background: transparent;
     border: none;
     cursor: pointer;
-    font-size: 0.85rem;
-    padding: 5px 12px;
+    font-size: 1rem;
+    padding: 6px 10px;
     border-radius: 16px;
     color: var(--text-light);
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .theme-switch button.active {
@@ -650,7 +659,6 @@ input:focus, select:focus {
     font-size: 13px;
 }
 
-/* MODO CLARO EXTRASS */
 body.light-theme .status-pendente {
     background: #fff3cd;
     color: #856404;
@@ -678,11 +686,43 @@ body.light-theme .operation-icon {
     .card { padding: 15px; }
 }
 
-/* IMPRESSÃO */
+/* IMPRESSÃO DO COMPROVANTE */
 @media print {
-    body * { visibility: hidden; }
-    #receiptModal, #receiptModal * { visibility: visible; }
-    #receiptModal { position: absolute; left: 0; top: 0; width: 100%; background: white; }
-    .modal-content { border: none; box-shadow: none; max-width: 100%; color: black; }
-    .modal-content button { display: none; }
+    body * { 
+        visibility: hidden; 
+    }
+    #receiptModal, #receiptModal * { 
+        visibility: visible; 
+    }
+    #receiptModal { 
+        position: absolute; 
+        left: 0; 
+        top: 0; 
+        width: 100%; 
+        background: #ffffff !important; 
+        padding: 0;
+    }
+    #receiptModal button { 
+        display: none !important; 
+    }
+    .modal-content.receipt { 
+        background-color: #ffffff !important; 
+        border: none !important; 
+        box-shadow: none !important; 
+        max-width: 100% !important; 
+        color: #000000 !important; 
+        padding: 0 !important;
+    }
+    .modal-content.receipt h2,
+    .modal-content.receipt h3,
+    .modal-content.receipt p,
+    .modal-content.receipt strong {
+        color: #000000 !important;
+    }
+    #receiptContent {
+        background: #ffffff !important;
+        color: #000000 !important;
+        border: 1px dashed #000000;
+        padding: 10px;
+    }
 }

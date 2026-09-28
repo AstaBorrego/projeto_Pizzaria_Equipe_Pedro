@@ -1,647 +1,390 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
-
-:root {
-  --pizza-red: #D32F2F;
-  --pizza-red-dark: #B71C1C;
-  --cheese-gold: #FFB300;
-  --basil-green: #2E7D32;
-
-  --bg-oven: #181515;
-  --card-bg: #242020;
-  --card-header: #2E2828;
-
-  --text-light: #FBFADA;
-  --text-muted: #A39B98;
-
-  --border-color: #3D3535;
-
-  --blue: #2980b9;
-  --blue-dark: #1c5980;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Poppins', sans-serif;
-}
-
-body {
-  min-height: 100vh;
-  padding: 30px 20px;
-  background-color: var(--bg-oven);
-  background-image: radial-gradient(#2c2424 1px, transparent 1px);
-  background-size: 20px 20px;
-  color: var(--text-light);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* CONTAINER EXPANDIDO DE 850px PARA 1200px */
-.container,
-.form-box,
-form,
-.page-section {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 30px;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 18px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(211, 47, 47, 0.15);
-  position: relative;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: linear-gradient(
-    90deg,
-    var(--pizza-red),
-    var(--cheese-gold),
-    var(--basil-green)
-  );
-}
-
-/* HEADER */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  padding-bottom: 20px;
-  margin-bottom: 25px;
-  border-bottom: 2px dashed var(--border-color);
-}
-
-.brand-title {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.pizza-icon {
-  font-size: 2.8rem;
-  display: inline-block;
-  animation: floatPizza 3s ease-in-out infinite;
-}
-
-@keyframes floatPizza {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-6px) rotate(8deg);
-  }
-}
-
-.brand-title h1 {
-  font-family: 'Fredoka', cursive;
-  font-size: 1.8rem;
-  color: var(--cheese-gold);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.brand-title p {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  margin-top: 2px;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.theme-switch {
-  display: flex;
-  gap: 4px;
-  padding: 4px;
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  background: var(--card-header);
-}
-
-.theme-switch button {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 5px 8px;
-  border-radius: 50%;
-  font-size: 1rem;
-  transition: 0.2s;
-}
-
-.theme-switch button:hover {
-  transform: scale(1.15);
-  background: rgba(255, 179, 0, 0.12);
-}
-
-/* SECTIONS */
-.section-card {
-  margin-bottom: 22px;
-  padding: 22px;
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  background: rgba(0, 0, 0, 0.10);
-  width: 100%;
-}
-
-.section-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.section-title h2 {
-  font-family: 'Fredoka', cursive;
-  font-size: 1.3rem;
-  color: var(--cheese-gold);
-  margin-bottom: 4px;
-}
-
-.section-title p {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-/* TAMANHOS (Ajustado para 4 colunas em telas largas) */
-.size-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 14px;
-}
-
-.price-card {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  padding: 15px;
-  background: var(--card-header);
-  border: 1px solid var(--border-color);
-  border-radius: 11px;
-  transition: transform 0.2s, border-color 0.2s;
-}
-
-.price-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 179, 0, 0.5);
-}
-
-.card-icon {
-  width: 43px;
-  height: 43px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(211, 47, 47, 0.15);
-  font-size: 1.3rem;
-  flex-shrink: 0;
-}
-
-.card-info {
-  flex: 1;
-}
-
-.card-info h3 {
-  font-size: 0.95rem;
-  color: var(--text-light);
-}
-
-.card-info span {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-
-.input-wrapper {
-  width: 115px;
-}
-
-.input-wrapper label {
-  display: block;
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.input-unit {
-  display: flex;
-  align-items: center;
-  background: var(--bg-oven);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.input-unit input {
-  width: 100%;
-  padding: 8px;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: var(--text-light);
-  font-size: 0.9rem;
-}
-
-.input-unit span {
-  padding-right: 9px;
-  color: var(--cheese-gold);
-  font-weight: 600;
-}
-
-/* BORDAS */
-.border-list {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-
-.border-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 13px 15px;
-  background: var(--card-header);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-}
-
-.border-name {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.border-icon {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 179, 0, 0.10);
-  font-size: 1.15rem;
-}
-
-.border-name strong {
-  display: block;
-  font-size: 0.88rem;
-}
-
-.border-name small {
-  display: block;
-  color: var(--text-muted);
-  font-size: 0.7rem;
-}
-
-.money-input {
-  display: flex;
-  align-items: center;
-  width: 125px;
-  background: var(--bg-oven);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.money-input span {
-  padding-left: 10px;
-  color: var(--cheese-gold);
-  font-weight: 600;
-  font-size: 0.8rem;
-}
-
-.money-input input {
-  width: 100%;
-  padding: 9px 8px;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: var(--text-light);
-  font-size: 0.9rem;
-}
-
-.money-input.full {
-  width: 100%;
-}
-
-/* MEIO A MEIO */
-.half-pizza-preview {
-  display: flex;
-  width: 120px;
-  height: 120px;
-  margin: 0 auto 22px;
-  overflow: hidden;
-  border-radius: 50%;
-  border: 5px solid var(--cheese-gold);
-  transform: rotate(-45deg);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
-.half {
-  width: 50%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-.half.left {
-  background: linear-gradient(135deg, #d32f2f, #ff7043);
-}
-
-.half.right {
-  background: linear-gradient(135deg, #ffb300, #f57c00);
-}
-
-.half span {
-  font-size: 2.4rem;
-  transform: rotate(45deg);
-}
-
-.rules {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-
-.rule-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 13px 15px;
-  cursor: pointer;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  background: var(--card-header);
-  transition: 0.2s;
-}
-
-.rule-option:hover {
-  border-color: var(--cheese-gold);
-}
-
-.rule-option:has(input:checked) {
-  border-color: var(--cheese-gold);
-  background: rgba(255, 179, 0, 0.07);
-}
-
-.rule-option input {
-  width: 17px;
-  height: 17px;
-  accent-color: var(--pizza-red);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.radio-content strong {
-  display: block;
-  font-size: 0.86rem;
-}
-
-.radio-content span {
-  display: block;
-  margin-top: 2px;
-  color: var(--text-muted);
-  font-size: 0.72rem;
-}
-
-/* EXEMPLO */
-.example-card {
-  border-color: rgba(46, 125, 50, 0.4);
-}
-
-.example-form {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.form-group {
-  width: 100%;
-  margin-bottom: 12px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 7px;
-  color: var(--text-light);
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-select, input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  outline: none;
-  background: var(--card-header);
-  color: var(--text-light);
-  font-size: 0.85rem;
-  box-sizing: border-box;
-}
-
-select:focus,
-input:focus {
-  border-color: var(--cheese-gold);
-  box-shadow: 0 0 7px rgba(255, 179, 0, 0.2);
-}
-
-.calculation-result {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  padding: 14px;
-  background: var(--card-header);
-  border-radius: 10px;
-}
-
-.calculation-result div {
-  padding: 10px;
-  border-right: 1px solid var(--border-color);
-}
-
-.calculation-result div:last-child {
-  border-right: none;
-}
-
-.calculation-result span {
-  display: block;
-  color: var(--text-muted);
-  font-size: 0.68rem;
-  margin-bottom: 3px;
-}
-
-.calculation-result strong {
-  font-size: 0.9rem;
-}
-
-.result-total strong {
-  color: var(--cheese-gold);
-  font-family: 'Fredoka', cursive;
-  font-size: 1.25rem;
-}
-
-/* BOTÕES */
-.actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 5px;
-}
-
-.btn-primary,
-.btn-secondary {
-  flex: 1;
-  border: none;
-  padding: 13px;
-  border-radius: 10px;
-  font-size: 0.92rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.btn-primary {
-  color: white;
-  background: linear-gradient(
-    135deg,
-    var(--pizza-red),
-    var(--pizza-red-dark)
-  );
-  box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(211, 47, 47, 0.5);
-}
-
-.btn-secondary {
-  color: var(--text-light);
-  background: var(--card-header);
-  border: 1px solid var(--border-color);
-}
-
-.btn-secondary:hover {
-  border-color: var(--cheese-gold);
-  transform: translateY(-2px);
-}
-
-/* STATUS */
-.status-message {
-  margin-top: 15px;
-  padding: 11px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 0.82rem;
-  color: #fff;
-  background: var(--basil-green);
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* MODO CLARO */
-body.light-theme {
-  --bg-oven: #f4f4f4;
-  --card-bg: #ffffff;
-  --card-header: #eeeeee;
-  --text-light: #222222;
-  --text-muted: #666666;
-  --border-color: #d0d0d0;
-}
-
-body.light-theme .section-card {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-body.light-theme .half-pizza-preview {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-}
-
-/* RESPONSIVO */
-@media (max-width: 900px) {
-  .size-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 700px) {
-  .size-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .example-form {
-    grid-template-columns: 1fr;
-  }
-
-  .calculation-result {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .calculation-result div:nth-child(2) {
-    border-right: none;
-  }
-}
-
-@media (max-width: 540px) {
-  body {
-    padding: 15px 10px;
-  }
-
-  .container {
-    padding: 20px 15px;
-  }
-
-  header {
-    align-items: flex-start;
-  }
-
-  .brand-title h1 {
-    font-size: 1.45rem;
-  }
-
-  .pizza-icon {
-    font-size: 2.2rem;
-  }
-
-  .section-card {
-    padding: 16px;
-  }
-
-  .price-card {
-    flex-wrap: wrap;
-  }
-
-  .input-wrapper {
-    width: 100%;
-  }
-
-  .border-row {
-    gap: 10px;
-  }
-
-  .money-input {
-    width: 105px;
-    flex-shrink: 0;
-  }
-
-  .actions {
-    flex-direction: column;
-  }
-}
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap'); /* Importa fontes do Google Fonts */
+
+:root { /* Declaração de variáveis globais do CSS */
+  --pizza-red: #D32F2F; /* Cor vermelha tema pizza */
+  --pizza-red-dark: #B71C1C; /* Cor vermelha escura para sombras e hover */
+  --cheese-gold: #FFB300; /* Cor dourada tom de queijo */
+  --basil-green: #2E7D32; /* Cor verde tom de manjericão */
+
+  --bg-oven: #181515; /* Cor de fundo principal tom forno dark */
+  --card-bg: #211C1C; /* Cor de fundo dos cartões principal */
+  --card-header: #2E2828; /* Cor de fundo dos cabeçalhos internos */
+
+  --text-light: #FBFADA; /* Cor clara para texto principal */
+  --text-muted: #A39B98; /* Cor acinzentada para textos secundários */
+
+  --border-color: #383030; /* Cor padrão para bordas */
+} /* Fim das variáveis de tema padrão */
+
+* { /* Reset global para todos os elementos */
+  box-sizing: border-box; /* Inclui bordas e paddings no tamanho total do elemento */
+  margin: 0; /* Remove margens padrão */
+  padding: 0; /* Remove preenchimentos padrão */
+  font-family: 'Poppins', sans-serif; /* Define a fonte padrão como Poppins */
+} /* Fim da regra global */
+
+body { /* Estilização da página inteira */
+  min-height: 100vh; /* Garante altura mínima de 100% da viewport */
+  padding: 30px 20px; /* Adiciona espaçamento interno ao corpo */
+  background-color: var(--bg-oven); /* Cor de fundo do corpo */
+  background-image: radial-gradient(#2c2424 1px, transparent 1px); /* Padrão sutil em pontilhados de fundo */
+  background-size: 20px 20px; /* Tamanho da malha pontilhada */
+  color: var(--text-light); /* Cor do texto padrão */
+  display: flex; /* Utiliza flexbox no container principal */
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: flex-start; /* Alinha os itens no topo */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Transição suave na troca de tema */
+} /* Fim da estilização do body */
+
+
+
+.container { /* Container central */
+  width: 100%; /* Largura adaptável */
+  max-width: 1200px; /* Largura máxima fixa em 1200px */
+  margin: 0 auto; /* Centralização na tela */
+  padding: 28px; /* Espaçamento interno */
+  background-color: var(--card-bg); /* Cor de fundo */
+  border: 1px solid var(--border-color); /* Borda do container */
+  border-radius: 16px; /* Bordas arredondadas */
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(211, 47, 47, 0.15); /* Sombra externa */
+  position: relative; /* Posicionamento relativo para pseudelementos */
+  overflow: hidden; /* Oculta transbordamentos */
+  box-sizing: border-box; /* Respeita caixa interna */
+} /* Fim do estilo do container */
+
+.container::before { /* Barra colorida no topo do container */
+  content: ''; /* Elemento vazio para renderização de cor */
+  position: absolute; /* Posicionamento absoluto referente ao container */
+  top: 0; /* Alinhado ao topo */
+  left: 0; /* Alinhado à esquerda */
+  right: 0; /* Alinhado à direita */
+  height: 5px; /* Altura da barra */
+  background: linear-gradient(90deg, var(--pizza-red), var(--cheese-gold), var(--basil-green)); /* Gradiente com as cores italianas */
+} /* Fim da barra colorida */
+
+header { /* Estilo do cabeçalho da página */
+  display: flex; /* Flexbox para distribuição */
+  justify-content: space-between; /* Distribui os itens nas pontas */
+  align-items: center; /* Alinha itens ao centro verticalmente */
+  gap: 20px; /* Espaço entre elementos */
+  padding-bottom: 20px; /* Preenchimento inferior */
+  margin-bottom: 28px; /* Margem inferior de separação */
+  border-bottom: 1px dashed var(--border-color); /* Linha divisória pontilhada */
+} /* Fim do estilo do cabeçalho */
+
+.brand-title { /* Bloco do título e logotipo */
+  display: flex; /* Flexbox interno */
+  font-family: 'Fredoka', sans-serif; /* Fonte alegre Fredoka */
+  align-items: center; /* Alinha ícone e texto ao centro */
+  gap: 14px; /* Espaço entre ícone e texto */
+} /* Fim do bloco de logotipo */
+
+.pizza-icon { /* Ícone de pizza */
+  font-size: 2.4rem; /* Tamanho grande do emoji */
+  display: inline-block; /* Comportamento em bloco */
+} /* Fim do estilo do ícone */
+
+
+.brand-title h1 { /* Título principal */
+  font-family: 'Fredoka', sans-serif; /* Fonte alegre Fredoka */
+  font-size: 1.6rem; /* Tamanho da fonte */
+  color: var(--cheese-gold); /* Cor dourada */
+  letter-spacing: 0.3px; /* Espaçamento entre letras */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra de texto */
+} /* Fim da marca h1 */
+
+body.light-theme .brand-title h1 {
+    color: #0f172a;
+}
+
+.brand-title p { /* Subtítulo da marca */
+  color: var(--text-muted); /* Cor opaca */
+  font-size: 0.82rem; /* Tamanho pequeno */
+  margin-top: 2px; /* Margem superior */
+} /* Fim do subtítulo da marca */
+
+.header-right { /* Área direita do cabeçalho */
+  display: flex; /* Exibição flexível */
+  align-items: center; /* Centralização vertical */
+  gap: 12px; /* Espaçamento */
+} /* Fim da área direita */
+
+body.light-theme .section-title h2 {
+  color: #0f172a;
+}
+
+.theme-switch { /* Botões do alternador de tema */
+  display: flex; /* Flexbox para os botões */
+  gap: 2px; /* Espaçamento mínimo */
+  padding: 3px; /* Espaçamento interno */
+  border: 1px solid var(--border-color); /* Borda em volta do controle */
+  border-radius: 20px; /* Arredondamento pílula */
+  background: var(--card-header); /* Fundo do controle */
+} /* Fim da pílula de temas */
+
+.theme-switch button { /* Botões individuais de tema */
+  border: none; /* Sem bordas padrão */
+  background: transparent; /* Fundo transparente */
+  cursor: pointer; /* Cursor de clique */
+  padding: 4px 7px; /* Preenchimento interno */
+  border-radius: 50%; /* Arredondamento circular */
+  font-size: 0.9rem; /* Tamanho do ícone */
+  transition: 0.2s; /* Animação suave */
+} /* Fim dos botões de tema */
+
+.theme-switch button:hover { /* Hover nos botões de tema */
+  transform: scale(1.1); /* Efeito de expansão ao passar o mouse */
+  background: rgba(255, 179, 0, 0.12); /* Fundo amarelado suave */
+} /* Fim do efeito hover */
+
+.section-card { /* Bloco de seção principal */
+  background: rgba(0, 0, 0, 0.12); /* Cor transparente escura */
+  border: 1px solid var(--border-color); /* Borda da seção */
+  border-radius: 12px; /* Cantos arredondados */
+  padding: 20px; /* Preenchimento interno */
+  margin-bottom: 18px; /* Margem inferior */
+  width: 100%; /* Largura total */
+} /* Fim da seção principal */
+
+.section-title h2 { /* Título de seções */
+  font-family: 'Fredoka', cursive; /* Fonte especial */
+  font-size: 1.25rem; /* Tamanho do título */
+  color: var(--cheese-gold); /* Cor amarela */
+  margin-bottom: 4px; /* Margem inferior */
+} /* Fim do título da seção */
+
+.section-title p { /* Subtítulo da seção */
+  font-size: 0.8rem; /* Tamanho menor */
+  color: var(--text-muted); /* Texto apagado */
+} /* Fim do subtítulo da seção */
+
+/* ESTILIZAÇÃO DO SISTEMA DE ABAS */ /* Seção de estilo para as abas de categorias */
+.tabs-container { /* Contêiner flexível das abas */
+  display: flex; /* Exibe os botões lado a lado */
+  gap: 10px; /* Espaçamento entre os botões de abas */
+  margin-top: 15px; /* Margem superior de separação */
+  margin-bottom: 15px; /* Margem inferior de separação */
+  flex-wrap: wrap; /* Permite quebras de linha em telas pequenas */
+} /* Fim do contêiner das abas */
+
+.tab-btn { /* Estilo individual dos botões de aba */
+  background: var(--card-header); /* Cor de fundo padrão da aba */
+  color: var(--text-muted); /* Cor de texto discreta */
+  border: 1px solid var(--border-color); /* Borda sutil */
+  padding: 8px 16px; /* Preenchimento interno agradável */
+  border-radius: 8px; /* Cantos arredondados */
+  font-size: 0.85rem; /* Tamanho da fonte compacto */
+  font-weight: 600; /* Texto em negrito */
+  cursor: pointer; /* Cursor de clique */
+  transition: all 0.2s ease; /* Transição suave de cores e estado */
+} /* Fim do botão de aba */
+
+.tab-btn:hover { /* Efeito ao passar o mouse na aba */
+  color: var(--text-light); /* Torna o texto mais claro */
+  border-color: var(--cheese-gold); /* Destaca a borda com cor dourada */
+} /* Fim do hover da aba */
+
+.tab-btn.active { /* Estilo exclusivo para a aba selecionada (ativa) */
+  background: var(--pizza-red); /* Fundo com a cor principal vermelha */
+  color: #ffffff; /* Texto branco em destaque */
+  border-color: var(--pizza-red); /* Borda combinando com o fundo */
+  box-shadow: 0 4px 10px rgba(211, 47, 47, 0.4); /* Sombra avermelhada suave */
+} /* Fim do estado ativo da aba */
+
+/* ÁREA DE SCROLL DO CARDÁPIO */ /* Estilização da área rolável do cardápio */
+.cardapio-scroll-container { /* Container de rolagem */
+  max-height: 520px; /* Altura máxima permitida antes de acionar scroll */
+  overflow-y: auto; /* Ativa a barra de rolagem vertical quando necessário */
+  padding-right: 8px; /* Preenchimento para a barra não cobrir conteúdos */
+  margin-top: 15px; /* Margem superior de afastamento */
+} /* Fim do container de rolagem */
+
+/* Estilização personalizada da barra de rolagem (Scrollbar) */ /* Personalização da barra */
+.cardapio-scroll-container::-webkit-scrollbar { /* Trilho da scrollbar */
+  width: 8px; /* Largura da barra de rolagem */
+} /* Fim da largura do scroll */
+
+.cardapio-scroll-container::-webkit-scrollbar-track { /* Fundo do trilho da scrollbar */
+  background: var(--card-header); /* Fundo escuro */
+  border-radius: 4px; /* Cantos arredondados */
+} /* Fim do trilho */
+
+.cardapio-scroll-container::-webkit-scrollbar-thumb { /* Indicador deslizante */
+  background: var(--pizza-red); /* Cor vermelha do tema */
+  border-radius: 4px; /* Cantos arredondados */
+} /* Fim do indicador */
+
+/* GRID DO CARDÁPIO DA TELA 3 */ /* Estrutura visual em Grid dos itens */
+.cardapio-grid { /* Contêiner do grid */
+  display: grid; /* Exibição em grade CSS */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Layout responsivo em colunas */
+  gap: 16px; /* Espaçamento entre os cartões */
+} /* Fim do grid do cardápio */
+
+.card-item { /* Cartão individual do produto do cardápio */
+  background: var(--card-header); /* Fundo do cartão */
+  border: 1px solid var(--border-color); /* Borda fina */
+  border-radius: 12px; /* Cantos arredondados */
+  padding: 16px; /* Preenchimento interno */
+  display: flex; /* Flexbox vertical */
+  flex-direction: column; /* Direção em coluna */
+  justify-content: space-between; /* Espaça conteúdo e rodapé do cartão */
+  transition: transform 0.2s, box-shadow 0.2s; /* Efeito suave ao passar o mouse */
+} /* Fim do cartão individual */
+
+.card-item:hover { /* Hover do cartão do produto */
+  transform: translateY(-3px); /* Levanta o cartão levemente */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4); /* Adiciona sombra pronunciada */
+} /* Fim do hover */
+
+.card-item-header { /* Topo do cartão */
+  display: flex; /* Alinhamento lado a lado */
+  justify-content: space-between; /* Separa nome e tag */
+  align-items: flex-start; /* Alinha ao topo */
+  margin-bottom: 8px; /* Margem abaixo do topo */
+} /* Fim do topo do cartão */
+
+.card-item-title { /* Nome do produto */
+  font-size: 1rem; /* Tamanho padrão da fonte */
+  font-weight: 600; /* Texto em negrito */
+  color: var(--text-light); /* Cor do texto */
+} /* Fim do nome do produto */
+
+.card-item-badge { /* Etiqueta da categoria */
+  font-size: 0.7rem; /* Tamanho pequeno */
+  padding: 3px 8px; /* Preenchimento interno */
+  border-radius: 12px; /* Cantos arredondados pílula */
+  background: rgba(255, 179, 0, 0.15); /* Fundo dourado transparente */
+  color: var(--cheese-gold); /* Texto dourado */
+  font-weight: 600; /* Negrito */
+  white-space: nowrap; /* Impede quebra de linha */
+} /* Fim da etiqueta */
+
+.card-item-desc { /* Descrição/ingredientes do produto */
+  font-size: 0.8rem; /* Tamanho reduzido */
+  color: var(--text-muted); /* Cor secundária suave */
+  margin-bottom: 12px; /* Margem inferior */
+  flex-grow: 1; /* Ocupa espaço disponível no cartão */
+} /* Fim da descrição */
+
+.card-item-footer { /* Rodapé do cartão */
+  display: flex; /* Flexbox horizontal */
+  justify-content: space-between; /* Preço à esquerda e status à direita */
+  align-items: center; /* Centralizado verticalmente */
+  padding-top: 10px; /* Preenchimento superior */
+  border-top: 1px dashed var(--border-color); /* Borda pontilhada superior */
+} /* Fim do rodapé do cartão */
+
+.card-item-price { /* Preço do produto */
+  font-size: 1.1rem; /* Tamanho destacado */
+  font-weight: 700; /* Negrito forte */
+  color: var(--cheese-gold); /* Cor dourada */
+} /* Fim do preço */
+
+.card-item-status { /* Badge de status do produto */
+  font-size: 0.75rem; /* Tamanho menor */
+  font-weight: 600; /* Texto em negrito */
+} /* Fim do status */
+
+/* MODAL CENTRO DA TELA (AVISO DE ERRO) */ /* Estilização do modal centralizado */
+.modal-overlay { /* Camada de fundo para escurecer a tela */
+  position: fixed; /* Posicionamento fixo sobre a janela inteira */
+  top: 0; /* Cobre do topo */
+  left: 0; /* Cobre da esquerda */
+  width: 100vw; /* Largura total da janela */
+  height: 100vh; /* Altura total da janela */
+  background: rgba(0, 0, 0, 0.75); /* Fundo preto semi-transparente */
+  backdrop-filter: blur(4px); /* Efeito de desfoque no fundo */
+  display: flex; /* Flexbox para centralizar caixa interna */
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  z-index: 9999; /* Fica acima de absolutamente todos os elementos */
+  transition: opacity 0.3s ease; /* Animação de aparecimento */
+} /* Fim do overlay do modal */
+
+.modal-box { /* Caixa do modal de erro */
+  background: var(--card-bg); /* Fundo do modal */
+  border: 2px solid var(--pizza-red); /* Borda em destaque em vermelho */
+  border-radius: 16px; /* Cantos arredondados */
+  padding: 24px 30px; /* Preenchimento interno */
+  max-width: 400px; /* Largura máxima da caixa */
+  width: 90%; /* Largura em telas pequenas */
+  text-align: center; /* Texto centralizado */
+  box-shadow: 0 10px 30px rgba(211, 47, 47, 0.4); /* Sombra avermelhada */
+  animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animação de entrada saltitante */
+} /* Fim da caixa do modal */
+
+@keyframes modalPop { /* Animação Keyframes para abertura do modal */
+  from { transform: scale(0.8); opacity: 0; } /* Começa menor e invisível */
+  to { transform: scale(1); opacity: 1; } /* Termina em tamanho normal e visível */
+} /* Fim da animação de abertura */
+
+.modal-icon { /* Ícone centralizado do modal */
+  font-size: 2.8rem; /* Ícone bem grande */
+  margin-bottom: 10px; /* Margem abaixo do ícone */
+} /* Fim do ícone do modal */
+
+.modal-box h3 { /* Título dentro do modal */
+  font-family: 'Fredoka', cursive; /* Fonte alegre */
+  font-size: 1.4rem; /* Tamanho destacado */
+  color: var(--pizza-red); /* Cor vermelha para indicar erro */
+  margin-bottom: 8px; /* Margem inferior */
+} /* Fim do título do modal */
+
+.modal-box p { /* Mensagem textual no modal */
+  font-size: 0.9rem; /* Tamanho padrão */
+  color: var(--text-light); /* Cor do texto */
+  margin-bottom: 20px; /* Margem abaixo para afastar do botão */
+} /* Fim do texto do modal */
+
+.btn-modal-close { /* Botão de confirmação/fechamento do modal */
+  background: var(--pizza-red); /* Cor de fundo vermelha */
+  color: white; /* Cor do texto branca */
+  border: none; /* Sem bordas padrão */
+  padding: 10px 24px; /* Preenchimento confortável */
+  border-radius: 8px; /* Cantos arredondados */
+  font-weight: 600; /* Texto em negrito */
+  cursor: pointer; /* Cursor em formato de mão */
+  transition: background 0.2s; /* Transição de cor */
+} /* Fim do botão de fechar modal */
+
+.btn-modal-close:hover { /* Hover do botão de fechar modal */
+  background: var(--pizza-red-dark); /* Escurece a cor no hover */
+} /* Fim do hover do botão de fechar */
+
+/* STATUS MESSAGE (TOAST) */ /* Mensagem de rodapé rápida */
+.status-message { /* Caixa de mensagem de status */
+  margin-top: 15px; /* Margem acima */
+  padding: 11px; /* Preenchimento */
+  border-radius: 8px; /* Arredondamento */
+  text-align: center; /* Centralização do texto */
+  font-size: 0.82rem; /* Tamanho compacto */
+  color: #fff; /* Texto em branco */
+  background: var(--basil-green); /* Cor verde */
+} /* Fim do status message */
+
+.hidden { /* Classe auxiliar para ocultar elementos da página */
+  display: none !important; /* Força ocultação */
+} /* Fim da classe hidden */
+
+/* MODO CLARO */ /* Regras aplicadas quando o modo claro está ativo */
+body.light-theme { /* Seletor ativado para o tema claro */
+  --bg-oven: #f4f4f4; /* Fundo geral claro */
+  --card-bg: #ffffff; /* Fundo de cartões branco */
+  --card-header: #eaeaea; /* Cabeçalhos em cinza claro */
+  --text-light: #222222; /* Texto escuro para leitura */
+  --text-muted: #666666; /* Texto secundário em cinza médio */
+  --border-color: #d0d0d0; /* Bordas suaves */
+} /* Fim das variáveis do tema claro */
+
+/* RESPONSIVIDADE */ /* Regras para adequação em telas menores */
+@media (max-width: 600px) { /* Ajustes para dispositivos móveis */
+  header { /* Cabeçalho responsivo */
+    flex-direction: column; /* Direciona itens em coluna */
+    align-items: flex-start; /* Alinha itens à esquerda */
+  } /* Fim do cabeçalho responsivo */
+  .header-right { /* Área direita responsiva */
+    width: 100%; /* Ocupa largura total */
+    justify-content: space-between; /* Distribui conteúdo nas pontas */
+  } /* Fim da área direita responsiva */
+} /* Fim da media query */

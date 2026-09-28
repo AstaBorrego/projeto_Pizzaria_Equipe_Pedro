@@ -1,42 +1,56 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bella Massa | Expedição</title>
-  <link rel="stylesheet" href="css/expedicao.css" />
+  <title>Bella Massa | Balcão/Salão</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <div class="container">
     <header class="page-header">
       <div class="brand-title">
-        <span class="pizza-icon" title="Expedição">🍕</span>
+        <!-- Ícone ilustrativo de pizza com atributo de acessibilidade de título -->
+        <span class="pizza-icon" title="Cozinha">🍕</span>
+        <!-- Container dos textos de cabeçalho -->
         <div>
-          <span class="eyebrow">Módulo 05</span>
-          <h1>Expedição e <strong>Balcão / Salão</strong></h1>
+          <!-- Título principal com destaque -->
+          <h1>Balcão / Salão</h1>
+          <!-- Subtítulo descritivo do objetivo da tela -->
           <p>Organize pedidos prontos, chamadas de balcão e entregas nas mesas.</p>
         </div>
       </div>
 
+      <!-- Bloco alinhado à direita -->
       <div class="header-right">
-        <!-- BOTÕES DE ALTERNÂNCIA DE TEMA -->
-        <div class="theme-switch">
-          <button type="button" id="btnLight" onclick="setTheme('light')" title="Clarear modo" aria-label="Clarear">☀️ Clarear</button>
-          <button type="button" id="btnDark" onclick="setTheme('dark')" title="Escurecer modo" aria-label="Escurecer">🌙 Escurecer</button>
-        </div>
-        <div class="topbar-status">
-          <div class="connection"><span class="dot"></span> KDS conectado</div>
-          <div class="clock-box"><small id="date"></small><strong id="clock">--:--:--</strong></div>
+        <!-- BOTÕES DE ALTERNÂNCIA DE TEMA (APENAS ÍCONES DE SOL E LUA) -->
+        <div class="theme-switch-wrapper">
+          <div class="theme-switch">
+            <button type="button" id="btnLight" onclick="setTheme('light')" title="Clarear modo"
+              aria-label="Clarear">☀️</button>
+            <button type="button" id="btnDark" onclick="setTheme('dark')" title="Escurecer modo"
+              aria-label="Escurecer">🌙</button>
+          </div>
         </div>
       </div>
     </header>
 
     <main class="main-content-expedicao">
       <section class="stats-grid">
-        <article class="stat-card"><span class="stat-icon gold">✓</span><div><strong id="statReady">0</strong><span>Prontos para expedição</span></div></article>
-        <article class="stat-card"><span class="stat-icon amber">♢</span><div><strong id="statCalled">0</strong><span>Aguardando retirada</span></div></article>
-        <article class="stat-card"><span class="stat-icon green">⌂</span><div><strong id="statTables">0</strong><span>Mesas aguardando atendimento</span></div></article>
-        <article class="stat-card"><span class="stat-icon red">◷</span><div><strong id="statOldest">0 min</strong><span>Pedido pronto há</span></div></article>
+        <article class="stat-card"><span class="stat-icon gold">✓</span>
+          <div><strong id="statReady">0</strong><span>Prontos para expedição</span></div>
+        </article>
+        <article class="stat-card"><span class="stat-icon amber">♢</span>
+          <div><strong id="statCalled">0</strong><span>Aguardando retirada</span></div>
+        </article>
+        <article class="stat-card"><span class="stat-icon green">⌂</span>
+          <div><strong id="statTables">0</strong><span>Mesas aguardando atendimento</span></div>
+        </article>
+        <article class="stat-card"><span class="stat-icon red">◷</span>
+          <div><strong id="statOldest">0 min</strong><span>Pedido pronto há</span></div>
+        </article>
       </section>
 
       <div class="toolbar">
@@ -46,7 +60,8 @@
           <button class="filter" data-filter="salao">Salão</button>
         </div>
         <div class="toolbar-actions">
-          <label class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="Buscar pedido, nome ou mesa..." /></label>
+          <label class="search"><span>⌕</span><input id="searchInput" type="search"
+              placeholder="Buscar pedido, nome ou mesa..." /></label>
           <button class="refresh" id="refreshBtn">⟳ Atualizar</button>
           <button class="refresh" id="publicPanelBtn">◉ Painel Público</button>
           <button class="refresh" id="helpBtn">? Ajuda</button>
@@ -56,7 +71,10 @@
       <section class="content-grid">
         <div class="panel orders-panel">
           <div class="panel-header">
-            <div><h2>Pedidos prontos</h2><p>Saíram da cozinha e aguardam expedição.</p></div>
+            <div>
+              <h2>Pedidos prontos</h2>
+              <p>Saíram da cozinha e aguardam expedição.</p>
+            </div>
             <span class="panel-badge" id="readyBadge">0 pedidos</span>
           </div>
           <div id="ordersList" class="orders-list"></div>
@@ -64,12 +82,22 @@
 
         <aside class="right-column">
           <div class="panel calls-panel">
-            <div class="panel-header"><div><h2>Painel de chamadas</h2><p>Pedidos chamados no balcão.</p></div><span class="live"><i></i> Ao vivo</span></div>
+            <div class="panel-header">
+              <div>
+                <h2>Painel de chamadas</h2>
+                <p>Pedidos chamados no balcão.</p>
+              </div><span class="live"><i></i> Ao vivo</span>
+            </div>
             <div id="callsList" class="calls-list"></div>
           </div>
 
           <div class="panel tables-panel">
-            <div class="panel-header"><div><h2>Mesas ativas</h2><p>Pedidos prontos para o salão.</p></div><span class="panel-badge" id="tablesBadge">0</span></div>
+            <div class="panel-header">
+              <div>
+                <h2>Mesas ativas</h2>
+                <p>Pedidos prontos para o salão.</p>
+              </div><span class="panel-badge" id="tablesBadge">0</span>
+            </div>
             <div id="tablesList" class="tables-list"></div>
           </div>
         </aside>
@@ -88,7 +116,11 @@
 
   <div class="modal-backdrop hidden" id="publicModal">
     <div class="modal">
-      <div class="modal-head"><div><span class="eyebrow">Painel público</span><h2>Pedidos prontos</h2></div><button class="close" id="closeModal">×</button></div>
+      <div class="modal-head">
+        <div><span class="eyebrow">Painel público</span>
+          <h2>Pedidos prontos</h2>
+        </div><button class="close" id="closeModal">×</button>
+      </div>
       <div id="publicList" class="public-list"></div>
       <p class="public-hint">A tela pública exibe somente chamadas ainda aguardando retirada.</p>
     </div>
@@ -96,11 +128,18 @@
 
   <div class="modal-backdrop hidden" id="helpModal">
     <div class="modal help-modal">
-      <div class="modal-head"><div><span class="eyebrow">Ajuda</span><h2>Como usar</h2></div><button class="close" id="closeHelp">×</button></div>
+      <div class="modal-head">
+        <div><span class="eyebrow">Ajuda</span>
+          <h2>Como usar</h2>
+        </div><button class="close" id="closeHelp">×</button>
+      </div>
       <div class="help-content">
-        <p><strong>Balcão:</strong> clique em <em>Chamar cliente</em> para mandar o pedido ao painel público. Depois, marque como entregue.</p>
-        <p><strong>Salão:</strong> clique em <em>Avisar garçom</em>. O pedido entra na fila da mesa até ser marcado como entregue.</p>
-        <p><strong>Integração com Cozinha:</strong> a tela considera como entrada os pedidos com status de prontos (<code>status = ready</code>).</p>
+        <p><strong>Balcão:</strong> clique em <em>Chamar cliente</em> para mandar o pedido ao painel público. Depois,
+          marque como entregue.</p>
+        <p><strong>Salão:</strong> clique em <em>Avisar garçom</em>. O pedido entra na fila da mesa até ser marcado como
+          entregue.</p>
+        <p><strong>Integração com Cozinha:</strong> a tela considera como entrada os pedidos com status de prontos
+          (<code>status = ready</code>).</p>
       </div>
     </div>
   </div>
@@ -118,7 +157,8 @@
   </script>
 
   <!-- SCRIPTS CENTRALIZADOS E ESPECÍFICOS -->
-  <script src="../../database.js"></script>
-  <script src="js/expedicao.js"></script>
+  <script src="dataBase.js"></script>
+  <script src="app.js"></script>
 </body>
+
 </html>

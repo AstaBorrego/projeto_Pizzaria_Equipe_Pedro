@@ -2,138 +2,181 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bella Massa | Cardápio Digital</title>
-    <!-- Ícones Phosphor -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="css/estilo.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bella Massa - Cadastro de Item</title>
+  <!-- Adicionando a fonte Fredoka para manter o mesmo padrão de títulos da tela de atendimento -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+  <!-- BARRA DE GRADIENTE SUPERIOR -->
+  <div class="top-gradient-bar"></div>
+
+  <!-- CONTAINER EXTERNO GERAL -->
+  <div class="main-wrapper">
     <div class="container">
-        <header class="page-header">
-            <div>
-                <span class="eyebrow"><i class="ph ph-book-open"></i> Módulo 02</span>
-                <h1>Gestão do <strong>Cardápio Digital</strong></h1>
-                <p>Cadastre, edite e gerencie a disponibilidade dos itens da pizzaria.</p>
-            </div>
 
-            <!-- BOTÕES DE TEMA (CLAREAR / ESCURECER) -->
-            <div class="theme-switch-wrapper">
-                <div class="theme-switch">
-                    <button type="button" onclick="setTheme('light')" id="btn-light" title="Modo Claro">
-                        <i class="ph ph-sun"></i> Clarear
-                    </button>
-                    <button type="button" onclick="setTheme('dark')" id="btn-dark" class="active" title="Modo Escuro">
-                        <i class="ph ph-moon"></i> Escurecer
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <main class="main-layout">
-            <!-- Formulário de Cadastro / Edição -->
-            <section class="card form-card" id="cadastro">
-                <div class="card-header">
-                    <h2 id="formTitle"><i class="ph ph-plus-circle"></i> Cadastrar Item</h2>
-                </div>
-
-                <form id="formCardapio" onsubmit="event.preventDefault(); cadastrarPizza();">
-                    <div class="form-group">
-                        <label for="nomePizza">Nome do Item *</label>
-                        <input type="text" id="nomePizza" placeholder="Ex.: Calabresa Especial" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="categoria">Categoria *</label>
-                        <select id="categoria" required>
-                            <option value="">Selecione a categoria</option>
-                            <option value="Pizza Tradicional">Pizza Tradicional</option>
-                            <option value="Pizza Doce">Pizza Doce</option>
-                            <option value="Bebida">Bebida</option>
-                            <option value="Borda Recheada">Borda Recheada</option>
-                            <option value="Sobremesa">Sobremesa</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="precoPizza">Preço (R$) *</label>
-                        <input type="number" id="precoPizza" placeholder="0.00" step="0.01" min="0" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="ingredientes">Ingredientes / Descrição</label>
-                        <textarea id="ingredientes" placeholder="Ex.: Molho de tomate, muçarela, calabresa fatiada e cebola"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="disponivel">Status de Disponibilidade</label>
-                        <select id="disponivel">
-                            <option value="Disponível">Disponível</option>
-                            <option value="Esgotado">Esgotado</option>
-                        </select>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" id="btnSalvar" class="btn btn-primary">
-                            <i class="ph ph-floppy-disk"></i> Salvar Item
-                        </button>
-                        <button type="button" id="btnCancelar" class="btn btn-secondary hidden" onclick="cancelarEdicao()">
-                            Cancelar
-                        </button>
-                    </div>
-                </form>
-            </section>
-
-            <!-- Tabela de Itens do Cardápio -->
-            <section class="card table-card" id="listaCardapio">
-                <div class="card-header flex-between">
-                    <div>
-                        <h2><i class="ph ph-list-bullets"></i> Itens do Cardápio</h2>
-                    </div>
-                    <div class="search-box">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" id="searchInput" placeholder="Buscar por nome ou categoria..." onkeyup="filtrarTabela()">
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Categoria</th>
-                                <th>Preço</th>
-                                <th>Ingredientes</th>
-                                <th>Status</th>
-                                <th class="text-center">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaCardapio">
-                            <!-- Inserido dinamicamente via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Widget VLIBRAS -->
-    <div vw class="enabled">
-        <div vw-access-button class="active"></div>
-        <div vw-plugin-wrapper>
-            <div class="vw-plugin-top-wrapper"></div>
+      <!-- HEADER / TOPO -->
+      <header>
+        <div class="brand-title">
+          <span class="pizza-icon" title="Clique para girar!">🍕</span>
+          <h1>Bella Massa | Cadastro de Item</h1>
         </div>
-    </div>
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-    <script>
-        new window.VLibras.Widget('https://vlibras.gov.br/app');
-    </script>
 
-    <!-- Script Principal e CRUD -->
-    <script src="js/crud-cardapio.js"></script>
+        <div class="header-right">
+          <div class="theme-switch" role="group" aria-label="Alternar tema">
+            <button type="button" id="btnLight" onclick="setTheme('light')" title="Modo claro"
+              aria-label="Modo claro">☀️</button>
+            <button type="button" id="btnDark" onclick="setTheme('dark')" title="Modo escuro"
+              aria-label="Modo escuro">🌙</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- LAYOUT CENTRALIZADO DE CADASTRO -->
+      <div id="catalogLayout" class="catalog-layout tabela-oculta">
+
+        <!-- COLUNA DA ESQUERDA / FORMULÁRIO -->
+        <section class="section-card form-section">
+          <div class="section-title">
+            <div>
+              <h2>Cadastrar Item</h2>
+            </div>
+          </div>
+
+          <input type="hidden" id="editIndex" value="">
+
+          <div class="form-group">
+            <label>Nome do Item *</label>
+            <input type="text" id="nomeItem" list="sugestoesNomes" placeholder="Selecione na lista ou digite um novo..."
+              autocomplete="off">
+
+            <datalist id="sugestoesNomes">
+              <!-- Pizzas Salgadas -->
+              <option value="Calabresa"></option>
+              <option value="Mussarela"></option>
+              <option value="Marguerita"></option>
+              <option value="Portuguesa"></option>
+              <option value="Frango com Catupiry"></option>
+              <option value="Quatro Queijos"></option>
+              <option value="Bacon"></option>
+              <option value="Toscana"></option>
+              <option value="Brócolis com Bacon"></option>
+              <option value="Lombo Canadense"></option>
+              <option value="Baiana"></option>
+              <option value="Pepperoni"></option>
+
+              <!-- Pizzas Doces -->
+              <option value="Brigadeiro"></option>
+              <option value="Prestígio"></option>
+              <option value="Romeu e Julieta"></option>
+              <option value="Banana com Canela"></option>
+
+              <!-- Bebidas -->
+              <option value="Coca-Cola 2L"></option>
+              <option value="Guaraná Antarctica 2L"></option>
+              <option value="Fanta Laranja 2L"></option>
+              <option value="Sprite 2L"></option>
+              <option value="Coca-Cola Lata 350ml"></option>
+              <option value="Guaraná Lata 350ml"></option>
+              <option value="Suco Del Valle Uva 1L"></option>
+              <option value="Água Sem Gás 500ml"></option>
+              <option value="Água Com Gás 500ml"></option>
+            </datalist>
+          </div>
+
+          <div class="form-group">
+            <label>Categoria *</label>
+            <div class="custom-select-wrapper">
+              <select id="categoriaItem">
+                <option value="" disabled selected>Selecione a categoria</option>
+                <option value="Pizza Salgada">Pizza Salgada</option>
+                <option value="Pizza Doce">Pizza Doce</option>
+                <option value="Bebida">Bebida</option>
+              </select>
+              <span class="select-arrow">▼</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Preço (R$) *</label>
+            <div class="money-input full">
+              <span>R$</span>
+              <input type="text" id="precoItem" value="0,00">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Ingredientes / Descrição</label>
+            <textarea id="ingredientesItem" placeholder="Ex.: Molho de tomate, muçarela..."
+              style="width:100%; padding:10px 12px; background:var(--card-header); border:1px solid var(--border-color); border-radius:8px; color:var(--text-light); resize:none; height:80px; outline:none; font-family:'Poppins',sans-serif; font-size:0.85rem;"></textarea>
+          </div>
+
+          <div class="button-group">
+            <button type="button" id="btnSalvar" class="btn-primary" onclick="salvarItemCardapio()">
+              ✓ Salvar Item
+            </button>
+            <button type="button" id="btnCadastrar" class="btn-secondary" onclick="cadastrarNovoItem()">
+              ➕ Limpar Seleção
+            </button>
+          </div>
+
+          <button type="button" id="btnCancelar" class="hidden"
+            style="width:100%; margin-top:8px; background:transparent; border:1px solid var(--border-color); color:var(--text-muted); padding:8px; border-radius:8px; cursor:pointer;"
+            onclick="cancelarEdicao()">
+            Cancelar Edição
+          </button>
+        </section>
+
+        <!-- COLUNA DA DIREITA: TABELA -->
+        <section id="secaoTabela" class="section-card table-section">
+          <div class="section-title"
+            style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <h2>📋 Itens do Cardápio</h2>
+              <p>Lista de produtos cadastrados.</p>
+            </div>
+            <input type="text" id="buscaCardapio" placeholder="Buscar por nome ou categoria..."
+              oninput="renderizarCardapio()" style="max-width: 240px; padding: 8px 12px; font-size: 0.8rem;">
+          </div>
+
+          <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>NOME</th>
+                  <th>CATEGORIA</th>
+                  <th>PREÇO</th>
+                  <th>STATUS</th>
+                  <th>AÇÕES</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaCardapio">
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL DE MENSAGEM -->
+  <div id="customModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-icon" id="modalIcon">ℹ️</div>
+      <p id="modalMessage">Mensagem do sistema</p>
+      <button type="button" class="btn-primary" onclick="fecharModal()">OK</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 
 </html>

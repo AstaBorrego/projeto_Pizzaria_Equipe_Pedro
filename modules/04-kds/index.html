@@ -1,112 +1,206 @@
+<!-- Declaração do tipo de documento HTML5 -->
 <!DOCTYPE html>
+<!-- Elemento raiz do HTML definindo o idioma como Português do Brasil -->
 <html lang="pt-BR">
+<!-- Cabeçalho do documento contendo metadados e links de recursos -->
+
 <head>
+  <!-- Definindo a codificação de caracteres como UTF-8 -->
   <meta charset="UTF-8" />
+  <!-- Configurando a viewport para responsividade em dispositivos móveis -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bella Massa | KDS - Cozinha</title>
-  <link rel="stylesheet" href="css/kds.css" />
+  <!-- Título da página exibido na aba do navegador -->
+  <title>Bella Massa | Cozinha</title>
+  <!-- Link para o arquivo de estilização CSS externo do KDS -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- Fechamento da tag de cabeçalho -->
 </head>
+<!-- Corpo do documento onde reside todo o conteúdo visível da aplicação -->
+
 <body>
+  <!-- Container principal centralizado para estruturar a aplicação KDS -->
   <div class="container">
+    <!-- Cabeçalho superior da página com marca, título e relógio/ações -->
     <header class="page-header">
+      <!-- Bloco de identificação da marca e do módulo do sistema -->
       <div class="brand-title">
+        <!-- Ícone ilustrativo de pizza com atributo de acessibilidade de título -->
         <span class="pizza-icon" title="Cozinha">🍕</span>
+        <!-- Container dos textos de cabeçalho -->
         <div>
-          <span class="eyebrow">Módulo 04</span>
-          <h1>KDS - <strong>Cozinha</strong></h1>
+          <!-- Pequeno texto acima do título para identificação do módulo -->
+          <!-- Título principal com destaque na palavra Cozinha -->
+          <h1>Bella Massa | Cozinha</h1>
+          <!-- Subtítulo descritivo do objetivo da tela -->
           <p>Acompanhe e gerencie os pedidos em tempo real</p>
+          <!-- Fechamento da div de textos do título -->
         </div>
+        <!-- Fechamento do bloco da marca -->
       </div>
 
+      <!-- Container do lado direito do cabeçalho para controles e status -->
       <div class="header-right">
-        <!-- BOTÕES DE ALTERNÂNCIA DE TEMA -->
+        <!-- BOTÕES DE ALTERNÂNCIA DE TEMA (APENAS ÍCONES) -->
         <div class="theme-switch">
-          <button type="button" id="btnLight" onclick="setTheme('light')" title="Clarear modo" aria-label="Clarear">☀️ Clarear</button>
-          <button type="button" id="btnDark" onclick="setTheme('dark')" title="Escurecer modo" aria-label="Escurecer">🌙 Escurecer</button>
+          <!-- Botão para ativar o modo claro (Light Theme) -->
+          <button type="button" id="btnLight" onclick="setTheme('light')" title="Clarear modo"
+            aria-label="Clarear">☀️</button>
+          <!-- Botão para ativar o modo escuro (Dark Theme) -->
+          <button type="button" id="btnDark" onclick="setTheme('dark')" title="Escurecer modo"
+            aria-label="Escurecer">🌙</button>
+          <!-- Fechamento do container de botões de tema -->
         </div>
-        <div class="topbar-status">
-          <div class="connection"><span class="dot"></span> Conectado</div>
-          <div class="clock-box"><small id="date"></small><strong id="clock">--:--:--</strong></div>
-        </div>
+
       </div>
+      <!-- Fechamento do cabeçalho da página -->
     </header>
 
+    <!-- Conteúdo principal com as colunas do KDS e resumo inferior -->
     <main class="main-content-kds">
+      <!-- Grid de 3 colunas para o fluxo de pedidos (Fila, Preparo, Prontos) -->
       <section class="kds-grid">
+        <!-- Coluna 1: Fila de Pedidos pendentes/aguardando -->
         <div class="column queue">
+          <!-- Cabeçalho da coluna Fila -->
           <div class="column-header">
+            <!-- Container do título e ícone da coluna Fila -->
             <div class="column-title">
+              <!-- Ícone visual representando tempo de espera -->
               <span class="title-icon">⌛</span>
+              <!-- Container de textos da coluna 1 -->
               <div>
+                <!-- Título da coluna com contador dinâmico de itens -->
                 <h2>Fila de Pedidos <span id="queueCount" class="count">0</span></h2>
+                <!-- Descrição da etapa da coluna Fila -->
                 <p>Pedidos aguardando preparo</p>
+                <!-- Fechamento do container de textos -->
               </div>
+              <!-- Fechamento do título da coluna -->
             </div>
+            <!-- Fechamento do cabeçalho da coluna -->
           </div>
+          <!-- Lista onde os cards de pedidos em fila serão injetados dinamicamente -->
           <div id="queueList" class="orders-list"></div>
+          <!-- Fechamento da coluna Fila -->
         </div>
 
+        <!-- Coluna 2: Pedidos em Preparo/Produção -->
         <div class="column preparing">
+          <!-- Cabeçalho da coluna Em Preparo -->
           <div class="column-header">
+            <!-- Container do título e ícone da coluna Em Preparo -->
             <div class="column-title">
+              <!-- Ícone visual representando processo em andamento -->
               <span class="title-icon">⚙</span>
+              <!-- Container de textos da coluna 2 -->
               <div>
+                <!-- Título da coluna com contador dinâmico de itens -->
                 <h2>Em Preparo <span id="preparingCount" class="count">0</span></h2>
+                <!-- Descrição da etapa da coluna Em Preparo -->
                 <p>Pedidos em produção</p>
+                <!-- Fechamento do container de textos -->
               </div>
+              <!-- Fechamento do título da coluna -->
             </div>
+            <!-- Fechamento do cabeçalho da coluna -->
           </div>
+          <!-- Lista onde os cards de pedidos em preparo serão injetados dinamicamente -->
           <div id="preparingList" class="orders-list"></div>
+          <!-- Fechamento da coluna Em Preparo -->
         </div>
 
+        <!-- Coluna 3: Pedidos Prontos aguardando expedição -->
         <div class="column ready">
+          <!-- Cabeçalho da coluna Prontos -->
           <div class="column-header">
+            <!-- Container do título e ícone da coluna Prontos -->
             <div class="column-title">
+              <!-- Ícone visual representando conclusão da preparação -->
               <span class="title-icon">✓</span>
+              <!-- Container de textos da coluna 3 -->
               <div>
+                <!-- Título da coluna com contador dinâmico de itens -->
                 <h2>Prontos <span id="readyCount" class="count">0</span></h2>
+                <!-- Descrição da etapa da coluna Prontos -->
                 <p>Finalizados, aguardando expedição</p>
+                <!-- Fechamento do container de textos -->
               </div>
+              <!-- Fechamento do título da coluna -->
             </div>
+            <!-- Fechamento do cabeçalho da coluna -->
           </div>
+          <!-- Lista onde os cards de pedidos prontos serão injetados dinamicamente -->
           <div id="readyList" class="orders-list"></div>
+          <!-- Fechamento da coluna Prontos -->
         </div>
+        <!-- Fechamento da seção do grid do KDS -->
       </section>
 
+      <!-- Barra inferior com indicadores e métricas resumidas da operação -->
       <footer class="summary-bar">
+        <!-- Indicador de total de pedidos recebidos no dia -->
         <div class="summary-item">
+          <!-- Ícone do indicador -->
           <span class="summary-icon red">▥</span>
+          <!-- Texto e valor numérico do total de pedidos do dia -->
           <div><strong id="dayOrders">0</strong><span>Pedidos no dia</span></div>
+          <!-- Fechamento do item de resumo -->
         </div>
+        <!-- Indicador de tempo médio de preparo/atendimento -->
         <div class="summary-item">
+          <!-- Ícone do indicador de tempo -->
           <span class="summary-icon red">◷</span>
+          <!-- Texto e valor formatado do tempo médio de preparo -->
           <div><strong id="avgTime">0 min</strong><span>Tempo médio</span></div>
+          <!-- Fechamento do item de resumo -->
         </div>
+        <!-- Indicador de pedidos totalmente finalizados/expedidos -->
         <div class="summary-item">
+          <!-- Ícone do indicador de conclusão -->
           <span class="summary-icon green">✓</span>
+          <!-- Texto e valor do contador de pedidos finalizados -->
           <div><strong id="finalized">0</strong><span>Finalizados</span></div>
+          <!-- Fechamento do item de resumo -->
         </div>
+        <!-- Botão para forçar a reatualização manual da lista de pedidos -->
         <button class="refresh" id="refreshBtn" onclick="carregarPedidosKDS()">⟳ Atualizar</button>
+        <!-- Fechamento da barra de resumo footer -->
       </footer>
+      <!-- Fechamento do conteúdo principal -->
     </main>
+    <!-- Fechamento da div container -->
   </div>
 
-  <!-- Widget VLIBRAS -->
+  <!-- Container e estrutura de suporte ao Widget VLIBRAS (Acessibilidade em Libras) -->
   <div vw class="enabled">
+    <!-- Botão de acesso flutuante do VLibras -->
     <div vw-access-button class="active"></div>
+    <!-- Wrapper do plugin do VLibras -->
     <div vw-plugin-wrapper>
+      <!-- Cabeçalho interno do wrapper do VLibras -->
       <div class="vw-plugin-top-wrapper"></div>
+      <!-- Fechamento do wrapper do plugin -->
     </div>
+    <!-- Fechamento da div principal do VLibras -->
   </div>
+  <!-- Importação do script oficial do VLibras fornecido pelo Governo Federal -->
   <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <!-- Script inline para inicialização do Widget de VLibras -->
   <script>
+    // Instancia a biblioteca do VLibras apontando para o servidor oficial
     new window.VLibras.Widget('https://vlibras.gov.br/app');
   </script>
-  
+
+  <!-- Div para exibição de mensagens flutuantes no estilo Toast -->
   <div id="toast" class="toast"></div>
 
-  <!-- CARREGAMENTO DOS SCRIPTS NA ORDEM CORRETA -->
+  <!-- CARREGAMENTO DOS SCRIPTS NA ORDEM CORRETA DE DEPENDÊNCIAS -->
+  <!-- Script do banco de dados fictício / simulador de dados -->
   <script src="../../database.js"></script>
-  <script src="js/kds.js"></script>
+  <!-- Script principal de lógica de negócios e renderização da tela KDS -->
+  <script src="app.js"></script>
+  <!-- Fechamento do corpo da página -->
 </body>
+<!-- Fechamento do documento HTML -->
+
 </html>

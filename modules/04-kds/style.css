@@ -1,0 +1,311 @@
+/* Importação de fontes externas do Google Fonts (Fredoka e Poppins) */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+/* Definição das variáveis de ambiente globais e paleta de cores padrão no escopo :root */
+:root {
+  /* Cor vermelha temática da pizzaria */
+  --pizza-red: #D32F2F;
+  /* Tom escuro de vermelho para variações e hover */
+  --pizza-red-dark: #B71C1C;
+  /* Tom amarelo ouro para destacar dados e títulos */
+  --cheese-gold: #FFB300;
+  /* Tom de verde folha para badges e ações de conclusão */
+  --basil-green: #2E7D32;
+  /* Cor de fundo principal escura estilo forno */
+  --bg-oven: #181515;
+  /* Cor de fundo para os containers e cards */
+  --card-bg: #242020;
+  /* Cor de fundo para os cabeçalhos das colunas */
+  --card-header: #2E2828;
+  /* Cor principal para textos claros */
+  --text-light: #FBFADA;
+  /* Cor secundária opaca para textos de apoio e detalhes */
+  --text-muted: #A39B98;
+  /* Cor de borda para divisórias e delimitadores */
+  --border-color: #3D3535;
+}
+
+/* Sobrescreve as variáveis globais para aplicar a estilização quando o modo claro estiver ativo */
+body.light-theme {
+  /* Fundo principal claro */
+  --bg-oven: #f4f4f4;
+  /* Fundo de container e cards em branco puro */
+  --card-bg: #ffffff;
+  /* Fundo de cabeçalho cinza claro */
+  --card-header: #eaeaea;
+  /* Texto principal em tom escuro para alto contraste */
+  --text-light: #222222;
+  /* Texto mudo em tom cinza médio */
+  --text-muted: #666666;
+  /* Bordas em tom cinza suave */
+  --border-color: #cccccc;
+}
+
+/* Reset universal css para normalização de caixa, margem, espaçamento e tipografia */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+/* Configuração do estilo base da página e corpo */
+body {
+  /* Garante altura mínima cobrindo a tela toda */
+  min-height: 100vh;
+  /* Aplica a cor de texto padrão definida em variáveis */
+  color: var(--text-light);
+  /* Aplica a cor de fundo padrão */
+  background: var(--bg-oven);
+  /* Textura de fundo estilo padrão pontilhado */
+  background-image: radial-gradient(#2c2424 1px, transparent 1px);
+  /* Tamanho da repetição da textura pontilhada */
+  background-size: 20px 20px;
+  /* Utiliza flexbox para alinhamento centralizado */
+  display: flex;
+  /* Alinha os itens no topo da tela */
+  justify-content: center;
+  /* Alinhamento no eixo secundário */
+  align-items: flex-start;
+  /* Espaçamento interno das bordas da tela */
+  padding: 20px;
+  /* Suaviza a transição da cor de fundo durante troca de temas */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light-theme .brand-title h1 {
+    color: #0f172a;
+}
+
+/* Estilização da caixa principal contendo todo a aplicação */
+.container {
+  /* Ocupa toda a largura disponível */
+  width: 100%;
+  /* Limita a largura máxima para boa usabilidade */
+  max-width: 1200px;
+  /* Centraliza a div no eixo horizontal */
+  margin: 0 auto;
+  /* Cor de fundo do container segundo variável do tema */
+  background-color: var(--card-bg);
+  /* Preenchimento interno do container */
+  padding: 30px;
+  /* Arredondamento suave de cantos do container */
+  border-radius: 18px;
+  /* Sombreamento projetado suave com destaque vermelho */
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(211, 47, 47, 0.15);
+  /* Borda fina delimitadora */
+  border: 1px solid var(--border-color);
+  /* Posição relativa para suporte ao elemento pseudo ::before */
+  position: relative;
+  /* Oculta qualquer transbordo dos elementos filhos */
+  overflow: hidden;
+  /* Define dimensionamento de caixa incluindo bordas */
+  box-sizing: border-box;
+}
+
+/* Faixa decorativa multicolorida no topo da caixa container principal */
+.container::before {
+  /* Elemento pseudo vazio */
+  content: '';
+  /* Posicionamento absoluto no topo */
+  position: absolute;
+  /* Alinhamento ao topo, esquerda e direita */
+  top: 0; left: 0; right: 0;
+  /* Altura fina da faixa superior */
+  height: 5px;
+  /* Gradiente linear horizontal com cores temáticas da pizzaria */
+  background: linear-gradient(90deg, var(--pizza-red), var(--cheese-gold), var(--basil-green));
+}
+
+/* Estilização da seção do cabeçalho */
+.page-header {
+  /* Linha inferior tracejada para separação */
+  border-bottom: 2px dashed var(--border-color);
+  /* Espaçamento interno inferior */
+  padding-bottom: 18px;
+  /* Margem de afastamento inferior */
+  margin-bottom: 22px;
+  /* Distribuição em flexbox alinhando extremidades */
+  display: flex;
+  /* Espaçamento flexível entre elementos */
+  justify-content: space-between;
+  /* Alinhamento vertical centralizado */
+  align-items: center;
+  /* Permite quebra de linha em telas pequenas */
+  flex-wrap: wrap;
+  /* Espaço entre itens filhos em flex */
+  gap: 15px;
+}
+
+/* Estilos para alinhamento da marca da pizzaria e título */
+.brand-title { display: flex; align-items: center; gap: 14px; }
+/* Tamanho do ícone visual de pizza */
+.pizza-icon { font-size: 2.8rem; display: inline-block; }
+
+/* Estilização do título h1 principal */
+.page-header h1 {
+  /* Fonte display estilo arredondado */
+  font-family: 'Fredoka', cursive;
+  /* Tamanho de fonte destacado */
+  font-size: 1.8rem;
+  /* Cor amarela ouro da marca */
+  color: var(--cheese-gold);
+}
+
+/* Container do lado direito do cabeçalho */
+.header-right {
+  /* Flexbox alinhado ao centro */
+  display: flex;
+  /* Alinhamento vertical dos itens do topo */
+  align-items: center;
+  /* Espaçamento entre os controles */
+  gap: 15px;
+  /* Permite dobrar itens em telas menores */
+  flex-wrap: wrap;
+}
+
+/* Caixinha de contorno para o interruptor de troca de tema */
+.theme-switch {
+  /* Organização dos botões internamente em linha */
+  display: flex;
+  /* Fundo diferenciado do container */
+  background: var(--card-header);
+  /* Borda delimitadora suave */
+  border: 1px solid var(--border-color);
+  /* Cantos arredondados no estilo pílula */
+  border-radius: 20px;
+  /* Espaçamento interno da pílula */
+  padding: 3px;
+  /* Espaço entre os botões interno */
+  gap: 4px;
+}
+
+/* Estilo padrão dos botões internos do seletor de tema */
+.theme-switch button {
+  /* Fundo transparente por padrão */
+  background: transparent;
+  /* Sem borda padrão de botão */
+  border: none;
+  /* Cursor apontador de clique */
+  cursor: pointer;
+  /* Tamanho relativo do emoji/ícone */
+  font-size: 0.95rem;
+  /* Espaçamento interno do botão */
+  padding: 4px 8px;
+  /* Formato perfeitamente circular */
+  border-radius: 50%;
+  /* Animação suave para efeito ao passar o mouse */
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+/* Efeito de destaque no hover dos botões de tema */
+.theme-switch button:hover {
+  /* Aplica leve aumento de escala */
+  transform: scale(1.15);
+}
+
+/* Estilo do botão de tema que está selecionado atualmente */
+.theme-switch button.active {
+  /* Fundo amarelo suave translúcido para indicar estado ativo */
+  background: rgba(255, 179, 0, 0.2);
+}
+
+/* Barra de status da conexão e relógio */
+.topbar-status { display: flex; align-items: center; gap: 10px; }
+/* Caixa do indicador visual de conexão */
+.connection { padding: 6px 12px; border: 1px solid rgba(46,125,50,.55); border-radius: 8px; color: #83cd86; font-size: 12px; }
+/* Ponto verde piscante/sólido do indicador de conexão */
+.dot { width: 7px; height: 7px; display: inline-block; border-radius: 50%; background: #57b861; margin-right: 5px; }
+/* Container do relógio em tempo real no cabeçalho */
+.clock-box { border: 1px solid var(--border-color); border-radius: 8px; padding: 4px 10px; text-align: right; background: var(--card-header); }
+/* Estilo para exibição da data dentro da caixa de relógio */
+.clock-box small { display: block; color: var(--text-muted); font-size: 9px; }
+/* Estilo para as horas com destaque numérico */
+.clock-box strong { display: block; font-family: 'Fredoka', sans-serif; color: var(--cheese-gold); font-size: 15px; }
+
+/* Estrutura de grid das 3 colunas da cozinha (KDS) */
+.kds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+/* Estilo base de cada coluna de pedidos */
+.column { border: 1px solid var(--border-color); border-radius: 13px; padding: 15px; background: var(--card-header); }
+/* Cabeçalho superior de cada coluna */
+.column-header { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 12px; }
+/* Disposição do título e ícone do cabeçalho da coluna */
+.column-title { display: flex; align-items: center; gap: 10px; }
+/* Estilização do ícone arredondado de cada coluna */
+.title-icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; font-size: 18px; background: rgba(255,179,0,.12); color: var(--cheese-gold); }
+
+/* Título das colunas */
+.column h2 { font-family: 'Fredoka', sans-serif; font-size: 1.1rem; color: var(--text-light); }
+/* Badge circular com o contador de pedidos na coluna */
+.count { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; background: var(--cheese-gold); color: #000; margin-left: 5px; }
+
+/* Container das listas verticais de cartões dentro da coluna */
+.orders-list { display: flex; flex-direction: column; gap: 12px; }
+/* Estilo individual de cada card de pedido */
+.order-card { border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; background: var(--card-bg); }
+/* Topo do card contendo o número do pedido e modalidade */
+.order-top { display: flex; justify-content: space-between; margin-bottom: 8px; }
+/* Destaque para o número do pedido no card */
+.order-number { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; color: var(--cheese-gold); }
+
+/* Etiquetas descritivas de tipo de pedido (Entrega, Balcão, Salão) */
+.badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; background: var(--border-color); color: var(--text-light); }
+/* Cor de badge para pedidos de Entrega */
+.badge.red { background: rgba(211,47,47,.3); color: #ff8a8a; }
+/* Cor de badge para pedidos de Salão */
+.badge.green { background: rgba(46,125,50,.3); color: #8cd994; }
+
+/* Lista de itens do pedido no card */
+.items { margin: 10px 0; display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+/* Estilo da quantidade do item */
+.item .qty { font-weight: bold; margin-right: 5px; color: var(--cheese-gold); }
+
+/* Botão de ação genérico do card */
+.action { width: 100%; border: none; border-radius: 6px; padding: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 8px; }
+/* Estilo do botão de iniciar preparo */
+.action.start { background: var(--cheese-gold); color: #000; }
+/* Estilo do botão de concluir preparo */
+.action.finish { background: var(--pizza-red); color: #fff; }
+/* Estilo do botão de expedir pedido */
+.action.deliver { background: var(--basil-green); color: #fff; }
+
+/* Estilização da barra de estatísticas e métricas inferior */
+.summary-bar { display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; background: var(--card-header); flex-wrap: wrap; gap: 10px; }
+/* Estilo individual de cada bloco resumido */
+.summary-item { display: flex; align-items: center; gap: 10px; }
+/* Estilo dos números das métricas no resumo */
+.summary-item strong { display: block; font-family: 'Fredoka', sans-serif; color: var(--cheese-gold); font-size: 1.2rem; }
+/* Rótulo descritivo das métricas */
+.summary-item span { font-size: 0.8rem; color: var(--text-muted); }
+
+/* Botão de atualizar página/dados manualmente no footer */
+.refresh { padding: 8px 16px; border: 1px solid var(--cheese-gold); border-radius: 6px; color: var(--cheese-gold); background: transparent; cursor: pointer; font-weight: 600; }
+
+/* ==========================================
+   TOAST (MENSAGENS) - CENTRALIZADO
+   ========================================== */
+.toast {
+  position: fixed;
+  top: 60px;
+  left: 60%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: var(--card-header);
+  border: 1px solid var(--border-color);
+  color: var(--cheese-gold);
+  padding: 18px 30px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(211, 47, 47, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  z-index: 9999;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Regras de mídia para responsividade em dispositivos móveis e telas menores que 900px */
+@media (max-width: 900px) {
+  /* Transforma o grid de 3 colunas em uma coluna única vertical */
+  .kds-grid { grid-template-columns: 1fr; }
+}
